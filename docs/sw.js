@@ -1,5 +1,5 @@
 // Nova – speichert die App, damit sie schnell startet und auch offline öffnet.
-const CACHE = "nova-v1";
+const CACHE = "nova-v2";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", (event) => {

@@ -274,6 +274,14 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 .logopick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .logopick button{display:grid;justify-items:center;gap:6px;padding:10px 4px;border-radius:14px;border:2px solid transparent;font-size:12.5px;font-weight:700}
 .logopick button[aria-pressed="true"]{border-color:var(--acc);background:var(--surface2)}
+.steps{display:grid;gap:12px;margin:6px 0 14px;padding:0;list-style:none;counter-reset:st}
+.steps li{display:flex;gap:12px;align-items:center;background:var(--surface2);border-radius:14px;padding:12px 14px;font-weight:600;line-height:1.35}
+.steps li::before{counter-increment:st;content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--acc);color:var(--acc-ink);display:grid;place-items:center;font-weight:900}
+.steps .k{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;background:var(--bg);font-weight:800;white-space:nowrap}
+.steps .k svg{--s:16px}
+.installbar{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin:4px 0 10px}
+.installbar b{display:block;font-size:14px}
+.installbar small{color:var(--muted);font-size:12.5px}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
 
@@ -355,6 +363,9 @@ const ICONS = {
   video:'<rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="m15.5 10 6-3.5v11l-6-3.5z"/>',
   mute:'<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m17 9.5 4 5M21 9.5l-4 5"/>',
   vol:'<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 9a4.5 4.5 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/>',
+  more:'<circle cx="5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="19" cy="12" r="1.7" fill="currentColor"/>',
+  home:'<rect x="5" y="3" width="14" height="18" rx="3"/><path d="M12 8v6M9 11h6"/>',
+  shareios:'<path d="M12 3v12M8 7l4-4 4 4"/><path d="M7 11H5v10h14V11h-2"/>',
   calendar:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'
 };
 function ic(name, size){ const s = document.createElementNS("http://www.w3.org/2000/svg","svg"); s.setAttribute("viewBox","0 0 24 24"); s.setAttribute("class","ic"); if (size) s.style.setProperty("--s",size+"px"); s.setAttribute("aria-hidden","true"); s.innerHTML = ICONS[name]||""; return s; }
@@ -701,7 +712,7 @@ function header(title, extra){
     iconBtn("search","Suchen",openSearch),
     h("h1",{},title),
     iconBtn("userplus","Freunde hinzufügen",openAddFriend),
-    extra || h("span",{style:"width:38px"}));
+    extra || iconBtn("more","Mehr – zum Home-Bildschirm",openInstall));
 }
 function status(c){
   const last = c.msgs[c.msgs.length-1];
@@ -722,6 +733,7 @@ function renderChats(){
   const list = [...chats].filter(c=>c.msgs.length).sort((a,b)=>b.msgs.at(-1).at - a.msgs.at(-1).at).filter(c => c.title.toLowerCase().includes(search.toLowerCase()));
   el.replaceChildren(
     header("Chats", iconBtn("edit","Neuer Chat",openNewChat)),
+    isInstalled() ? null : h("button",{class:"installbar",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"Nova als App holen"), h("small",{},"Auf den Home-Bildschirm legen")), ic("home")),
     h("div",{class:"searchwrap"}, ic("search"), h("input",{class:"search",id:"chat-search",placeholder:"Chats durchsuchen",value:search,oninput:e=>{search=e.target.value; renderChats(); const i=document.getElementById("chat-search"); i.focus(); i.setSelectionRange(search.length,search.length);}})),
     ...list.map(c => { const s = status(c);
       return h("button",{class:"row",onclick:()=>openChat(c.id)},
@@ -895,7 +907,7 @@ function renderCam(){
   vf.append(
     h("div",{class:"camtop"},
       h("span",{style:"display:flex;gap:8px"}, h("button",{"aria-label":"Mein Profil",onclick:()=>goTab(4)}, avatar(ME,38)), iconBtn("search","Suchen",openSearch,"round glass")),
-      iconBtn("userplus","Freunde hinzufügen",openAddFriend,"round glass")),
+      h("span",{style:"display:flex;gap:8px"}, iconBtn("userplus","Freunde hinzufügen",openAddFriend,"round glass"), iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass"))),
     h("div",{class:"camside"}, iconBtn("flip","Kamera wechseln",()=>toast("Kamera gewechselt"),"round glass"), iconBtn("bolt","Blitz",()=>toast("Blitz an"),"round glass"), iconBtn("timer","Selbstauslöser",()=>toast("Selbstauslöser: 3 Sekunden"),"round glass")),
     h("p",{}, camMode==="video" ? "Tippe auf den roten Knopf und nimm ein Video auf." : "Lens wählen, dann auslösen."),
     h("button",{class:"chip",onclick:()=>openEditor({}, {img:IMG.city}, camLens)}, ic("image"),"Mit Beispielbild testen"));
@@ -1227,7 +1239,8 @@ function renderProfile(){
         iconBtn("search","Suchen",openSearch,"round glass"),
         h("span",{style:"display:flex;gap:8px"},
           iconBtn("share","Profil teilen",async()=>{ try{ await navigator.clipboard.writeText("Füg mich bei Nova hinzu: @"+account.username); toast("Profil-Link kopiert"); }catch{ toast("Dein Benutzername: @"+account.username); } },"round glass"),
-          iconBtn("sliders","Einstellungen",openSettings,"round glass")))),
+          iconBtn("sliders","Einstellungen",openSettings,"round glass"),
+          iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass")))),
     h("div",{class:"pbody"},
       h("div",{style:"display:flex;align-items:flex-end;justify-content:space-between;gap:10px"},
         h("button",{"aria-label":"Profilbild ändern",style:"position:relative",onclick:changePhoto}, bigAv,
@@ -1290,6 +1303,7 @@ function openSettings(){
   overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
     h("div",{class:"sheet"},
       h("h2",{},"Einstellungen", iconBtn("close","Schließen",closeOverlay)),
+      h("button",{class:"installbar",style:"width:100%",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"Zum Home-Bildschirm"), h("small",{},"Nova wie eine App nutzen")), ic("home")),
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Aussehen"),
       h("div",{style:"display:flex;gap:8px"}, ...[["dark","Dunkel"],["light","Hell"]].map(([k,l])=>h("button",{class:"sbtn",style:theme===k?"background:var(--acc);color:var(--acc-ink)":"",onclick:()=>setTheme(k)}, ic(k==="dark"?"moon":"spark"), l))),
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Konto & Privatsphäre"),
@@ -1298,6 +1312,31 @@ function openSettings(){
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer sieht meine Story?"), h("small",{},h("span",{},"Freunde")))),
       h("p",{class:"note",style:"text-align:left;margin-top:10px"},"Vorschau: Konto, Fotos und Chats bleiben nur auf diesem Gerät."),
       h("button",{class:"sbtn",style:"color:var(--snap);width:100%;justify-content:center",onclick:logout}, ic("logout"),"Abmelden"))));
+}
+
+// ================= Zum Home-Bildschirm =================
+let installEvt = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
+const isInstalled = () => { try { return window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; } catch { return false; } };
+const isApple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Android/.test(navigator.userAgent);
+function openInstall(){
+  const k = (icon, text) => h("span",{class:"k"}, icon ? ic(icon) : null, text);
+  const steps = isApple
+    ? [ ["Tippe in Safari unten auf ", k("more",""), " – oder auf ", k("shareios","Teilen"), "."],
+        ["Tippe auf ", k(null,"Zum Home-Bildschirm"), ". Falls du es nicht siehst: im Menü nach unten wischen."],
+        ["Tippe oben rechts auf ", k(null,"Hinzufügen"), ". Fertig – Nova ist jetzt auf deinem Home-Bildschirm."] ]
+    : [ ["Tippe im Browser oben rechts auf ", k("more",""), "."],
+        ["Tippe auf ", k(null,"App installieren"), " oder ", k(null,"Zum Startbildschirm"), "."],
+        ["Bestätige mit ", k(null,"Installieren"), "."] ];
+  overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
+    h("div",{class:"sheet"},
+      h("h2",{},"Nova als App", iconBtn("close","Schließen",closeOverlay)),
+      h("div",{style:"display:flex;gap:14px;align-items:center;margin-bottom:12px"}, logo(60), h("span",{}, h("b",{style:"display:block;font-size:17px"},"Nova auf deinen Home-Bildschirm"), h("small",{style:"color:var(--muted)"},"Startet im Vollbild wie eine echte App."))),
+      isInstalled() ? h("p",{class:"empty"},"Nova ist schon als App installiert.") : null,
+      installEvt ? h("button",{class:"send",style:"width:100%;margin-bottom:12px",onclick:async()=>{ installEvt.prompt(); const r = await installEvt.userChoice; installEvt = null; if (r.outcome==="accepted"){ closeOverlay(); toast("Nova wird installiert"); } }}, ic("home"),"Jetzt installieren") : null,
+      h("ol",{class:"steps"}, ...steps.map(st=>h("li",{}, h("span",{}, ...st)))),
+      isApple ? h("p",{class:"note",style:"text-align:left"},"Wichtig: Das klappt nur in Safari. Wenn du Nova gerade in einer anderen App geöffnet hast, öffne den Link zuerst in Safari.") : null,
+      h("button",{class:"sbtn",style:"width:100%;justify-content:center",onclick:closeOverlay},"Verstanden"))));
 }
 
 // ================= Navigation =================
