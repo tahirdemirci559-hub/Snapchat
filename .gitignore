@@ -1,0 +1,15 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+.swiftpm/
+.build/
+
+# macOS
+.DS_Store
+
+# Firebase-Konfiguration bleibt privat
+GoogleService-Info.plist
