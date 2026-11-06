@@ -366,6 +366,7 @@ const ICONS = {
   more:'<circle cx="5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="19" cy="12" r="1.7" fill="currentColor"/>',
   home:'<rect x="5" y="3" width="14" height="18" rx="3"/><path d="M12 8v6M9 11h6"/>',
   shareios:'<path d="M12 3v12M8 7l4-4 4 4"/><path d="M7 11H5v10h14V11h-2"/>',
+  expand:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
   calendar:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'
 };
 function ic(name, size){ const s = document.createElementNS("http://www.w3.org/2000/svg","svg"); s.setAttribute("viewBox","0 0 24 24"); s.setAttribute("class","ic"); if (size) s.style.setProperty("--s",size+"px"); s.setAttribute("aria-hidden","true"); s.innerHTML = ICONS[name]||""; return s; }
@@ -908,7 +909,7 @@ function renderCam(){
     h("div",{class:"camtop"},
       h("span",{style:"display:flex;gap:8px"}, h("button",{"aria-label":"Mein Profil",onclick:()=>goTab(4)}, avatar(ME,38)), iconBtn("search","Suchen",openSearch,"round glass")),
       h("span",{style:"display:flex;gap:8px"}, iconBtn("userplus","Freunde hinzufügen",openAddFriend,"round glass"), iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass"))),
-    h("div",{class:"camside"}, iconBtn("flip","Kamera wechseln",()=>toast("Kamera gewechselt"),"round glass"), iconBtn("bolt","Blitz",()=>toast("Blitz an"),"round glass"), iconBtn("timer","Selbstauslöser",()=>toast("Selbstauslöser: 3 Sekunden"),"round glass")),
+    h("div",{class:"camside"}, iconBtn("expand","Vollbild",goFullscreen,"round glass"), iconBtn("flip","Kamera wechseln",()=>toast("Kamera gewechselt"),"round glass"), iconBtn("bolt","Blitz",()=>toast("Blitz an"),"round glass"), iconBtn("timer","Selbstauslöser",()=>toast("Selbstauslöser: 3 Sekunden"),"round glass")),
     h("p",{}, camMode==="video" ? "Tippe auf den roten Knopf und nimm ein Video auf." : "Lens wählen, dann auslösen."),
     h("button",{class:"chip",onclick:()=>openEditor({}, {img:IMG.city}, camLens)}, ic("image"),"Mit Beispielbild testen"));
   el.replaceChildren(vf, lensName, row,
@@ -1319,7 +1320,14 @@ let installEvt = null;
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
 const isInstalled = () => { try { return window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; } catch { return false; } };
 const isApple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Android/.test(navigator.userAgent);
-function openInstall(){
+async function goFullscreen(){
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (document.fullscreenElement || document.webkitFullscreenElement){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); return; }
+  try { if (!req) throw 0; await req.call(el); }
+  catch { openInstall(true); }
+}
+function openInstall(fromFullscreen){
   const k = (icon, text) => h("span",{class:"k"}, icon ? ic(icon) : null, text);
   const steps = isApple
     ? [ ["Tippe in Safari unten auf ", k("more",""), " – oder auf ", k("shareios","Teilen"), "."],
@@ -1331,6 +1339,7 @@ function openInstall(){
   overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
     h("div",{class:"sheet"},
       h("h2",{},"Nova als App", iconBtn("close","Schließen",closeOverlay)),
+      fromFullscreen === true ? h("p",{class:"empty",style:"margin:0 0 12px;text-align:left"},"Dieses Gerät erlaubt kein Vollbild per Knopf. Auf dem iPhone geht Vollbild nur über den Home-Bildschirm:") : h("button",{class:"send",style:"width:100%;margin-bottom:12px",onclick:()=>{ closeOverlay(); goFullscreen(); }}, ic("expand"),"Vollbild jetzt"),
       h("div",{style:"display:flex;gap:14px;align-items:center;margin-bottom:12px"}, logo(60), h("span",{}, h("b",{style:"display:block;font-size:17px"},"Nova auf deinen Home-Bildschirm"), h("small",{style:"color:var(--muted)"},"Startet im Vollbild wie eine echte App."))),
       isInstalled() ? h("p",{class:"empty"},"Nova ist schon als App installiert.") : null,
       installEvt ? h("button",{class:"send",style:"width:100%;margin-bottom:12px",onclick:async()=>{ installEvt.prompt(); const r = await installEvt.userChoice; installEvt = null; if (r.outcome==="accepted"){ closeOverlay(); toast("Nova wird installiert"); } }}, ic("home"),"Jetzt installieren") : null,
