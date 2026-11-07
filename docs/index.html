@@ -541,10 +541,6 @@ function logout(){ loggedIn = false; store.del("pling-session"); overlay.replace
 // ================= Personen & Inhalte (Beispiele) =================
 const ME = "me";
 const people = {
-  mama:   {name:"Mama", username:"mama", color:"#d9467a", friend:true, bio:"Familie zuerst.", followers:48, streak:12},
-  papa:   {name:"Papa", username:"papa", color:"#2f7fd1", friend:true, bio:"Rennrad · Grill · VfB", followers:35, streak:3},
-  lena:   {name:"Lena", username:"lena", color:"#c9862c", friend:true, bio:"Tanz · Stuttgart", followers:212, streak:5},
-  opa:    {name:"Opa", username:"opa", color:"#2e9d6a", friend:false, bio:"Mein Garten ist mein Paradies.", followers:9, streak:0},
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
   urban:  {name:"Urban Shots", username:"urban.shots", color:"#4b5bd6", bio:"Stadt bei Nacht. Fotografie & Video.", followers:132000, verified:true},
   kick:   {name:"Kick Highlights", username:"kick.highlights", color:"#1f8f4a", bio:"Tore, Skills und Highlights aus der Liga.", followers:76500, verified:true},
@@ -558,50 +554,30 @@ const puser = id => id === ME ? (account?.username || "du") : people[id].usernam
 const initials = n => n.split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
 const now = Date.now(), MIN = 60000;
 
-const chats = [
-  {id:"mama", title:"Mama", members:["mama"], streak:12, read:false, msgs:[
-    {by:"mama", text:"Hey, alles gut bei dir?", at:now-40*MIN},
-    {by:ME, text:"Ja, alles gut!", at:now-38*MIN},
-    {by:"mama", text:"Schick mal einen Snap, wo du gerade bist.", at:now-10*MIN}]},
-  {id:"lena", title:"Lena", members:["lena"], streak:5, read:false, msgs:[
-    {by:"lena", snap:pic("ocean",{stamp:{time:"18:42",place:"Gardasee"},sec:5}), at:now-3*MIN}]},
-  {id:"familie", title:"Familie", group:true, members:["mama","papa","lena"], streak:30, read:true, msgs:[
-    {by:"papa", text:"Sonntag Grillen bei uns?", at:now-90*MIN},
-    {by:"lena", text:"Bin dabei.", at:now-80*MIN}]},
-  {id:"papa", title:"Papa", members:["papa"], streak:3, read:true, msgs:[
-    {by:ME, text:"Kannst du mich um 5 abholen?", at:now-26*60*MIN},
-    {by:"papa", text:"Klar, bis dann.", at:now-26*60*MIN+5*MIN}]}
-];
-const stories = [
-  {by:"lena", snap:pic("mountains",{stamp:{time:"11:42",place:"Schwäbische Alb",style:"boxed"}}), at:now-30*MIN, seen:false},
-  {by:"papa", snap:pic("road",{cap:"Spät heute.",capY:62}), at:now-120*MIN, seen:false},
-  {by:"mama", snap:pic("food",{cap:"Abendessen ist fertig",capY:80}), at:now-200*MIN, seen:true},
-  {by:"lena", snap:pic("city",{stamp:{time:"21:10",place:"Stuttgart"}}), at:now-15*MIN, seen:false}
-];
+const chats = [];
+const stories = [];
 const myStories = [];
 let pid = 0;
 const C = (by,text,mins,likes=0) => ({by,text,at:now-mins*MIN,likes,liked:false});
 const vid = (src, extra={}) => ({video:src, ...extra});
 const posts = [
   {id:++pid, by:"kino", snap:vid("bunny.mp4"), likes:96400, shares:5100, sound:"Originalton – Big Buck Bunny", credit:"Big Buck Bunny © Blender Foundation · CC BY 3.0",
-    comments:[C("lena","Haha, der ist so gut gemacht.",25,31),C("papa","Kenn ich noch!",50,8)]},
+    comments:[C("night","Haha, der ist so gut gemacht.",25,31),C("street","Kenn ich noch!",50,8)]},
   {id:++pid, by:"urban", snap:vid("traffic.mp4",{cap:"Rush Hour von oben",capY:80}), likes:22800, shares:740, sound:"Stadt – Urban Shots", credit:"Video: Intel IoT DevKit · CC BY 4.0",
-    comments:[C("papa","Schöne Perspektive.",70,6)]},
+    comments:[C("road","Schöne Perspektive.",70,6)]},
   {id:++pid, by:"night", snap:pic("road",{cap:"B27 um Mitternacht",capY:72}), likes:84100, shares:3200, sound:"Lofi Drive – Night Drive",
-    comments:[C("papa","Die Strecke fahr ich jeden Tag.",30,12),C("lena","Wie heißt der Song?",22,40),C("urban","Starke Farben.",90,3)]},
+    comments:[C("road","Die Strecke fahr ich jeden Tag.",30,12),C("kick","Wie heißt der Song?",22,40),C("urban","Starke Farben.",90,3)]},
   {id:++pid, by:"urban", snap:pic("city",{stamp:{time:"23:58",place:"Stuttgart Mitte"}}), likes:53100, shares:1800, sound:"Originalton – Urban Shots",
-    comments:[C("lena","Mega Aufnahme.",40,22),C("mama","Wo ist das genau?",60,9)]},
+    comments:[C("kino","Mega Aufnahme.",40,22),C("outdoor","Wo ist das genau?",60,9)]},
   {id:++pid, by:"street", snap:pic("food",{cap:"Beste Pasta in der Stadt?",capY:84}), likes:12040, shares:2500, sound:"Originalton – Streetfood Stuttgart",
-    comments:[C("mama","Da müssen wir mal hin.",120,15)]},
+    comments:[C("urban","Da muss ich mal hin.",120,15)]},
   {id:++pid, by:"kick", snap:pic("pitch",{cap:"Was für ein Abend.",capY:22}), likes:28770, shares:900, sound:"Stadion – Live",
-    comments:[C("papa","Unglaubliche Stimmung!",300,30)]},
+    comments:[C("night","Unglaubliche Stimmung!",300,30)]},
   {id:++pid, by:"road", snap:pic("mountains",{stamp:{time:"08:15",place:"Albtrauf",style:"boxed"}}), likes:9320, shares:640, sound:"Natur – Roadtrip BW",
-    comments:[C("opa","Da war ich früher oft wandern.",200,5)]},
+    comments:[C("outdoor","Da war ich auch schon wandern.",200,5)]},
   {id:++pid, by:"night", snap:pic("neon",{cap:"Retro Nights",capY:30}), likes:41200, shares:2100, sound:"Synthwave Mix",
-    comments:[C("lena","Mehr davon!",80,18)]},
+    comments:[C("urban","Mehr davon!",80,18)]},
   {id:++pid, by:"outdoor", snap:pic("forest",{stamp:{time:"06:40",place:"Schwarzwald"}}), likes:615, shares:44, sound:"Originalton – Outdoor Max", comments:[]},
-  {id:++pid, by:"lena", snap:pic("ocean",{cap:"Letzter Ferientag",capY:78}), likes:318, shares:12, sound:"Originalton – Lena",
-    comments:[C("mama","Schön!",15,4),C("papa","Genieß es.",12,2)]}
 ];
 posts.forEach(p=>{ p.liked=false; p.saved=false; p.at = now - Math.random()*20*60*MIN; });
 const replies = ["Haha, stark.","Nice!","Bin gleich da.","Was machst du heute noch?","Krass.","Ok, passt.","Erzähl mal.","Sieht gut aus."];
@@ -634,14 +610,14 @@ const trophyList = [
   {id:"friend", ic:"userplus", name:"Crew", how:"Einen Freund hinzufügen"},
   {id:"flame", ic:"flame", name:"30 Tage", how:"30 Tage Flammen-Serie"}
 ];
-let trophies = new Set(["flame"]);
+let trophies = new Set();
 function unlock(id){
   if (trophies.has(id)) return;
   trophies.add(id);
   const t = trophyList.find(x=>x.id===id);
   if (t && id !== "start") setTimeout(()=>toast(`Trophäe freigeschaltet: ${t.name}`), 900);
 }
-let score = 1240;
+let score = 0;
 const addScore = n => { score += n; };
 
 function avatar(id, size=46, ring=false){
@@ -741,7 +717,7 @@ function renderChats(){
         c.group ? groupAvatar() : avatar(c.members[0]),
         h("span",{class:"t"}, h("b",{},c.title), h("small",{class:s.cls}, s.mark, h("span",{},s.text))),
         flame(c.streak)); }),
-    h("p",{class:"note",style:"margin-top:10px"},"Vorschau · Mama, Papa, Lena und Opa sind Test-Kontakte und antworten automatisch."));
+    list.length ? null : h("div",{class:"empty",style:"margin-top:24px"}, h("b",{style:"display:block;color:var(--fg);margin-bottom:6px"},"Noch keine Chats"), "Füge Freunde hinzu, dann siehst du hier eure Chats.", h("br"), h("button",{class:"send",style:"margin-top:14px",onclick:openAddFriend}, ic("userplus"),"Freunde hinzufügen")));
   const unread = chats.filter(c => status(c).cls).length;
   const badge = document.getElementById("badge"); if (badge){ badge.textContent = unread; badge.hidden = !unread; }
 }
@@ -846,6 +822,7 @@ function renderStories(){
       h("button",{class:"abtn","aria-label":"Story aufnehmen",onclick:()=>takePhoto(false,{story:true})}, ic("plus"))),
     h("div",{class:"circles"}, ...groups.map((g,i)=>h("button",{onclick:()=>openStoryViewer(groups,i)}, avatar(g.by,60,g.unseen), pname(g.by)))),
     h("h2",{},"Freunde", h("small",{},"24 Stunden sichtbar")),
+    groups.length ? null : h("div",{class:"empty",style:"margin-bottom:10px"},"Noch keine Stories von Freunden. Füge Freunde hinzu, dann siehst du ihre Stories hier."),
     h("div",{class:"grid"}, ...groups.map((g,i)=>{ const s=g.list.at(-1);
       const c = h("button",{class:"card"+(g.unseen?" unseen":""),onclick:()=>openStoryViewer(groups,i)});
       c.append(miniShot(s.snap,"art"), capLabel(g.by, ago(g.latest))); return c; })),
@@ -990,7 +967,7 @@ function postStory(snap){
 function postSpotlight(snap, caption){
   const p = {id:++pid, by:ME, snap, likes:0, shares:0, liked:false, saved:false, at:Date.now(), sound:"Originalton – "+(account?.name||"Du"), comments:[], text:caption};
   posts.unshift(p); unlock("spot"); addScore(50);
-  const fans = ["mama","papa","lena"];
+  const fans = ["night","urban","kino"];
   [2500,6000,11000].forEach((ms,i)=>setTimeout(()=>{
     p.likes += [3,12,40][i];
     if (i===1) p.comments.push({by:fans[Math.floor(Math.random()*fans.length)], text:["Starkes Video.","Wo ist das?","Nice!"][Math.floor(Math.random()*3)], at:Date.now(), likes:0, liked:false});
@@ -1194,12 +1171,11 @@ function befriend(id){
   const p = people[id]; if (p.friend) return;
   p.friend = true; p.followers++;
   const c = chatWith(id); c.msgs.push({by:id,text:"Hey, jetzt sind wir befreundet.",at:Date.now()}); c.read = false;
-  if (id==="opa" && !stories.some(s=>s.by==="opa")) stories.push({by:"opa", snap:pic("forest",{cap:"Mein Garten",capY:70}), at:Date.now(), seen:false});
   unlock("friend"); addScore(5); toast(`${p.name} ist jetzt dein Freund`);
 }
 function openAddFriend(){
-  const input = h("input",{class:"search",id:"friend-input",style:"padding-left:14px",placeholder:"Benutzername, z. B. opa",autocapitalize:"none"});
-  const msg = h("p",{class:"note",style:"text-align:left"},"Tipp: Probier „opa“.");
+  const input = h("input",{class:"search",id:"friend-input",style:"padding-left:14px",placeholder:"Benutzername",autocapitalize:"none"});
+  const msg = h("p",{class:"note",style:"text-align:left"},"Gib den Benutzernamen deines Freundes ein.");
   const suggestions = Object.keys(people).filter(id=>!isFriend(id)).slice(0,4);
   overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
     h("div",{class:"sheet"}, h("h2",{},"Freunde hinzufügen", iconBtn("close","Schließen",closeOverlay)), input, msg,
@@ -1262,6 +1238,7 @@ function renderProfile(){
       h("div",{class:"score"}, h("span",{class:"lv"}, level),
         h("div",{style:"flex:1;display:grid;gap:6px;min-width:0"}, h("span",{style:"display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:13.5px;flex-wrap:wrap"}, h("span",{},"Level "+level), h("span",{style:"color:var(--muted)"}, (500-score%500)+" Punkte bis Level "+(level+1))), h("div",{class:"meter"},h("i",{style:`width:${inLevel}%`})))),
       h("h2",{},"Beste Freunde", h("small",{},"nach Flammen-Serie")),
+      friends.length ? null : h("div",{class:"empty"},"Noch keine Freunde. ", h("button",{class:"link",style:"width:auto;padding:0",onclick:openAddFriend},"Jetzt hinzufügen")),
       h("div",{class:"friendsrow"}, ...friends.sort((a,b)=>(people[b].streak||0)-(people[a].streak||0)).map(id=>h("button",{onclick:()=>openUserProfile(id)}, avatar(id,58), pname(id), flame(people[id].streak) || h("span",{style:"color:var(--muted)"},"–")))),
       h("div",{class:"ptabs",role:"tablist"}, ...[["spot","grid","Spotlight"],["story","story","Story"],["saved","bookmark","Gemerkt"],["trophy","trophy","Trophäen"]].map(([k,i,l])=>h("button",{role:"tab","aria-current":profTab===k?"true":"false",onclick:()=>{ profTab=k; renderProfile(); }}, ic(i,20), l))),
       content));
