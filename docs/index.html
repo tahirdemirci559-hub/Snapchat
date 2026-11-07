@@ -593,7 +593,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 13:29";
+const SHADE_VERSION = "07.11. 13:34";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -2344,7 +2344,11 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       h("a",{href:"https://apps.apple.com/app/ntfy/id1625396347",target:"_blank",class:"sbtn",style:"margin:8px 0;display:inline-flex"}, ic("link"),"ntfy im App Store öffnen"), h("br"),
       "2. Tippe hier auf ", h("b",{style:"color:var(--fg)"},"„Code kopieren“"), ".", h("br"),
       "3. Öffne ntfy, tippe oben rechts auf ", h("b",{style:"color:var(--fg)"},"„+“"), ", füge den Code ein und tippe auf ", h("b",{style:"color:var(--fg)"},"„Subscribe“"), ".", h("br"),
-      "4. Erlaube in ntfy die Mitteilungen. Fertig!");
+      "4. Erlaube in ntfy die Mitteilungen. Fertig!",
+      h("b",{style:"color:var(--fg);display:block;margin:12px 0 6px"},"Ohne App Store (wenn du keine Apps laden darfst):"),
+      "1. Öffne in Safari ", h("b",{style:"color:var(--fg)"},"ntfy.sh/app"), ".", h("br"),
+      "2. Tippe auf Teilen → ", h("b",{style:"color:var(--fg)"},"„Zum Home-Bildschirm“"), ".", h("br"),
+      "3. Öffne ntfy vom Home-Bildschirm, tippe auf ", h("b",{style:"color:var(--fg)"},"„Subscribe to topic“"), ", füge den Code ein, schalte ", h("b",{style:"color:var(--fg)"},"„Background notifications“"), " an und erlaube Mitteilungen.");
     overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
       h("div",{class:"sheet"}, h("h2",{},"Benachrichtigungen", iconBtn("close","Schließen",closeOverlay)), steps,
         h("div",{style:"margin:12px 0;padding:12px 14px;border-radius:14px;background:var(--surface2);font:700 16px ui-monospace,monospace;word-break:break-all;color:var(--fg)"}, t || "…"),
