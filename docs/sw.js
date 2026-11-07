@@ -1,5 +1,5 @@
 // shade – speichert die App, damit sie schnell startet und auch offline öffnet.
-const CACHE = "shade-v3";
+const CACHE = "shade-v4";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", (event) => {
