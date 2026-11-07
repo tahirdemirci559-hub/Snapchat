@@ -582,7 +582,7 @@ function showAuth(mode){
     mode === "signup" ? f("a-name","Name","text",null,"name") : null,
     mode === "signup" ? f("a-user","Benutzername","text",null,"username",{autocapitalize:"none"}) : null,
     mode === "signup" ? f("a-birth","Geburtsdatum","text",null,"bday",{inputmode:"numeric",maxlength:"10",oninput:e=>{ const d=e.target.value.replace(/\D/g,"").slice(0,8); e.target.value = d.length>4 ? d.slice(0,2)+"."+d.slice(2,4)+"."+d.slice(4) : d.length>2 ? d.slice(0,2)+"."+d.slice(2) : d; }}) : null,
-    f("a-email","E-Mail","email",null,"email"),
+    f("a-email","E-Mail","email",null,"email",{value:store.get("shade-last-email") || ""}),
     f("a-pass","Passwort","password",null, mode==="signup"?"new-password":"current-password"),
     err,
     h("button",{class:"big",type:"submit"}, mode === "signup" ? "Weiter" : "Anmelden"),
@@ -603,7 +603,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 16:36";
+const SHADE_VERSION = "07.11. 18:15";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -2243,6 +2243,9 @@ let NET = null;
 if (FIREBASE_CONFIG && window.firebase) NET = (() => {
   firebase.initializeApp(FIREBASE_CONFIG);
   const auth = firebase.auth(), db = firebase.firestore(), FV = firebase.firestore.FieldValue;
+  // Angemeldet bleiben: Anmeldung dauerhaft speichern und den Speicher vor dem Aufräumen schützen
+  try { auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{}); } catch {}
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist().catch(()=>{}); } catch {}
   let UID = null, myFriends = [], lastUsername = "", initialized = false;
   let unsubs = [], friendUnsubs = {}, msgUnsubs = {}, storyUnsubs = [];
   const toLocal = u => u === UID ? ME : u;
@@ -2549,7 +2552,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err.textContent = "Bitte gib eine gültige E-Mail-Adresse ein.";
       if (!pass) return err.textContent = "Bitte gib dein Passwort ein.";
       busy(true);
-      try { await auth.signInWithEmailAndPassword(email, pass); }
+      try { await auth.signInWithEmailAndPassword(email, pass); store.set("shade-last-email", email); }
       catch(e){ err.textContent = errText(e); busy(false); }
     }
   }
@@ -2561,7 +2564,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       chats.length = 0; stories.length = 0; myStories.length = 0; myFriends = [];
       Object.keys(people).forEach(k => { if (people[k].real) delete people[k]; });
       if (!user){ UID = null; loggedIn = false; account = null; overlay.replaceChildren(); showAuth(store.get("shade-had-account") ? "login" : "signup"); return; }
-      UID = user.uid; store.set("shade-had-account", true);
+      UID = user.uid; store.set("shade-had-account", true); if (user.email) store.set("shade-last-email", user.email);
       unsubs.push(db.collection("users").doc(UID).onSnapshot(s => {
         if (!s.exists) return;
         const d = s.data(), first = !loggedIn;
