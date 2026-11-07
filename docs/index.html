@@ -605,7 +605,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 18:49";
+const SHADE_VERSION = "07.11. 20:03";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -2906,7 +2906,26 @@ function renderAll(){ renderChats(); renderStories(); renderCam(); renderSpot();
 
 applyLogo();
 const savedTheme = store.get("pling-theme"); if (savedTheme === "light") document.documentElement.setAttribute("data-theme","light");
-if (NET) { loggedIn = false; NET.start(); } else if (!loggedIn) showAuth(); else renderAll();
+// Server-Check: Ist der Online-Server gesperrt oder nicht erreichbar, geht ShadeChat automatisch in die Vorschau
+const SERVER_PROBE = "https://firestore.googleapis.com/v1/projects/shade-56574/databases/(default)/documents/usernames/zz-probe";
+async function serverDown(){
+  try {
+    const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 6000);
+    const r = await fetch(SERVER_PROBE, {signal:ctl.signal, cache:"no-store"}); clearTimeout(t);
+    if (r.status === 403){ const tx = await r.text(); return /suspend/i.test(tx); }
+    return false;
+  } catch { return false; }
+}
+if (NET){
+  loggedIn = false; NET.start();
+  serverDown().then(down => { if (down){ store.set("shade-preview", true); store.set("shade-auto-preview", true); location.reload(); } });
+} else {
+  if (!loggedIn) showAuth(); else renderAll();
+  if (store.get("shade-auto-preview")) setTimeout(() => toast("Der Online-Server ist gerade gesperrt – du bist in der Vorschau."), 800);
+  if (store.get("shade-auto-preview") && FIREBASE_CONFIG){
+    serverDown().then(down => { if (!down){ fetch(SERVER_PROBE, {cache:"no-store"}).then(r => { if (r.status !== 403){ store.del("shade-preview"); store.del("shade-auto-preview"); toast("Der Server läuft wieder – melde dich mit deinem Konto an."); setTimeout(() => location.reload(), 1500); } }).catch(()=>{}); } });
+  }
+}
 requestAnimationFrame(()=>{ pager.scrollLeft = 2*pager.clientWidth; setTab(2); });
 setInterval(()=>{ if(!overlay.childElementCount && loggedIn) { renderChats(); renderStories(); } }, 60000);
 </script>
