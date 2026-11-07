@@ -344,7 +344,8 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 // ================= Hilfen =================
-{ const rc = Element.prototype.replaceChildren; Element.prototype.replaceChildren = function(...k){ return rc.apply(this, k.filter(x => x != null && x !== false)); }; }
+{ const rc = Element.prototype.replaceChildren; Element.prototype.replaceChildren = function(...k){ return rc.apply(this, k.filter(x => x != null && x !== false)); };
+  const ap = Element.prototype.append; Element.prototype.append = function(...k){ return ap.apply(this, k.filter(x => x != null && x !== false)); }; }
 function h(tag, attrs, ...kids){
   const el = document.createElement(tag);
   for (const [k,v] of Object.entries(attrs||{})){
@@ -1651,9 +1652,14 @@ function renderProfile(){
       h("div",{class:"ptabs",role:"tablist"}, ...[["spot","grid","Spotlight"],["story","story","Story"],["saved","bookmark","Gemerkt"],["trophy","trophy","Trophäen"]].map(([k,i,l])=>h("button",{role:"tab","aria-current":profTab===k?"true":"false",onclick:()=>{ profTab=k; renderProfile(); }}, ic(i,20), l))),
       content));
 }
-async function changePhoto(){
-  const f = await pickFile("file-face"); if (!f) return;
-  account.photo = await loadImage(f,320,true); saveAccount(); renderAll(); toast("Profilbild gespeichert");
+function changePhoto(){
+  const go = async id => { closeOverlay(); const f = await pickFile(id); if (!f) return;
+    account.photo = await loadImage(f,320,true); saveAccount(); renderAll(); toast("Profilbild gespeichert"); };
+  overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
+    h("div",{class:"sheet"}, h("h2",{},"Profilbild ändern", iconBtn("close","Schließen",closeOverlay)),
+      h("div",{style:"display:grid;gap:10px"},
+        h("button",{class:"send",style:"width:100%",onclick:()=>go("file-facelib")}, ic("image"),"Aus Galerie wählen"),
+        h("button",{class:"sbtn",style:"width:100%;justify-content:center",onclick:()=>go("file-face")}, ic("camera"),"Foto machen")))));
 }
 function openEditProfile(){
   let photo = account.photo;
