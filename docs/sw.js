@@ -1,5 +1,5 @@
 // shade – speichert die App, damit sie schnell startet und auch offline öffnet.
-const CACHE = "shade-v16";
+const CACHE = "shade-v17";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", (event) => {
@@ -21,7 +21,7 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET" || url.origin !== location.origin || url.pathname.endsWith(".mp4")) return;
   // Erst Netz (für Updates), bei Offline die gespeicherte Version
   event.respondWith(
-    fetch(req)
+    fetch(req, { cache: "no-store" })
       .then((res) => {
         const copy = res.clone();
         caches.open(CACHE).then((cache) => cache.put(req, copy));

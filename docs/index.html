@@ -1274,7 +1274,7 @@ function renderCam(){
   const el = document.getElementById("p-cam");
   const lensName = h("div",{class:"lensname"}, lenses.find(l=>l.id===camLens).name);
   const row = h("div",{class:"lensrow"});
-  const vf = h("div",{class:"viewfinder"+(camOn?" on":""),style:camOn?"":`background-image:url(${IMG.city})`});
+  const vf = h("div",{class:"viewfinder"+(camOn?" on":""),style:"background:#000"});
   const preview = () => { const l = lenses.find(x=>x.id===camLens); if (camOn){ vf.style.filter = "none"; drawFx(); } else vf.style.filter = l.filter || "none"; };
   const drawRow = () => row.replaceChildren(...lenses.map(l => lensButton(l, l.id===camLens, ()=>{ camLens=l.id; lensName.textContent=l.name; drawRow(); preview(); })));
   if (camOn){ vf.append(camVideo, camFx); setTimeout(() => camVideo.play().catch(()=>{}), 0); }
@@ -1284,9 +1284,9 @@ function renderCam(){
       h("span",{style:"display:flex;gap:8px"}, h("button",{"aria-label":"Mein Profil",onclick:()=>goTab(4)}, avatar(ME,38)), iconBtn("search","Suchen",openSearch,"round glass")),
       h("span",{style:"display:flex;gap:8px"}, iconBtn("userplus","Freunde hinzufügen",openAddFriend,"round glass"), iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass"))),
     h("div",{class:"camside"}, iconBtn("expand","Vollbild",goFullscreen,"round glass"), iconBtn("flip","Kamera wechseln",async()=>{ if (!camOn) return toast("Schalte zuerst die Kamera ein."); try { await LiveCam.flip(); camVideo.srcObject = LiveCam.stream; camVideo.classList.toggle("mirror", LiveCam.facing === "user"); camVideo.play().catch(()=>{}); } catch { toast("Kamera konnte nicht gewechselt werden."); } },"round glass"), iconBtn("bolt","Blitz",()=>toast("Blitz an"),"round glass"), iconBtn("timer","Selbstauslöser",()=>toast("Selbstauslöser: 3 Sekunden"),"round glass")),
-    h("p",{}, camMode==="video" ? "Tippe auf den roten Knopf und nimm ein Video auf." : "Lens wählen, dann auslösen."),
+
     camOn || !camDenied ? null : h("button",{class:"chip",style:"background:var(--acc);color:var(--acc-ink);font-weight:800",onclick:()=>{ camDenied = false; startCam(); }}, ic("camera"),"Kamera erlauben"),
-    h("button",{class:"chip",onclick:()=>openEditor({}, {img:IMG.city}, camLens)}, ic("image"),"Mit Beispielbild testen"));
+    null);
   el.replaceChildren(vf, lensName, row,
     h("div",{class:"modes"}, ...[["photo","FOTO"],["video","VIDEO"]].map(([k,l])=>h("button",{"aria-pressed":camMode===k?"true":"false",onclick:()=>{ camMode=k; renderCam(); }},l))),
     h("div",{class:"camrow"},
