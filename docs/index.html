@@ -595,7 +595,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 14:55";
+const SHADE_VERSION = "07.11. 15:19";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -638,6 +638,65 @@ const people = {
   yttaranking:{"name": "TA ranking", "username": "ta.ranking", "color": "#4b5bd6", "bio": "Videos von YouTube", "followers": 479000},
   ytadamfunny97:{"name": "Adam Funny 97", "username": "adam.funny.97", "color": "#1f8f4a", "bio": "Videos von YouTube", "followers": 160000},
   ythardyshortz:{"name": "HardyShortz", "username": "hardyshortz", "color": "#2a9bb0", "bio": "Videos von YouTube", "followers": 583000},
+  ytjokemetric:{"name": "Joke Metric", "username": "joke.metric", "color": "#c2562b", "bio": "Gym · Videos", "followers": 50000},
+  yt999lazer:{"name": "999lazer", "username": "999lazer", "color": "#4b5bd6", "bio": "Dirt Bike · Videos", "followers": 804000},
+  ytswipefive:{"name": "SwipeFive", "username": "swipefive", "color": "#1f8f4a", "bio": "Drift · Videos", "followers": 415000},
+  ytanabaygull:{"name": "Anabay Gull", "username": "anabay.gull", "color": "#2a9bb0", "bio": "E-Scooter · Videos", "followers": 887000},
+  ytwoodbridgemoto:{"name": "Woodbridge Motorsport", "username": "woodbridge.motorspor", "color": "#9b3bd1", "bio": "Drift · Videos", "followers": 238000},
+  ytzipfunny:{"name": "ZIP FUNNY", "username": "zip.funny", "color": "#e0533b", "bio": "Memes · Videos", "followers": 501000},
+  ytjoshsingh:{"name": "Josh Singh", "username": "josh.singh", "color": "#5f7d3a", "bio": "Basketball · Videos", "followers": 426000},
+  ytrawbucket27:{"name": "Raw Bucket 27", "username": "raw.bucket.27", "color": "#b8862b", "bio": "Basketball · Videos", "followers": 223000},
+  ytauraguyofficia:{"name": "AuraGuy Official", "username": "auraguy.official", "color": "#2d6cdf", "bio": "Memes · Videos", "followers": 364000},
+  ytcaxton:{"name": "CAXTON", "username": "caxton", "color": "#d04f8a", "bio": "BMX & Skate · Videos", "followers": 360000},
+  ythftv:{"name": "HFTV_", "username": "hftv_", "color": "#c2562b", "bio": "Skate · Videos", "followers": 796000},
+  ytgiovanniaxibal:{"name": "Giovanni Axibal", "username": "giovanni.axibal", "color": "#4b5bd6", "bio": "Gym · Videos", "followers": 272000},
+  ytentertixo:{"name": "Entertixo", "username": "entertixo", "color": "#1f8f4a", "bio": "Basketball · Videos", "followers": 31000},
+  ytgrowthoperator:{"name": "growth_operator77", "username": "growth_operator77", "color": "#2a9bb0", "bio": "BMX & Skate · Videos", "followers": 836000},
+  ytzevirank:{"name": "ZEVIRANK", "username": "zevirank", "color": "#9b3bd1", "bio": "Memes · Videos", "followers": 718000},
+  ytdougdemuro:{"name": "Doug DeMuro", "username": "doug.demuro", "color": "#e0533b", "bio": "Autos · Videos", "followers": 478000},
+  ytpenenena:{"name": "PeneNena", "username": "penenena", "color": "#5f7d3a", "bio": "BMX & Skate · Videos", "followers": 769000},
+  ytringiq:{"name": "RINGIQ", "username": "ringiq", "color": "#b8862b", "bio": "Boxen · Videos", "followers": 679000},
+  ytbug123:{"name": "bug.123", "username": "bug.123", "color": "#2d6cdf", "bio": "Parkour · Videos", "followers": 424000},
+  ytvidvalley:{"name": "VidValley", "username": "vidvalley", "color": "#d04f8a", "bio": "Gym · Videos", "followers": 20000},
+  ytrankvault:{"name": "RankVault", "username": "rankvault", "color": "#c2562b", "bio": "Skate · Videos", "followers": 331000},
+  ytfurkitoon:{"name": "FurkiToon", "username": "furkitoon", "color": "#4b5bd6", "bio": "Memes · Videos", "followers": 211000},
+  ytfoeko:{"name": "Foeko", "username": "foeko", "color": "#1f8f4a", "bio": "Gym · Videos", "followers": 677000},
+  ytgarrettlyon:{"name": "Garrett Lyon", "username": "garrett.lyon", "color": "#2a9bb0", "bio": "Basketball · Videos", "followers": 63000},
+  ytrodsdiysolutio:{"name": "ROD'S DIY Solutions", "username": "rods.diy.solutions", "color": "#9b3bd1", "bio": "E-Scooter · Videos", "followers": 29000},
+  ytnotyiky:{"name": "NotYiky", "username": "notyiky", "color": "#e0533b", "bio": "Fußball · Videos", "followers": 870000},
+  ytbiggestcrashes:{"name": "Biggest Crashes", "username": "biggest.crashes", "color": "#5f7d3a", "bio": "Drift · Videos", "followers": 95000},
+  ytsportnexid:{"name": "SportNexID", "username": "sportnexid", "color": "#b8862b", "bio": "Motocross · Videos", "followers": 233000},
+  ytmotodynasty:{"name": "Moto Dynasty", "username": "moto.dynasty", "color": "#2d6cdf", "bio": "Motocross · Videos", "followers": 268000},
+  ytaustinmcgriff:{"name": "Austin Mcgriff", "username": "austin.mcgriff", "color": "#d04f8a", "bio": "Motocross · Videos", "followers": 397000},
+  ytclipfarmer:{"name": "Clip Farmer", "username": "clip.farmer", "color": "#c2562b", "bio": "Dirt Bike · Videos", "followers": 484000},
+  ytdomharvey:{"name": "Dom Harvey", "username": "dom.harvey", "color": "#4b5bd6", "bio": "Motocross · Videos", "followers": 515000},
+  ytusafun:{"name": "USA FUN", "username": "usa.fun", "color": "#1f8f4a", "bio": "Memes · Videos", "followers": 415000},
+  ytloveanimal123:{"name": "Love_animal123", "username": "love_animal123", "color": "#2a9bb0", "bio": "Pranks · Videos", "followers": 177000},
+  ytbrightbeatsoci:{"name": "Bright Beat Society", "username": "bright.beat.society", "color": "#9b3bd1", "bio": "Autos · Videos", "followers": 857000},
+  ytaneesianoronal:{"name": "Aneesiano Ronaldo", "username": "aneesiano.ronaldo", "color": "#e0533b", "bio": "Fußball · Videos", "followers": 762000},
+  ytmagyverranks:{"name": "magyverranks", "username": "magyverranks", "color": "#5f7d3a", "bio": "Motocross · Videos", "followers": 777000},
+  ytonly50cc:{"name": "Only 50 cc", "username": "only.50.cc", "color": "#b8862b", "bio": "Dirt Bike · Videos", "followers": 221000},
+  ytredbull:{"name": "Red Bull", "username": "red.bull", "color": "#2d6cdf", "bio": "Extrem · Videos", "followers": 514000},
+  ytscooterraversf:{"name": "scooter ravers forever", "username": "scooter.ravers.forev", "color": "#d04f8a", "bio": "E-Scooter · Videos", "followers": 451000},
+  ytbmxcaiden:{"name": "Bmx Caiden", "username": "bmx.caiden", "color": "#c2562b", "bio": "BMX & Skate · Videos", "followers": 131000},
+  ytfightverse:{"name": "FightVerse", "username": "fightverse", "color": "#4b5bd6", "bio": "Boxen · Videos", "followers": 281000},
+  yt22morm:{"name": "22Morm", "username": "22morm", "color": "#1f8f4a", "bio": "E-Scooter · Videos", "followers": 421000},
+  ytbasketballbeau:{"name": "Basketball Beauties", "username": "basketball.beauties", "color": "#2a9bb0", "bio": "Basketball · Videos", "followers": 863000},
+  ytmouse:{"name": "Mouse", "username": "mouse", "color": "#9b3bd1", "bio": "Fußball · Videos", "followers": 320000},
+  ytspaethmorando:{"name": "Spaeth Morando", "username": "spaeth.morando", "color": "#e0533b", "bio": "Pranks · Videos", "followers": 757000},
+  yttylermonagan:{"name": "Tyler Monagan", "username": "tyler.monagan", "color": "#5f7d3a", "bio": "Dirt Bike · Videos", "followers": 253000},
+  ytsylo:{"name": "Sylo", "username": "sylo", "color": "#b8862b", "bio": "Memes · Videos", "followers": 649000},
+  ytfunmaster:{"name": "Fun Master", "username": "fun.master", "color": "#2d6cdf", "bio": "Memes · Videos", "followers": 237000},
+  ytmrjit90editz:{"name": "MR Jit90 Editz®", "username": "mr.jit90.editz", "color": "#d04f8a", "bio": "Fußball · Videos", "followers": 90000},
+  ytskateblueprint:{"name": "Skate Blueprint", "username": "skate.blueprint", "color": "#c2562b", "bio": "Skate · Videos", "followers": 476000},
+  ytelectricbeast:{"name": "Electric Beast", "username": "electric.beast", "color": "#4b5bd6", "bio": "Dirt Bike · Videos", "followers": 67000},
+  ytcrazymoments:{"name": "Crazy Moments", "username": "crazy.moments", "color": "#1f8f4a", "bio": "Tiere · Videos", "followers": 397000},
+  ytmikesupercarst:{"name": "Mike Supercars TopSpeed (Supercars Miami)", "username": "mike.supercars.topsp", "color": "#2a9bb0", "bio": "Autos · Videos", "followers": 154000},
+  ytvionapvt:{"name": "VioNa PVT.", "username": "viona.pvt.", "color": "#9b3bd1", "bio": "Boxen · Videos", "followers": 358000},
+  ytmtfootball:{"name": "MT Football", "username": "mt.football", "color": "#e0533b", "bio": "Fußball · Videos", "followers": 554000},
+  ytboxingpoetry:{"name": "BOXING POETRY", "username": "boxing.poetry", "color": "#5f7d3a", "bio": "Boxen · Videos", "followers": 624000},
+  ytmillionairemot:{"name": "Millionaire Motorsport", "username": "millionaire.motorspo", "color": "#b8862b", "bio": "Autos · Videos", "followers": 506000},
+  yt:{"name": "まーくんねる", "username": "yt", "color": "#4b5bd6", "bio": "Videos", "followers": 632000},
   outdoor:{name:"Outdoor Max", username:"outdoor.max", color:"#5f7d3a", bio:"Wandern, Klettern, Draußen sein.", followers:5100}
 };
 const pname = id => id === ME ? (account?.name || "Du") : (people[id]?.name || "…");
@@ -655,44 +714,107 @@ const posts = [
   {id:++pid, by:"kino", snap:vid("bunny.mp4"), likes:96400, shares:5100, sound:"Originalton – Big Buck Bunny", credit:"Big Buck Bunny © Blender Foundation · CC BY 3.0",
     comments:[C("night","Haha, der ist so gut gemacht.",25,31),C("street","Kenn ich noch!",50,8)]},
   {id:++pid, by:"ytrankrushes", snap:{yt:"jMD5LUthooQ"}, text:"Ranking the Most Unexpected Moments 😳😂", likes:144737, shares:2029, sound:"Originalton – RankRushes", comments:[]},
+  {id:++pid, by:"ytjokemetric", snap:{yt:"ldlhJ4xL2Ys"}, text:"Bro Thought He Was Ready For This 😭 #Gym", likes:39817, shares:9326, sound:"Originalton – Joke Metric", comments:[]},
+  {id:++pid, by:"yt999lazer", snap:{yt:"SEkOLoxWepw"}, text:"Wheelie on 700cc 2 Stroke Dirt Bike! #DirtBike", likes:59584, shares:6660, sound:"Originalton – 999lazer", comments:[]},
   {id:++pid, by:"urban", snap:vid("traffic.mp4",{cap:"Rush Hour von oben",capY:80}), likes:22800, shares:740, sound:"Stadt – Urban Shots", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[C("road","Schöne Perspektive.",70,6)]},
+  {id:++pid, by:"ytafvshorts", snap:{yt:"AKnSHPnG2a8"}, text:"Gym Fails That Are Absolutely Ridiculous 🤣 #Gym", likes:59519, shares:4866, sound:"Originalton – AFV Shorts", comments:[]},
+  {id:++pid, by:"ytswipefive", snap:{yt:"EZna-6ZH01s"}, text:"TOP 5 Most Insane Drifts Ever 🚗💨 #Drift", likes:38036, shares:376, sound:"Originalton – SwipeFive", comments:[]},
   {id:++pid, by:"ytviralprankdail", snap:{yt:"SkBBmoEkZKA"}, text:"The Most Satisfying Prank Payback EVER! 😈💥", likes:83866, shares:3061, sound:"Originalton – Viral Prank Daily", comments:[]},
+  {id:++pid, by:"ytanabaygull", snap:{yt:"D5D33kexqu8"}, text:"🚀 The Craziest Electric Scooter Ride You’ve Ever Seen! 🛴🔥 #EScooter", likes:362083, shares:108, sound:"Originalton – Anabay Gull", comments:[]},
+  {id:++pid, by:"ytwoodbridgemoto", snap:{yt:"paarwn0BwJU"}, text:"Insane drifting with the Ford Mustang #Drift", likes:112952, shares:957, sound:"Originalton – Woodbridge Motorsport", comments:[]},
   {id:++pid, by:"ytpettsandbabiie", snap:{yt:"wEupTizGUsI"}, text:"Cat And Dog Funny Moments 😂😂😂", likes:155462, shares:3178, sound:"Originalton – Petts And Babiies", comments:[]},
+  {id:++pid, by:"ytzipfunny", snap:{yt:"SQ8yxWUTlcs"}, text:"Laugh Just Don’t Cry 😂 Top 100 Funniest Videos 2026 🎬🔥 Best Memes Epic Fails & P #Memes", likes:199850, shares:11714, sound:"Originalton – ZIP FUNNY", comments:[]},
+  {id:++pid, by:"ytjoshsingh", snap:{yt:"mvdfTtmwW7Y"}, text:"5’2” basketball player can dunk! 🤯 #Basketball", likes:223091, shares:1296, sound:"Originalton – Josh Singh", comments:[]},
   {id:++pid, by:"ytanimaloops", snap:{yt:"rHqnmiSRwq4"}, text:"Funny Animal 🤣 | Try Not To Laugh!", likes:28540, shares:1128, sound:"Originalton – AnimalOops", comments:[]},
+  {id:++pid, by:"yt", snap:{yt:"e-_WAT2Z-64"}, text:"なんでそこわたる😱からの爆音 #Autos", likes:299873, shares:10412, sound:"Originalton – まーくんねる", comments:[]},
+  {id:++pid, by:"ytrawbucket27", snap:{yt:"PeUBxHo78Ho"}, text:"Ranking Most Viral Basketball Dunks 👌🏀 #Basketball", likes:356846, shares:4520, sound:"Originalton – Raw Bucket 27", comments:[]},
   {id:++pid, by:"ytcarenthusiasts", snap:{yt:"IRNBfHDthq8"}, text:"INSANE Drifting Moments Ever Caught", likes:18624, shares:3474, sound:"Originalton – Car Enthusiasts Playground", comments:[]},
+  {id:++pid, by:"ytauraguyofficia", snap:{yt:"efmefvnM-xY"}, text:"Try Not To Laugh Challenge (Impossible)😈|Funny Memes|Auraguy Official #Memes", likes:48688, shares:5198, sound:"Originalton – AuraGuy Official", comments:[]},
+  {id:++pid, by:"ytcaxton", snap:{yt:"uWWJZwYr3O0"}, text:"Watch These BMX Riders Take It to the Next Level 🚲 #BMXSkate", likes:10942, shares:6818, sound:"Originalton – CAXTON", comments:[]},
   {id:++pid, by:"outdoor", snap:vid("flower.mp4",{cap:"Frühling im Garten",capY:80}), likes:18300, shares:960, sound:"Natur – Outdoor Max", credit:"Video: MDN · CC0",
     comments:[C("road","So nah dran, krass.",35,9)]},
+  {id:++pid, by:"ythftv", snap:{yt:"IfS7UlU0QdQ"}, text:"Ranking the Most Insane Skateboard Moments 😳 #Skate", likes:64861, shares:2305, sound:"Originalton – HFTV_", comments:[]},
+  {id:++pid, by:"ytgiovanniaxibal", snap:{yt:"74L0fuZhTxU"}, text:"None other than yours truly #Gym", likes:373680, shares:1755, sound:"Originalton – Giovanni Axibal", comments:[]},
   {id:++pid, by:"ytbhagwankigadi", snap:{yt:"LxPF_zR55_U"}, text:"The Most SATISFYING Supercar Unboxing 🤯🔥", likes:181362, shares:8811, sound:"Originalton – Bhagwan Ki Gadi", comments:[]},
+  {id:++pid, by:"ytentertixo", snap:{yt:"N-9ymFzjXOs"}, text:"She violated him on the court! 💀🔥 #Basketball", likes:34401, shares:7717, sound:"Originalton – Entertixo", comments:[]},
+  {id:++pid, by:"ytgrowthoperator", snap:{yt:"PH-g-VORTAc"}, text:"That Was Absolutely Insane.👀🏆 #BMXSkate", likes:258235, shares:3011, sound:"Originalton – growth_operator77", comments:[]},
   {id:++pid, by:"ytnigamminivlogg", snap:{yt:"4s4XS-Vkrrs"}, text:"Try Not to Laugh 😂 Ultimate Funny Fails Compilation", likes:206745, shares:5246, sound:"Originalton – Nigam mini vlogger", comments:[]},
+  {id:++pid, by:"ytzevirank", snap:{yt:"TAEwkSi7luY"}, text:"RANKING TOP FUNNY MOMENTS OF THIS MONTH #Memes", likes:296231, shares:3186, sound:"Originalton – ZEVIRANK", comments:[]},
+  {id:++pid, by:"ytdougdemuro", snap:{yt:"8eRHnvWYgro"}, text:"A Surprisingly Cheap Supercar! #Autos", likes:269792, shares:3224, sound:"Originalton – Doug DeMuro", comments:[]},
   {id:++pid, by:"ytafvshorts", snap:{yt:"7XMyj7WpFlI"}, text:"Pranks that caught everyone off guard", likes:156501, shares:7524, sound:"Originalton – AFV Shorts", comments:[]},
+  {id:++pid, by:"ytpenenena", snap:{yt:"CcYwSujLkH4"}, text:"When “Other Skills” Go Completely Insane 😂 #BMXSkate", likes:71664, shares:6968, sound:"Originalton – PeneNena", comments:[]},
+  {id:++pid, by:"ytringiq", snap:{yt:"ZDOg75l1LME"}, text:"When Boxers Get CRACKED For the First Time😳 #Boxen", likes:204196, shares:2008, sound:"Originalton – RINGIQ", comments:[]},
   {id:++pid, by:"ytdizzzy", snap:{yt:"geofu_-SCpE"}, text:"Wait, what did the cat just say? 🐱", likes:81582, shares:4170, sound:"Originalton – DizZzy", comments:[]},
+  {id:++pid, by:"ytbug123", snap:{yt:"DULn_ctpk_E"}, text:"Insane Parkour: High-Flying Jumps in the Jungle #Parkour", likes:223597, shares:3587, sound:"Originalton – bug.123", comments:[]},
+  {id:++pid, by:"ytvidvalley", snap:{yt:"xjUCP0s7Ccc"}, text:"Ranking Gym Fails That Make You Cringe 😬 #Gym", likes:144450, shares:9811, sound:"Originalton – VidValley", comments:[]},
   {id:++pid, by:"road", snap:vid("street.mp4",{stamp:{time:"17:20",place:"Parkplatz von oben"}}), likes:7400, shares:210, sound:"Originalton – Roadtrip BW", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[]},
+  {id:++pid, by:"ytrankvault", snap:{yt:"8Fz5uxmN2p4"}, text:"Are These The Best Skateboard Tricks Ever? 🛹🤔 #Skate", likes:13292, shares:3552, sound:"Originalton – RankVault", comments:[]},
+  {id:++pid, by:"ytfurkitoon", snap:{yt:"qhUur2BHuAM"}, text:"They Tried So Hard Not to Laugh 🤭 #Memes", likes:209713, shares:9963, sound:"Originalton – FurkiToon", comments:[]},
   {id:++pid, by:"ytfunnyhub", snap:{yt:"O9KiCu1MRLQ"}, text:"Try Not To Laugh: Impossible Cat & Dog Moments! 🐾 🐈🤣", likes:50124, shares:4099, sound:"Originalton – Funny Hub", comments:[]},
+  {id:++pid, by:"ytfoeko", snap:{yt:"9gaZLEtOnKc"}, text:"Ranking The Most Unhinged Gym Fails Ever! 😭💀 #Gym", likes:305493, shares:1743, sound:"Originalton – Foeko", comments:[]},
+  {id:++pid, by:"ytgarrettlyon", snap:{yt:"QtIKN2C743M"}, text:"Team Inspire DUNK Fest Went Crazy..🤧🏀 #Basketball", likes:79734, shares:3593, sound:"Originalton – Garrett Lyon", comments:[]},
   {id:++pid, by:"ytexoticrubber", snap:{yt:"7biTUUEIXNI"}, text:"He turned his driveway into a track", likes:153581, shares:5019, sound:"Originalton – Exotic Rubber", comments:[]},
+  {id:++pid, by:"ytviralprankdail", snap:{yt:"83G7GMTKoM8"}, text:"The Craziest Family Pranks Ever! 😱🤣 #Pranks", likes:234495, shares:4331, sound:"Originalton – Viral Prank Daily", comments:[]},
+  {id:++pid, by:"ytrodsdiysolutio", snap:{yt:"0wjzntP5bVQ"}, text:"The Old Man's Scooter #EScooter", likes:322990, shares:5489, sound:"Originalton – ROD'S DIY Solutions", comments:[]},
   {id:++pid, by:"ytviralprankdail", snap:{yt:"7HYKNRdKeTc"}, text:"He Did NOT Expect That To Happen! 😳🔥", likes:140677, shares:8211, sound:"Originalton – Viral Prank Daily", comments:[]},
+  {id:++pid, by:"ytnotyiky", snap:{yt:"N5lfKQnLtxo"}, text:"Messi Skills🤣 #Fußball", likes:158359, shares:6427, sound:"Originalton – NotYiky", comments:[]},
+  {id:++pid, by:"ytbiggestcrashes", snap:{yt:"9ocoTQO5qqs"}, text:"MOST CRAZY Drifting Clips! 😱🌀 #Drift", likes:41944, shares:1576, sound:"Originalton – Biggest Crashes", comments:[]},
   {id:++pid, by:"ytxanami", snap:{yt:"Gc73LrtI8vw"}, text:"The Most Unexpected Animal Moments Ever Caught on Camera😱", likes:194219, shares:7453, sound:"Originalton – Xanami", comments:[]},
+  {id:++pid, by:"ytsportnexid", snap:{yt:"32j4VgfRMxM"}, text:"🔥 GoPro Captured the Most Epic Motocross Cinematic! 🤯🏍️ #Motocross", likes:308520, shares:10529, sound:"Originalton – SportNexID", comments:[]},
+  {id:++pid, by:"ytmotodynasty", snap:{yt:"vhP1MHLnu1c"}, text:"He Completely Bottomed Out His Dirtbike! #Motocross", likes:11131, shares:9951, sound:"Originalton – Moto Dynasty", comments:[]},
   {id:++pid, by:"night", snap:pic("road",{cap:"B27 um Mitternacht",capY:72}), likes:84100, shares:3200, sound:"Lofi Drive – Night Drive",
     comments:[C("road","Die Strecke fahr ich jeden Tag.",30,12),C("kick","Wie heißt der Song?",22,40),C("urban","Starke Farben.",90,3)]},
+  {id:++pid, by:"ytaustinmcgriff", snap:{yt:"37EMvWF-eP0"}, text:"Epic dirt bike racing crashes 💥 #Motocross", likes:197879, shares:10293, sound:"Originalton – Austin Mcgriff", comments:[]},
+  {id:++pid, by:"ytclipfarmer", snap:{yt:"FpU4yLutohg"}, text:"Tota Rides A Dirt Bike And Wheelies It Around…😭❤️ #DirtBike", likes:69700, shares:9721, sound:"Originalton – Clip Farmer", comments:[]},
   {id:++pid, by:"ytabusufyan", snap:{yt:"56cn1rZ6x8w"}, text:"Funny animals 😂😂", likes:162634, shares:1299, sound:"Originalton – Abu sufyan", comments:[]},
+  {id:++pid, by:"ytdomharvey", snap:{yt:"J_tBhYW8G9s"}, text:"World motocross champ's HORROR crash… #Motocross", likes:304240, shares:2323, sound:"Originalton – Dom Harvey", comments:[]},
+  {id:++pid, by:"ytusafun", snap:{yt:"ISH6xBck3SI"}, text:"Try not to laugh 😂💧❄️💦 # #Memes", likes:98854, shares:10376, sound:"Originalton – USA FUN", comments:[]},
   {id:++pid, by:"ytanimalsfunyt", snap:{yt:"e-7Glg4FJQw"}, text:"Funny animals video🤣🤣🤩", likes:137200, shares:6950, sound:"Originalton – Animals fun yt", comments:[]},
+  {id:++pid, by:"ytloveanimal123", snap:{yt:"VqWxMZJpWwk"}, text:"Harmless Pranks in School, Stores and the Gym 💯 #Pranks", likes:165954, shares:3841, sound:"Originalton – Love_animal123", comments:[]},
+  {id:++pid, by:"ytbrightbeatsoci", snap:{yt:"y7MBb5Mx9yQ"}, text:"Lamborghini Sound And Fire 🔥 #Autos", likes:323048, shares:4187, sound:"Originalton – Bright Beat Society", comments:[]},
   {id:++pid, by:"ytgalinhofc", snap:{yt:"Qn-uN1YjtFE"}, text:"Crazy Skills in Football 😍", likes:201479, shares:5704, sound:"Originalton – Galinho FC", comments:[]},
+  {id:++pid, by:"ytaneesianoronal", snap:{yt:"096EASK-i54"}, text:"Messi and Ronaldo Started Like This 😳 #Fußball", likes:102510, shares:2696, sound:"Originalton – Aneesiano Ronaldo", comments:[]},
+  {id:++pid, by:"ytmagyverranks", snap:{yt:"2IzW7yGnCg4"}, text:"RANKING THE CRAZIEST MOTOCROSS STUNTS 🏍️🔥 #Motocross", likes:332765, shares:9175, sound:"Originalton – magyverranks", comments:[]},
   {id:++pid, by:"ytviralfunnyvide", snap:{yt:"vA98lOaUe4U"}, text:"Weirdest Things People Do For Fun Caught On Camera!", likes:247651, shares:8111, sound:"Originalton – Viral Funny Videos", comments:[]},
+  {id:++pid, by:"ytonly50cc", snap:{yt:"y3V718Nw2GM"}, text:"KNEE KNOCK #DirtBike", likes:363172, shares:6460, sound:"Originalton – Only 50 cc", comments:[]},
+  {id:++pid, by:"ytredbull", snap:{yt:"QGVIWsw-TYQ"}, text:"Not The Average BASE Jump 🔥 #Extrem", likes:319425, shares:1386, sound:"Originalton – Red Bull", comments:[]},
   {id:++pid, by:"urban", snap:pic("city",{stamp:{time:"23:58",place:"Stuttgart Mitte"}}), likes:53100, shares:1800, sound:"Originalton – Urban Shots",
     comments:[C("kino","Mega Aufnahme.",40,22),C("outdoor","Wo ist das genau?",60,9)]},
+  {id:++pid, by:"ytscooterraversf", snap:{yt:"0Ilnbz5VPYc"}, text:"scooter going crazy 🤣🤣🤣🤣🤣 #EScooter", likes:27852, shares:1801, sound:"Originalton – scooter ravers forever", comments:[]},
+  {id:++pid, by:"ytbmxcaiden", snap:{yt:"Su0zawvoyd8"}, text:"😈Beast mode😈 #BMXSkate", likes:23288, shares:8494, sound:"Originalton – Bmx Caiden", comments:[]},
   {id:++pid, by:"ytadamshowtv", snap:{yt:"nI270TuaoQw"}, text:"Comedy Fails Compilation 😂 | You Won’t Believe These Fails!", likes:13277, shares:1371, sound:"Originalton – Adam_Show Tv", comments:[]},
+  {id:++pid, by:"ytfightverse", snap:{yt:"7by21WxcXR4"}, text:"This Knockout Was So Unique That No Fighter Will Ever Be Able To Recreate It Aga #Boxen", likes:127994, shares:11643, sound:"Originalton – FightVerse", comments:[]},
+  {id:++pid, by:"yt22morm", snap:{yt:"0XkTXQgQ7po"}, text:"Top 10 Scooter Tricks For Beginners! #EScooter", likes:137732, shares:6994, sound:"Originalton – 22Morm", comments:[]},
   {id:++pid, by:"ytechonova", snap:{yt:"xvKjKDOMUPY"}, text:"Hilariously prank VIDEO funny reaction tiktok meme America", likes:149296, shares:5240, sound:"Originalton – EchoNova", comments:[]},
+  {id:++pid, by:"ytbasketballbeau", snap:{yt:"KhuTnlb7ayY"}, text:"WOW ‼️🏀🔥 #Basketball", likes:315720, shares:8144, sound:"Originalton – Basketball Beauties", comments:[]},
+  {id:++pid, by:"ytmouse", snap:{yt:"okoQtF1kQAg"}, text:"stunning goal 🤩 #Fußball", likes:275668, shares:2974, sound:"Originalton – Mouse", comments:[]},
   {id:++pid, by:"ytpsilocybinium", snap:{yt:"nbni9OiJJkw"}, text:"Animals Caught Doing the Most Unexpected Things", likes:185267, shares:5837, sound:"Originalton – Psilocybinium", comments:[]},
+  {id:++pid, by:"ytspaethmorando", snap:{yt:"KNRfduYThsc"}, text:"Prank compilation #Pranks", likes:39058, shares:2170, sound:"Originalton – Spaeth Morando", comments:[]},
+  {id:++pid, by:"yttylermonagan", snap:{yt:"arpgQepS-08"}, text:"Dirt Bike Street Wheelies✊ #DirtBike", likes:254291, shares:9264, sound:"Originalton – Tyler Monagan", comments:[]},
   {id:++pid, by:"ytusatadramjogal", snap:{yt:"lKXNZbBmd_0"}, text:"new funny 😂 cats Vs Dogs 😅", likes:133200, shares:7574, sound:"Originalton – usatad ram jogal", comments:[]},
+  {id:++pid, by:"ytrankvault", snap:{yt:"r15R3ckYQXM"}, text:"These Skateboard Tricks Are NEXT LEVEL #Skate", likes:345626, shares:10190, sound:"Originalton – RankVault", comments:[]},
+  {id:++pid, by:"ytsylo", snap:{yt:"4KD0Q7Tvu20"}, text:"Try Not to Laugh Challenge 249🤣 ⁠ #Memes", likes:41870, shares:4691, sound:"Originalton – Sylo", comments:[]},
   {id:++pid, by:"kino", snap:vid("classroom.mp4",{cap:"Montagmorgen, erste Stunde.",capY:20}), likes:33900, shares:1400, sound:"Originalton – Kino Kurz", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[C("kick","Genau so sieht's aus.",45,27)]},
+  {id:++pid, by:"ytfunmaster", snap:{yt:"r3zk0iJ5unc"}, text:"try not to laugh #Memes", likes:109943, shares:371, sound:"Originalton – Fun Master", comments:[]},
+  {id:++pid, by:"ytmrjit90editz", snap:{yt:"XN9T610pT9k"}, text:"This boys football skills 💀⚽ #Fußball", likes:144135, shares:6840, sound:"Originalton – MR Jit90 Editz®", comments:[]},
   {id:++pid, by:"ytdbeditz", snap:{yt:"3hiuF2P2dy8"}, text:"Ranking Funniest Animal Moment 🤣🤣", likes:223192, shares:1633, sound:"Originalton – DB EditZ", comments:[]},
+  {id:++pid, by:"ytskateblueprint", snap:{yt:"f-rJBsYnkqc"}, text:"One Of The Best Mega Ramp Skaters Alive 🤯 Elliot Sloan 👑 #Skate", likes:133581, shares:1090, sound:"Originalton – Skate Blueprint", comments:[]},
+  {id:++pid, by:"ytelectricbeast", snap:{yt:"jREVQ1fFiv4"}, text:"Can I Wheelie This Electric Dirt Bike? #DirtBike", likes:95407, shares:4719, sound:"Originalton – Electric Beast", comments:[]},
   {id:++pid, by:"ytcritterrank", snap:{yt:"JpZbpBAbOLU"}, text:"UNBELIEVABLE ANIMAL MOMENTS CAUGHT ON CAMERA 😲 🐕 😅", likes:127282, shares:1164, sound:"Originalton – Critter Rank", comments:[]},
+  {id:++pid, by:"ytcrazymoments", snap:{yt:"oeJY6e4KKBc"}, text:"Funniest Animals 2026 😂 When Pets Ignore The Rules! #Tiere", likes:281398, shares:9474, sound:"Originalton – Crazy Moments", comments:[]},
+  {id:++pid, by:"ytmikesupercarst", snap:{yt:"LibZ-Lc2eA0"}, text:"Lamborghini SIAN SOUND #Autos", likes:51335, shares:6033, sound:"Originalton – Mike Supercars TopSpeed (Supercars Miami)", comments:[]},
   {id:++pid, by:"ytthepetcollecti", snap:{yt:"byeYjhNr_no"}, text:"FUNNIEST Animal Videos of 2024", likes:194669, shares:5172, sound:"Originalton – The Pet Collective", comments:[]},
+  {id:++pid, by:"ytbasketballbeau", snap:{yt:"_gGg6MB5FbA"}, text:"THIS WAS WILD! #Basketball", likes:75565, shares:7478, sound:"Originalton – Basketball Beauties", comments:[]},
+  {id:++pid, by:"ytvionapvt", snap:{yt:"DJTZxFFL4BA"}, text:"Boxing power #Boxen", likes:347421, shares:11424, sound:"Originalton – VioNa PVT.", comments:[]},
   {id:++pid, by:"ytworldoff", snap:{yt:"1NoSKMOtWGU"}, text:"A minute with the most meme‑worthy animals 🐱🐶", likes:154505, shares:7401, sound:"Originalton – WorldOff", comments:[]},
+  {id:++pid, by:"ytmtfootball", snap:{yt:"c-vfDi-6odM"}, text:"Mbappe,Messi,Neymar,Ronaldo Skills & Goals🔥🔥🔥 #Fußball", likes:309415, shares:2399, sound:"Originalton – MT Football", comments:[]},
+  {id:++pid, by:"ytboxingpoetry", snap:{yt:"GpA4z_X7fhA"}, text:"Ryan Garcia vs Conor Benn Fight Highlights. #Boxen", likes:21392, shares:393, sound:"Originalton – BOXING POETRY", comments:[]},
   {id:++pid, by:"street", snap:pic("food",{cap:"Beste Pasta in der Stadt?",capY:84}), likes:12040, shares:2500, sound:"Originalton – Streetfood Stuttgart",
     comments:[C("urban","Da muss ich mal hin.",120,15)]},
+  {id:++pid, by:"ytmillionairemot", snap:{yt:"6g4-jCRMKgc"}, text:"Aventador SVJ Roadster Launch Control #Autos", likes:190418, shares:11584, sound:"Originalton – Millionaire Motorsport", comments:[]},
   {id:++pid, by:"ytflashshorts15", snap:{yt:"T0ITJt_6CPA"}, text:"Ranking The Funniest Animal Moment 🤣 Caught on Camera", likes:190859, shares:6420, sound:"Originalton – FlashShorts15", comments:[]},
   {id:++pid, by:"ytsoccereducatio", snap:{yt:"93i0L_U18yQ"}, text:"Try Not To Laugh: Football Edition 😂🔥", likes:93965, shares:469, sound:"Originalton – Soccer Education", comments:[]},
   {id:++pid, by:"ytanimalsfunnymo", snap:{yt:"gG8HNfYTDrA"}, text:"Funny Dog & Cat Moments 🐾😂🤣", likes:96182, shares:2853, sound:"Originalton – Animals Funny Moments", comments:[]},
@@ -890,6 +1012,24 @@ function chatWith(id){
   if (!c){ c = {id, title:people[id].name, members:[id], streak:0, read:true, msgs:[]}; chats.push(c); }
   return c;
 }
+// Von links nach rechts wischen = zurück (wie bei Instagram)
+function swipeBack(el, onBack){
+  let x0 = 0, y0 = 0, dx = 0, on = false, decided = false;
+  el.addEventListener("touchstart", e => { if (e.touches.length !== 1) return; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; on = true; decided = false; el.style.transition = "none"; }, {passive:true});
+  el.addEventListener("touchmove", e => {
+    if (!on) return;
+    const mx = e.touches[0].clientX - x0, my = e.touches[0].clientY - y0;
+    if (!decided){ if (Math.abs(mx) < 10 && Math.abs(my) < 10) return; decided = true; if (mx <= 0 || Math.abs(my) > Math.abs(mx)){ on = false; return; } }
+    dx = Math.max(0, mx); el.style.transform = `translateX(${dx}px)`; el.style.boxShadow = "-12px 0 30px #0008";
+  }, {passive:true});
+  const end = () => {
+    if (!on) return; on = false;
+    el.style.transition = "transform .22s ease-out";
+    if (dx > Math.min(120, window.innerWidth * .28)){ el.style.transform = `translateX(${window.innerWidth}px)`; setTimeout(() => { (onBack || closeOverlay)(); }, 200); }
+    else { el.style.transform = ""; el.style.boxShadow = ""; }
+  };
+  el.addEventListener("touchend", end); el.addEventListener("touchcancel", end);
+}
 function openChat(id){
   const c = chats.find(x=>x.id===id);
   c.read = true;
@@ -915,7 +1055,7 @@ function openChat(id){
   };
   const input = h("input",{id:"msg-input",placeholder:"Nachricht senden",enterkeyhint:"send",onkeydown:e=>{ if(e.key==="Enter") send(); }});
   function send(){ const text = input.value.trim(); if(!text) return; c.msgs.push({by:ME,text,at:Date.now()}); c.opened=false; input.value=""; draw(); reply(c,false); addScore(1); }
-  overlay.replaceChildren(h("div",{class:"ov","data-chat":c.id},
+  const chatOv = h("div",{class:"ov","data-chat":c.id},
     h("div",{class:"chathead"},
       iconBtn("back","Zurück",closeOverlay),
       h("button",{style:"display:flex;align-items:center;gap:10px;flex:1;min-width:0;text-align:left",onclick:()=>{ if(!c.group) openUserProfile(c.members[0]); }},
@@ -928,7 +1068,9 @@ function openChat(id){
     h("div",{class:"compose"},
       h("button",{class:"round",style:"width:42px;height:42px","aria-label":"Foto als Shot",onclick:()=>takePhoto(false,{chat:c.id})}, ic("camera")),
       input,
-      h("button",{class:"abtn","aria-label":"Senden",onclick:send}, ic("up",20)))));
+      h("button",{class:"abtn","aria-label":"Senden",onclick:send}, ic("up",20))));
+  swipeBack(chatOv);
+  overlay.replaceChildren(chatOv);
   c.redraw = draw;
   draw();
 }
