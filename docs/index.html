@@ -322,6 +322,8 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 #spotfeed .post.ytlive{background:transparent}
 #spotfeed .post.ytlive .shot{background:transparent}
 #spotfeed .post.ytlive img.ytp{opacity:0;transition:opacity .4s}
+.post .shot,.post .shot *{touch-action:pan-y!important}
+.feed{-webkit-overflow-scrolling:touch}
 </style>
 
 </head>
@@ -593,7 +595,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 14:31";
+const SHADE_VERSION = "07.11. 14:46";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -1436,6 +1438,9 @@ window.addEventListener("message", e => {
   let d; try { d = typeof e.data === "string" ? JSON.parse(e.data) : e.data; } catch { return; }
   if (d && d.event === "onStateChange" && d.info === 0){ try { ytP.contentWindow.postMessage(JSON.stringify({event:"command", func:"seekTo", args:[0, true]}), "*"); } catch {} ytCmd(ytP, "playVideo"); }
 });
+function unlockSound(){ feedSound = true; if (ytP){ ytCmd(ytP, "unMute"); ytCmd(ytP, "playVideo"); } document.querySelectorAll("#spotfeed video").forEach(v => { v.muted = false; }); }
+document.addEventListener("touchend", e => { if (e.target.closest && e.target.closest("#p-spot")) unlockSound(); }, {passive:true, capture:true});
+document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#p-spot")) unlockSound(); }, true);
 function ytSoundOn(){ feedSound = true; document.querySelectorAll(".snd.hint").forEach(x => x.remove()); if (ytP){ ytCmd(ytP, "unMute"); ytCmd(ytP, "playVideo"); } }
 const ytio = new IntersectionObserver(entries => entries.forEach(en => {
   const sh = en.target, id = sh.dataset.yt;
@@ -1479,9 +1484,9 @@ function buildPost(p){
   const post = h("div",{class:"post",onclick:e=>{
       const t = Date.now();
       if (t - lastTap < 320){ clearTimeout(tapTimer); toggleLike(true); const r = post.getBoundingClientRect(); const b = h("span",{class:"burst",style:`left:${e.clientX-r.left-55}px;top:${e.clientY-r.top-70}px`}, ic("heart")); post.append(b); setTimeout(()=>b.remove(),850); }
-      else if (ytShot){ feedSound = !feedSound; const f = ytShot.closest("#spotfeed") ? ytP : ytShot.querySelector("iframe.yt"); if (f){ ytCmd(f, feedSound ? "unMute" : "mute"); ytCmd(f, "playVideo"); if (feedSound) setTimeout(() => { ytCmd(f, "unMute"); ytCmd(f, "setVolume"); }, 150); }
+      else if (ytShot){ feedSound = true; const f = ytShot.closest("#spotfeed") ? ytP : ytShot.querySelector("iframe.yt"); if (f){ ytCmd(f, "unMute"); ytCmd(f, "playVideo"); setTimeout(() => ytCmd(f, "unMute"), 150); }
         document.querySelectorAll(".snd.hint").forEach(x => x.remove()); snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }
-      else if (vid) tapTimer = setTimeout(()=>{ feedSound = !feedSound; document.querySelectorAll(".post video").forEach(v=>v.muted=!feedSound); if (feedSound) vid.play().catch(()=>{}); snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }, 320);
+      else if (vid) tapTimer = setTimeout(()=>{ feedSound = true; document.querySelectorAll(".post video").forEach(v=>v.muted=false); vid.play().catch(()=>{}); snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }, 320);
       lastTap = t; }},
     media, snd, hint, vid ? h("div",{class:"vbar"}, bar) : null,
     h("div",{class:"info"},
