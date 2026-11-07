@@ -603,7 +603,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 15:47";
+const SHADE_VERSION = "07.11. 16:36";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -815,6 +815,24 @@ const people = {
   ytvrgranking:{"name": "VRGranking", "username": "vrgranking", "color": "#2a9bb0", "bio": "Sidemen · Videos", "followers": 539000},
   ytmadeinai:{"name": "Made In AI", "username": "made.in.ai", "color": "#e0533b", "bio": "BMX & Skate · Videos", "followers": 63000},
   ytdailyranks:{"name": "Daily_ranks", "username": "daily_ranks", "color": "#b8862b", "bio": "BMX & Skate · Videos", "followers": 619000},
+  ytberataep1:{"name": "berat.aep1", "username": "berat.aep1", "color": "#e0533b", "bio": "Galatasaray · Videos", "followers": 354000},
+  ytgrandfootball:{"name": "GrandFootball", "username": "grandfootball", "color": "#e0533b", "bio": "Galatasaray · Videos", "followers": 35000},
+  ytardenindnyas:{"name": "Arden’in Dünyası", "username": "ardenin.dnyas", "color": "#e0533b", "bio": "Galatasaray · Videos", "followers": 429000},
+  ytelitefootballe:{"name": "Elite Football Edits", "username": "elite.football.edits", "color": "#e0533b", "bio": "Galatasaray · Videos", "followers": 89000},
+  ytmaidanse:{"name": "Maidan Se", "username": "maidan.se", "color": "#e0533b", "bio": "Galatasaray · Videos", "followers": 232000},
+  ytarsaleditoffic:{"name": "ARSAL EDIT OFFICIAL ⚡", "username": "arsal.edit.official.", "color": "#e0533b", "bio": "Football Edits · Videos", "followers": 881000},
+  ytlouisthomilson:{"name": "Louis Thomilson", "username": "louis.thomilson", "color": "#e0533b", "bio": "Football Edits · Videos", "followers": 828000},
+  ytstickscout:{"name": "Stick Scout", "username": "stick.scout", "color": "#e0533b", "bio": "Football Edits · Videos", "followers": 694000},
+  ytf7x10edits:{"name": "F7X10 Edits", "username": "f7x10.edits", "color": "#e0533b", "bio": "Football Edits · Videos", "followers": 565000},
+  ytnovacut:{"name": "Nova cut", "username": "nova.cut", "color": "#e0533b", "bio": "Football Edits · Videos", "followers": 101000},
+  ytsungeditx:{"name": "SungEditx", "username": "sungeditx", "color": "#e0533b", "bio": "Football Edits · Videos", "followers": 434000},
+  ytnovax:{"name": "NovaX", "username": "novax", "color": "#e0533b", "bio": "Football Edits · Videos", "followers": 164000},
+  yt90minutfootbal:{"name": "90MİNUT Football", "username": "90minut.football", "color": "#e0533b", "bio": "Süper Lig · Videos", "followers": 677000},
+  yt100golbeklenti:{"name": "%100 Gol Beklentisi", "username": "100.gol.beklentisi", "color": "#e0533b", "bio": "Süper Lig · Videos", "followers": 28000},
+  ytbikesandbeards:{"name": "Bikes and Beards", "username": "bikes.and.beards", "color": "#e0533b", "bio": "Wheelies · Videos", "followers": 217000},
+  ytthrillsonwheel:{"name": "ThrillsOnWheels", "username": "thrillsonwheels", "color": "#e0533b", "bio": "Wheelies · Videos", "followers": 584000},
+  ytmopboyz:{"name": "MOPBOYZ", "username": "mopboyz", "color": "#e0533b", "bio": "Wheelies · Videos", "followers": 595000},
+  ytlivingproofnew:{"name": "Living Proof New York", "username": "living.proof.new.yor", "color": "#e0533b", "bio": "Wheelies · Videos", "followers": 422000},
   outdoor:{name:"Outdoor Max", username:"outdoor.max", color:"#5f7d3a", bio:"Wandern, Klettern, Draußen sein.", followers:5100}
 };
 const pname = id => id === ME ? (account?.name || "Du") : (people[id]?.name || "…");
@@ -832,7 +850,6 @@ const posts = [
   {id:++pid, by:"ytrankrushes", snap:{yt:"jMD5LUthooQ"}, cat:"Lustig", text:"Ranking the Most Unexpected Moments 😳😂", likes:144737, shares:2029, sound:"Originalton – RankRushes", comments:[]},
   {id:++pid, by:"ytjokemetric", snap:{yt:"ldlhJ4xL2Ys"}, cat:"Gym", text:"Bro Thought He Was Ready For This 😭 #Gym", likes:39817, shares:9326, sound:"Originalton – Joke Metric", comments:[]},
   {id:++pid, by:"yt999lazer", snap:{yt:"SEkOLoxWepw"}, cat:"Motocross", text:"Wheelie on 700cc 2 Stroke Dirt Bike! #DirtBike", likes:59584, shares:6660, sound:"Originalton – 999lazer", comments:[]},
-  {id:++pid, by:"ytkaimarklifesty", snap:{yt:"mtBbG9G_z00"}, cat:"Travel", text:"Beautiful Egypt - Most Beautiful Places in Egypt to Visit #Travel", likes:33175, shares:3468, sound:"Originalton – KaimarkLifestyle", comments:[]},
   {id:++pid, by:"ytafvshorts", snap:{yt:"AKnSHPnG2a8"}, cat:"Gym", text:"Gym Fails That Are Absolutely Ridiculous 🤣 #Gym", likes:59519, shares:4866, sound:"Originalton – AFV Shorts", comments:[]},
   {id:++pid, by:"ytswipefive", snap:{yt:"EZna-6ZH01s"}, cat:"Autos", text:"TOP 5 Most Insane Drifts Ever 🚗💨 #Drift", likes:38036, shares:376, sound:"Originalton – SwipeFive", comments:[]},
   {id:++pid, by:"ytfluffel", snap:{yt:"m3sNhomZzRU"}, cat:"Tiere", text:"These Kittens Are So Cute 🐾 #Tiere", likes:21512, shares:9752, sound:"Originalton – Fluffel", comments:[]},
@@ -858,7 +875,6 @@ const posts = [
   {id:++pid, by:"ytbhagwankigadi", snap:{yt:"LxPF_zR55_U"}, cat:"Lustig", text:"The Most SATISFYING Supercar Unboxing 🤯🔥", likes:181362, shares:8811, sound:"Originalton – Bhagwan Ki Gadi", comments:[]},
   {id:++pid, by:"ytentertixo", snap:{yt:"N-9ymFzjXOs"}, cat:"Basketball", text:"She violated him on the court! 💀🔥 #Basketball", likes:34401, shares:7717, sound:"Originalton – Entertixo", comments:[]},
   {id:++pid, by:"ytgrowthoperator", snap:{yt:"PH-g-VORTAc"}, cat:"BMX & Skate", text:"That Was Absolutely Insane.👀🏆 #BMXSkate", likes:258235, shares:3011, sound:"Originalton – growth_operator77", comments:[]},
-  {id:++pid, by:"ytexploropia", snap:{yt:"gM56RYCR_ys"}, cat:"Travel", text:"Nanjing, China 🇨🇳 by Drone 4K #Travel", likes:379393, shares:8014, sound:"Originalton – Exploropia", comments:[]},
   {id:++pid, by:"ytnigamminivlogg", snap:{yt:"4s4XS-Vkrrs"}, cat:"Lustig", text:"Try Not to Laugh 😂 Ultimate Funny Fails Compilation", likes:206745, shares:5246, sound:"Originalton – Nigam mini vlogger", comments:[]},
   {id:++pid, by:"ytzevirank", snap:{yt:"TAEwkSi7luY"}, cat:"Lustig", text:"RANKING TOP FUNNY MOMENTS OF THIS MONTH #Memes", likes:296231, shares:3186, sound:"Originalton – ZEVIRANK", comments:[]},
   {id:++pid, by:"ytdougdemuro", snap:{yt:"8eRHnvWYgro"}, cat:"Autos", text:"A Surprisingly Cheap Supercar! #Autos", likes:269792, shares:3224, sound:"Originalton – Doug DeMuro", comments:[]},
@@ -870,7 +886,6 @@ const posts = [
   {id:++pid, by:"ytdizzzy", snap:{yt:"geofu_-SCpE"}, cat:"Lustig", text:"Wait, what did the cat just say? 🐱", likes:81582, shares:4170, sound:"Originalton – DizZzy", comments:[]},
   {id:++pid, by:"ytbug123", snap:{yt:"DULn_ctpk_E"}, cat:"BMX & Skate", text:"Insane Parkour: High-Flying Jumps in the Jungle #Parkour", likes:223597, shares:3587, sound:"Originalton – bug.123", comments:[]},
   {id:++pid, by:"ytvidvalley", snap:{yt:"xjUCP0s7Ccc"}, cat:"Gym", text:"Ranking Gym Fails That Make You Cringe 😬 #Gym", likes:144450, shares:9811, sound:"Originalton – VidValley", comments:[]},
-  {id:++pid, by:"ytxzanbzz", snap:{yt:"Bg3DbQVdoD0"}, cat:"Travel", text:"Top Beautiful Places in 6 Amazing Countries 🌍😍 #Travel", likes:96606, shares:8842, sound:"Originalton – Xzan Bzz", comments:[]},
   {id:++pid, by:"ytrankvault", snap:{yt:"8Fz5uxmN2p4"}, cat:"BMX & Skate", text:"Are These The Best Skateboard Tricks Ever? 🛹🤔 #Skate", likes:13292, shares:3552, sound:"Originalton – RankVault", comments:[]},
   {id:++pid, by:"ytfurkitoon", snap:{yt:"qhUur2BHuAM"}, cat:"Lustig", text:"They Tried So Hard Not to Laugh 🤭 #Memes", likes:209713, shares:9963, sound:"Originalton – FurkiToon", comments:[]},
   {id:++pid, by:"ytritaellisonnai", snap:{yt:"aMIBPyvQgMg"}, cat:"Nails", text:"Clean Cuticles 💅✨ | Easy Nail Care | Ep.1 #Nails", likes:356039, shares:8620, sound:"Originalton – RitaEllison Nail Care 💅", comments:[]},
@@ -904,14 +919,12 @@ const posts = [
   {id:++pid, by:"ytgalinhofc", snap:{yt:"Qn-uN1YjtFE"}, cat:"Lustig", text:"Crazy Skills in Football 😍", likes:201479, shares:5704, sound:"Originalton – Galinho FC", comments:[]},
   {id:++pid, by:"ytaneesianoronal", snap:{yt:"096EASK-i54"}, cat:"Fußball", text:"Messi and Ronaldo Started Like This 😳 #Fußball", likes:102510, shares:2696, sound:"Originalton – Aneesiano Ronaldo", comments:[]},
   {id:++pid, by:"ytmagyverranks", snap:{yt:"2IzW7yGnCg4"}, cat:"Motocross", text:"RANKING THE CRAZIEST MOTOCROSS STUNTS 🏍️🔥 #Motocross", likes:332765, shares:9175, sound:"Originalton – magyverranks", comments:[]},
-  {id:++pid, by:"yttasvora", snap:{yt:"GIBTsV2NdRk"}, cat:"Travel", text:"✨ one of the most beautiful place 🌿 in the world 🌎🌎 #Travel", likes:117449, shares:4333, sound:"Originalton – Tasvora", comments:[]},
   {id:++pid, by:"ytviralfunnyvide", snap:{yt:"vA98lOaUe4U"}, cat:"Lustig", text:"Weirdest Things People Do For Fun Caught On Camera!", likes:247651, shares:8111, sound:"Originalton – Viral Funny Videos", comments:[]},
   {id:++pid, by:"ytonly50cc", snap:{yt:"y3V718Nw2GM"}, cat:"Motocross", text:"KNEE KNOCK #DirtBike", likes:363172, shares:6460, sound:"Originalton – Only 50 cc", comments:[]},
   {id:++pid, by:"ytredbull", snap:{yt:"QGVIWsw-TYQ"}, cat:"BMX & Skate", text:"Not The Average BASE Jump 🔥 #Extrem", likes:319425, shares:1386, sound:"Originalton – Red Bull", comments:[]},
   {id:++pid, by:"ytfluffel", snap:{yt:"3ZzladHqfKA"}, cat:"Tiere", text:"These Kittens Are The Cutest 😍 #Tiere", likes:81398, shares:1855, sound:"Originalton – Fluffel", comments:[]},
   {id:++pid, by:"ytscooterraversf", snap:{yt:"0Ilnbz5VPYc"}, cat:"E-Scooter", text:"scooter going crazy 🤣🤣🤣🤣🤣 #EScooter", likes:27852, shares:1801, sound:"Originalton – scooter ravers forever", comments:[]},
   {id:++pid, by:"ytbmxcaiden", snap:{yt:"Su0zawvoyd8"}, cat:"BMX & Skate", text:"😈Beast mode😈 #BMXSkate", likes:23288, shares:8494, sound:"Originalton – Bmx Caiden", comments:[]},
-  {id:++pid, by:"ytdronesnap", snap:{yt:"huWFgNnVM3E"}, cat:"Travel", text:"Drone Captures Stunning Cityscape: Mosque, Buildings, & Green Spaces! #Travel", likes:65596, shares:11685, sound:"Originalton – Drone Snap", comments:[]},
   {id:++pid, by:"ytadamshowtv", snap:{yt:"nI270TuaoQw"}, cat:"Lustig", text:"Comedy Fails Compilation 😂 | You Won’t Believe These Fails!", likes:13277, shares:1371, sound:"Originalton – Adam_Show Tv", comments:[]},
   {id:++pid, by:"ytfightverse", snap:{yt:"7by21WxcXR4"}, cat:"Boxen", text:"This Knockout Was So Unique That No Fighter Will Ever Be Able To Recreate It Aga #Boxen", likes:127994, shares:11643, sound:"Originalton – FightVerse", comments:[]},
   {id:++pid, by:"yt22morm", snap:{yt:"0XkTXQgQ7po"}, cat:"E-Scooter", text:"Top 10 Scooter Tricks For Beginners! #EScooter", likes:137732, shares:6994, sound:"Originalton – 22Morm", comments:[]},
@@ -934,7 +947,6 @@ const posts = [
   {id:++pid, by:"ytdbeditz", snap:{yt:"3hiuF2P2dy8"}, cat:"Lustig", text:"Ranking Funniest Animal Moment 🤣🤣", likes:223192, shares:1633, sound:"Originalton – DB EditZ", comments:[]},
   {id:++pid, by:"ytskateblueprint", snap:{yt:"f-rJBsYnkqc"}, cat:"BMX & Skate", text:"One Of The Best Mega Ramp Skaters Alive 🤯 Elliot Sloan 👑 #Skate", likes:133581, shares:1090, sound:"Originalton – Skate Blueprint", comments:[]},
   {id:++pid, by:"ytelectricbeast", snap:{yt:"jREVQ1fFiv4"}, cat:"Motocross", text:"Can I Wheelie This Electric Dirt Bike? #DirtBike", likes:95407, shares:4719, sound:"Originalton – Electric Beast", comments:[]},
-  {id:++pid, by:"ytxincottonwalls", snap:{yt:"fa5wBlCqkyc"}, cat:"Food", text:"Satisfying Cooking Video 🍳🤩 Incredible Food Preparation That Will Surprise You! #Food", likes:209245, shares:482, sound:"Originalton – Xin cotton wall stickers", comments:[]},
   {id:++pid, by:"ytcritterrank", snap:{yt:"JpZbpBAbOLU"}, cat:"Lustig", text:"UNBELIEVABLE ANIMAL MOMENTS CAUGHT ON CAMERA 😲 🐕 😅", likes:127282, shares:1164, sound:"Originalton – Critter Rank", comments:[]},
   {id:++pid, by:"ytcrazymoments", snap:{yt:"oeJY6e4KKBc"}, cat:"Tiere", text:"Funniest Animals 2026 😂 When Pets Ignore The Rules! #Tiere", likes:281398, shares:9474, sound:"Originalton – Crazy Moments", comments:[]},
   {id:++pid, by:"ytmikesupercarst", snap:{yt:"LibZ-Lc2eA0"}, cat:"Autos", text:"Lamborghini SIAN SOUND #Autos", likes:51335, shares:6033, sound:"Originalton – Mike Supercars TopSpeed (Supercars Miami)", comments:[]},
@@ -989,15 +1001,9 @@ const posts = [
   {id:++pid, by:"ytstoryversestud", snap:{yt:"C56v9Ys9C5M"}, cat:"Wildtiere", text:"🦁 We Found a Lion! 🌍 Wild Animal Adventure | Part 1 #Wildtiere", likes:243168, shares:6146, sound:"Originalton – StoryVerse Studios", comments:[]},
   {id:++pid, by:"ytsilentwhispers", snap:{yt:"KlHReeYKe44"}, cat:"Wildtiere", text:"The Noisy Sounds Of Lion Cubs In Their Natural Habitat #Wildtiere", likes:189279, shares:10983, sound:"Originalton – SilentWhispersPhotography", comments:[]},
   {id:++pid, by:"ytdecodeuniverse", snap:{yt:"s9pmzJz-9ec"}, cat:"Wildtiere", text:"When a Tiger Picked The Wrong Fight 🦁🚫 #Wildtiere", likes:152236, shares:10740, sound:"Originalton – Decode Universe", comments:[]},
-  {id:++pid, by:"ytdanvsiexplains", snap:{yt:"DYQq63cUjFk"}, cat:"Life Hacks", text:"💡 Genius Life Hacks You Need! #LifeHacks", likes:74617, shares:325, sound:"Originalton – DanvsI Explains", comments:[]},
-  {id:++pid, by:"ytsmartlivinghac", snap:{yt:"9RjYg2-qdik"}, cat:"Life Hacks", text:"Genius Hacks to Save Your Time & Money Every Day 💰⏱️ #LifeHacks", likes:98561, shares:4374, sound:"Originalton – Smart Living Hacks", comments:[]},
-  {id:++pid, by:"ytthebudgetrenov", snap:{yt:"nr1QBf5SX30"}, cat:"Life Hacks", text:"Genius Diy Home Decor Hacks #LifeHacks", likes:358205, shares:9914, sound:"Originalton – The Budget Renovator", comments:[]},
-  {id:++pid, by:"ytadamroseusa", snap:{yt:"HnCfsWRwCak"}, cat:"Life Hacks", text:"A Genius Trick Everyone Should Know! 🤯 #LifeHacks", likes:331597, shares:3447, sound:"Originalton – Adam rose USA", comments:[]},
-  {id:++pid, by:"ytsmartlivinghac", snap:{yt:"7BC6a6TU74c"}, cat:"Life Hacks", text:"Life-Changing Hacks You’ll Wish You Knew Sooner! #LifeHacks", likes:190680, shares:3732, sound:"Originalton – Smart Living Hacks", comments:[]},
   {id:++pid, by:"ytthecomedycompo", snap:{yt:"nxT4vHRIUqo"}, cat:"Comedy DE", text:"German Comedian Tricks Audience! #ComedyDE", likes:299650, shares:6712, sound:"Originalton – The Comedy Compound", comments:[]},
   {id:++pid, by:"ytbayerncomedyba", snap:{yt:"lhG6Ar-HHwI"}, cat:"Comedy DE", text:"Was gibt's da zu lachen? 5 der besten Kurz-Sketche #ComedyDE", likes:79437, shares:9597, sound:"Originalton – Bayern-COMEDY Bayerischer Humor", comments:[]},
   {id:++pid, by:"ytunddann", snap:{yt:"Nvfxy1ya4eo"}, cat:"Comedy DE", text:"Kein Widerstand ... 😄 #ComedyDE", likes:16555, shares:10574, sound:"Originalton – und dann...", comments:[]},
-  {id:++pid, by:"ytasianstreetfoo", snap:{yt:"Z8Y6t_vLU_E"}, cat:"Food", text:"Asian street food #Food", likes:205242, shares:1824, sound:"Originalton – Asian Street Food", comments:[]},
   {id:++pid, by:"ytbeastfanpage", snap:{yt:"9rftwHAVkRY"}, cat:"MrBeast", text:"Last To Fall Challenge #MrBeast", likes:85223, shares:28913, sound:"Originalton – Beast Fan Page", comments:[]},
   {id:++pid, by:"ytpizzacover", snap:{yt:"z9lG0moFdX8"}, cat:"MrBeast", text:"MR BEAST 😱🔥 | Viral Trend Challenge #MrBeast", likes:644847, shares:3311, sound:"Originalton – Pizza Cover", comments:[]},
   {id:++pid, by:"ytwhopmaster", snap:{yt:"f4p867yP7tI"}, cat:"MrBeast", text:"CAN SHE WON THIS MR. BEAST GAME OR SHE??? 🫣🫣🫣 #MrBeast", likes:209390, shares:20574, sound:"Originalton – Whop Master", comments:[]},
@@ -1048,6 +1054,28 @@ const posts = [
   {id:++pid, by:"ytvrgranking", snap:{yt:"ZJzyr9rRJqg"}, cat:"Sidemen", text:"TOP 5 SIDEMEN 20 VS 1 MOMENTS! #Sidemen", likes:596647, shares:25628, sound:"Originalton – VRGranking", comments:[]},
   {id:++pid, by:"ytmadeinai", snap:{yt:"hV5f5u_WZRo"}, cat:"BMX & Skate", text:"🌃 Epic Rooftop Flip ✨ | Neon Parkour Stunt #BMX&Skate", likes:437599, shares:22959, sound:"Originalton – Made In AI", comments:[]},
   {id:++pid, by:"ytdailyranks", snap:{yt:"81j3RT6UfQA"}, cat:"BMX & Skate", text:"I Ranked the Wildest Parkour Fails of All Time #BMX&Skate", likes:204783, shares:25468, sound:"Originalton – Daily_ranks", comments:[]},
+  {id:++pid, by:"ytberataep1", snap:{yt:"GMgyGh5crvQ"}, cat:"Galatasaray", text:"Osi 🔥 #Galatasaray", likes:201299, shares:24199, sound:"Originalton – berat.aep1", comments:[]},
+  {id:++pid, by:"ytgrandfootball", snap:{yt:"-Ifv4-SVuLY"}, cat:"Galatasaray", text:"Aleksey Batrakov Goal for Galatasaray vs Stuttgart 😱🔥 #Galatasaray", likes:808142, shares:8005, sound:"Originalton – GrandFootball", comments:[]},
+  {id:++pid, by:"ytardenindnyas", snap:{yt:"oyAqUd1wR0o"}, cat:"Galatasaray", text:"Batrakov Edit🤟 #Galatasaray", likes:756313, shares:5502, sound:"Originalton – Arden’in Dünyası", comments:[]},
+  {id:++pid, by:"ytelitefootballe", snap:{yt:"sRF5BlQx_3M"}, cat:"Galatasaray", text:"Barcelona VS Galatasaray #Galatasaray", likes:341521, shares:19618, sound:"Originalton – Elite Football Edits", comments:[]},
+  {id:++pid, by:"ytmaidanse", snap:{yt:"LTrZlpxBgzc"}, cat:"Galatasaray", text:"🔥 Galatasaray 2-0 Stuttgart | HT ⚽ | Goal Highlights #Galatasaray", likes:866972, shares:6410, sound:"Originalton – Maidan Se", comments:[]},
+  {id:++pid, by:"ytarsaleditoffic", snap:{yt:"fIEHlckieJk"}, cat:"Football Edits", text:"Cristiano Ronaldo x Montagem TENTA 🔥🥶 #FootballEdits", likes:840273, shares:3418, sound:"Originalton – ARSAL EDIT OFFICIAL ⚡", comments:[]},
+  {id:++pid, by:"ytlouisthomilson", snap:{yt:"JWeYgi5Y_r8"}, cat:"Football Edits", text:"Cristiano Ronaldo INSANE Edit 4K 🐐 | Ronaldo Aura Edit | Manchester United GOAT #FootballEdits", likes:27856, shares:6452, sound:"Originalton – Louis Thomilson", comments:[]},
+  {id:++pid, by:"ytstickscout", snap:{yt:"lGGxfAkt0UQ"}, cat:"Football Edits", text:"Cristiano Ronaldo - Coldest Moments 🥶 | 4K Edit Abnormal #FootballEdits", likes:459772, shares:27430, sound:"Originalton – Stick Scout", comments:[]},
+  {id:++pid, by:"ytf7x10edits", snap:{yt:"RGT3FLg6Kd4"}, cat:"Football Edits", text:"TITLE:Cristiano Ronaldo 🐐 | The Greatest of All Time | Ultimate Football Edit 4K #FootballEdits", likes:603806, shares:10662, sound:"Originalton – F7X10 Edits", comments:[]},
+  {id:++pid, by:"ytnovacut", snap:{yt:"UUQSESg4-EU"}, cat:"Football Edits", text:"Cristiano Ronaldo Edit 🐐🔥 | The GOAT Never Stops #FootballEdits", likes:100142, shares:10095, sound:"Originalton – Nova cut", comments:[]},
+  {id:++pid, by:"ytsungeditx", snap:{yt:"ARq_ay8VlM8"}, cat:"Football Edits", text:"Ranking Unexpected Football Edits #FootballEdits", likes:438922, shares:9489, sound:"Originalton – SungEditx", comments:[]},
+  {id:++pid, by:"ytnovax", snap:{yt:"lrycpcF_TGQ"}, cat:"Football Edits", text:"🐐 Neymar ⚡ vs Messi 👑 vs Ronaldo 🚀 — WHO HAS THE BEST GOAL? 🤯⚽ #FootballEdits", likes:31733, shares:1364, sound:"Originalton – NovaX", comments:[]},
+  {id:++pid, by:"yt90minutfootbal", snap:{yt:"PbSwbGx2SZs"}, cat:"S\u00fcper Lig", text:"Fenerbahçe 1-2 Beşiktaş | Ümit Özat #SüperLig", likes:664919, shares:5606, sound:"Originalton – 90MİNUT Football", comments:[]},
+  {id:++pid, by:"yt90minutfootbal", snap:{yt:"lATTvE-wIcg"}, cat:"S\u00fcper Lig", text:"Fenerbahçe 1-2 Beşiktaş | Ümit Karan #SüperLig", likes:323500, shares:28512, sound:"Originalton – 90MİNUT Football", comments:[]},
+  {id:++pid, by:"yt100golbeklenti", snap:{yt:"is5cg8Va7j8"}, cat:"S\u00fcper Lig", text:"Ülke Puanında Rekora Doğru! #SüperLig", likes:592548, shares:9001, sound:"Originalton – %100 Gol Beklentisi", comments:[]},
+  {id:++pid, by:"ytbikesandbeards", snap:{yt:"ZVvSMZWNbx0"}, cat:"Wheelies", text:"Wheelie King Ben: Street Skills Meets The Wheelie Machine Challenge! #Wheelies", likes:492143, shares:6304, sound:"Originalton – Bikes and Beards", comments:[]},
+  {id:++pid, by:"ytbikesandbeards", snap:{yt:"k79iGn4elFE"}, cat:"Wheelies", text:"Meet Jared: The Wheelie Man Who Masters Motorcycle Stunts! #Wheelies", likes:835688, shares:20353, sound:"Originalton – Bikes and Beards", comments:[]},
+  {id:++pid, by:"ytbikesandbeards", snap:{yt:"MUpxdWl4gTI"}, cat:"Wheelies", text:"$1000 Wheelie Challenge: The ULTIMATE Motorcycle Test! #Wheelies", likes:358493, shares:14126, sound:"Originalton – Bikes and Beards", comments:[]},
+  {id:++pid, by:"ytthrillsonwheel", snap:{yt:"FojeS-rnVXE"}, cat:"Wheelies", text:"MT07 12 O’clock Wheelie #Wheelies", likes:267802, shares:1857, sound:"Originalton – ThrillsOnWheels", comments:[]},
+  {id:++pid, by:"ytmopboyz", snap:{yt:"bwWQHVGC3vU"}, cat:"Wheelies", text:"12 o'clock Wheelie & Scrape on Moped | Gy6 150cc #Wheelies", likes:568099, shares:24144, sound:"Originalton – MOPBOYZ", comments:[]},
+  {id:++pid, by:"ytlivingproofnew", snap:{yt:"vKJBngsBEmU"}, cat:"Wheelies", text:"Surviving The New York Streets on an E-Bike #Wheelies", likes:616525, shares:22444, sound:"Originalton – Living Proof New York", comments:[]},
+  {id:++pid, by:"ytbikesandbeards", snap:{yt:"Lpf7-GQid-4"}, cat:"Wheelies", text:"Woman Attempts Epic Motorcycle Wheelie, But Falls Short! #Wheelies", likes:158525, shares:20073, sound:"Originalton – Bikes and Beards", comments:[]},
 ];
 for (let i = posts.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [posts[i], posts[j]] = [posts[j], posts[i]]; }
 posts.forEach(p=>{ p.liked=false; p.saved=false; p.at = now - Math.random()*20*60*MIN; });
@@ -1329,7 +1357,7 @@ function openNewChat(){
 }
 
 // ================= Stories =================
-const CAT_ORDER = ["MrBeast","IShowSpeed","Sidemen","Khaby Lame","Trickshots","Car Edits","Football Edits","POV Schule","Lustig","Comedy DE","Gaming","Magie","Satisfying","Life Hacks","Wildtiere","Wheelies","Islam","Christentum","Motocross","E-Scooter","Autos","Fußball","Basketball","Boxen","BMX & Skate","Gym","Dance","Beauty","Nails","Fashion","Gymnastics","Tiere","Travel","Food"];
+const CAT_ORDER = ["Football Edits","Galatasaray","Süper Lig","Wheelies","MrBeast","IShowSpeed","Sidemen","Khaby Lame","Trickshots","Car Edits","Football Edits","POV Schule","Lustig","Comedy DE","Gaming","Magie","Satisfying","Life Hacks","Wildtiere","Wheelies","Islam","Christentum","Motocross","E-Scooter","Autos","Fußball","Basketball","Boxen","BMX & Skate","Gym","Dance","Beauty","Nails","Fashion","Gymnastics","Tiere","Travel","Food"];
 function storyCats(){ const m = {}; posts.forEach(p => { if (p.cat && p.snap.yt) (m[p.cat] ||= []).push(p); });
   return CAT_ORDER.filter(c => m[c]).map(c => [c, m[c]]); }
 let picks = null;
@@ -1821,7 +1849,7 @@ let spotDirty = true, feedSound = true;
 function ytSrc(id, snd){ return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=${snd ? 0 : 1}&playsinline=1&loop=1&playlist=${id}&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`; }
 function ytCmd(f, func){ try { f.contentWindow.postMessage(JSON.stringify({event:"command", func, args:[]}), "*"); } catch {} }
 // Ein einziger Player für den Spotlight-Feed: Ton bleibt an, sobald er einmal an ist
-let ytP = null, ytCurPost = null;
+let ytP = null, ytCurPost = null, ytState = -1, ytMsgSeen = false;
 function ytShared(id){
   const panel = document.getElementById("p-spot");
   if (!ytP || !ytP.isConnected){
@@ -1832,13 +1860,16 @@ function ytShared(id){
     panel.prepend(ytP);
   } else if (ytP.dataset.id !== id){
     ytP.dataset.id = id;
-    try { ytP.contentWindow.postMessage(JSON.stringify({event:"command", func:"loadVideoById", args:[id, 0]}), "*"); } catch {}
+    try { ytP.contentWindow.postMessage(JSON.stringify({event:"command", func:"loadVideoById", args:[id, 0]}), "*"); ytP.contentWindow.postMessage(JSON.stringify({event:"listening", id:"shade", channel:"widget"}), "*"); } catch {}
     setTimeout(() => { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }, 500);
   } else { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }
 }
 window.addEventListener("message", e => {
   if (!ytP || e.source !== ytP.contentWindow) return;
   let d; try { d = typeof e.data === "string" ? JSON.parse(e.data) : e.data; } catch { return; }
+  const st = d && (d.event === "onStateChange" ? d.info : (d.event === "infoDelivery" && d.info && typeof d.info.playerState === "number" ? d.info.playerState : undefined));
+  if (d && d.event) ytMsgSeen = true;
+  if (typeof st === "number"){ ytState = st; if (ytCurPost){ if (st === 1){ ytCurPost.classList.add("ytlive"); ytCurPost.querySelector(".snd")?.classList.remove("show","keep"); } else if (st === -1 || st === 5) ytCurPost.classList.remove("ytlive"); } }
   if (d && d.event === "onStateChange" && d.info === 0){ try { ytP.contentWindow.postMessage(JSON.stringify({event:"command", func:"seekTo", args:[0, true]}), "*"); } catch {} ytCmd(ytP, "playVideo"); }
 });
 function unlockSound(){ feedSound = true; if (ytP){ ytCmd(ytP, "unMute"); ytCmd(ytP, "playVideo"); } document.querySelectorAll("#spotfeed video").forEach(v => { v.muted = false; }); }
@@ -1851,7 +1882,10 @@ const ytio = new IntersectionObserver(entries => entries.forEach(en => {
     const post = sh.closest(".post");
     if (en.isIntersecting && en.intersectionRatio > .6){
       if (ytCurPost && ytCurPost !== post) ytCurPost.classList.remove("ytlive");
-      ytCurPost = post; post.paused = false; const sd = post.querySelector(".snd"); if (sd) sd.classList.remove("show"); ytShared(id); setTimeout(() => { if (ytCurPost === post) post.classList.add("ytlive"); }, 700);
+      ytCurPost = post; post.paused = false; ytState = -1; const sd = post.querySelector(".snd"); if (sd) sd.classList.remove("show"); ytShared(id);
+      setTimeout(() => { if (ytCurPost !== post || ytState === 1) return;
+        if (!ytMsgSeen){ post.classList.add("ytlive"); return; }
+        sd && (sd.replaceChildren(ic("resume")), sd.classList.add("show","keep")); }, 3500);
     } else { post.classList.remove("ytlive"); if (ytCurPost === post){ ytCurPost = null; if (ytP) ytCmd(ytP, "pauseVideo"); } }
     return;
   }
@@ -1887,7 +1921,7 @@ function buildPost(p){
   const post = h("div",{class:"post",onclick:e=>{
       const t = Date.now();
       if (t - lastTap < 320){ clearTimeout(tapTimer); toggleLike(true); const r = post.getBoundingClientRect(); const b = h("span",{class:"burst",style:`left:${e.clientX-r.left-55}px;top:${e.clientY-r.top-70}px`}, ic("heart")); post.append(b); setTimeout(()=>b.remove(),850); }
-      else if (ytShot){ feedSound = true; const f = ytShot.closest("#spotfeed") ? ytP : ytShot.querySelector("iframe.yt"); post.paused = !post.paused;
+      else if (ytShot){ feedSound = true; const f = ytShot.closest("#spotfeed") ? ytP : ytShot.querySelector("iframe.yt"); const shared = f === ytP; post.paused = shared ? ytState === 1 : !post.paused;
         if (f){ ytCmd(f, "unMute"); ytCmd(f, post.paused ? "pauseVideo" : "playVideo"); }
         snd.replaceChildren(ic(post.paused ? "resume" : "pause")); snd.classList.toggle("keep", !!post.paused); snd.classList.add("show"); if (!post.paused) setTimeout(()=>snd.classList.remove("show"),700);
         document.querySelectorAll(".snd.hint").forEach(x => x.remove()); snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }
