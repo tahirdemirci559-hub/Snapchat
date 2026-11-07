@@ -175,7 +175,11 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 .toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:60;background:#fff;color:#111;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 6px 24px #0007;max-width:90%;display:flex;gap:8px;align-items:center}
 /* Anmeldung */
 .auth{position:fixed;inset:0;z-index:40;background:radial-gradient(120% 60% at 50% 0%,color-mix(in srgb,var(--acc) 22%,#0d0e11),#0d0e11 70%);color:#fff;overflow-y:auto;padding:calc(36px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.auth .inner{max-width:420px;margin:0 auto;display:grid;gap:18px}
+.auth{display:flex;flex-direction:column}
+.auth .inner{max-width:420px;width:100%;margin:auto;display:grid;gap:22px}
+.auth .brand{padding-block:8px 4px}
+.auth .brand .logo{width:120px!important;height:120px!important}
+.auth h1{font-size:44px!important}
 .auth .brand{display:grid;justify-items:center;gap:10px;text-align:center}
 .auth h1{font-family:var(--display);font-weight:900;font-size:40px;margin:0;letter-spacing:-.02em}
 .auth .tag{color:#b9bec8;font-weight:600}
@@ -599,7 +603,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 15:40";
+const SHADE_VERSION = "07.11. 15:47";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
