@@ -301,11 +301,12 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 .call .lbl{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;color:#ffffffc0}
 .call .pulse{animation:callpulse 1.6s ease-in-out infinite}
 @keyframes callpulse{0%,100%{box-shadow:0 0 0 0 #22d3ee55}50%{box-shadow:0 0 0 22px #22d3ee00}}
-.shot .yt{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.shot .yt{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;pointer-events:none}
 .shot img.ytp{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.85)}
 .viewfinder video.live{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0!important;background:#000}
 .viewfinder video.live.mirror{transform:scaleX(-1)}
 .viewfinder .fx{position:absolute;inset:0;pointer-events:none;z-index:0!important;overflow:hidden}
+.viewfinder .fx canvas.fxc{position:absolute;inset:0;width:100%;height:100%;display:block}
 .viewfinder .fx .tint{position:absolute;inset:0;mix-blend-mode:soft-light}
 .viewfinder .fx .fs{position:absolute;transform:translate(-50%,-50%);line-height:1;transition:left .06s linear,top .06s linear,font-size .1s}
 .viewfinder.on{padding:0}
@@ -640,60 +641,60 @@ const vid = (src, extra={}) => ({video:src, ...extra});
 const posts = [
   {id:++pid, by:"kino", snap:vid("bunny.mp4"), likes:96400, shares:5100, sound:"Originalton – Big Buck Bunny", credit:"Big Buck Bunny © Blender Foundation · CC BY 3.0",
     comments:[C("night","Haha, der ist so gut gemacht.",25,31),C("street","Kenn ich noch!",50,8)]},
-  {id:++pid, by:"ytrankrushes", snap:{yt:"jMD5LUthooQ"}, text:"Ranking the Most Unexpected Moments 😳😂", likes:144737, shares:2029, sound:"Originalton – YouTube", credit:"Video: YouTube · RankRushes", comments:[]},
+  {id:++pid, by:"ytrankrushes", snap:{yt:"jMD5LUthooQ"}, text:"Ranking the Most Unexpected Moments 😳😂", likes:144737, shares:2029, sound:"Originalton – RankRushes", comments:[]},
   {id:++pid, by:"urban", snap:vid("traffic.mp4",{cap:"Rush Hour von oben",capY:80}), likes:22800, shares:740, sound:"Stadt – Urban Shots", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[C("road","Schöne Perspektive.",70,6)]},
-  {id:++pid, by:"ytviralprankdail", snap:{yt:"SkBBmoEkZKA"}, text:"The Most Satisfying Prank Payback EVER! 😈💥", likes:83866, shares:3061, sound:"Originalton – YouTube", credit:"Video: YouTube · Viral Prank Daily", comments:[]},
-  {id:++pid, by:"ytpettsandbabiie", snap:{yt:"wEupTizGUsI"}, text:"Cat And Dog Funny Moments 😂😂😂", likes:155462, shares:3178, sound:"Originalton – YouTube", credit:"Video: YouTube · Petts And Babiies", comments:[]},
-  {id:++pid, by:"ytanimaloops", snap:{yt:"rHqnmiSRwq4"}, text:"Funny Animal 🤣 | Try Not To Laugh!", likes:28540, shares:1128, sound:"Originalton – YouTube", credit:"Video: YouTube · AnimalOops", comments:[]},
-  {id:++pid, by:"ytcarenthusiasts", snap:{yt:"IRNBfHDthq8"}, text:"INSANE Drifting Moments Ever Caught", likes:18624, shares:3474, sound:"Originalton – YouTube", credit:"Video: YouTube · Car Enthusiasts Playground", comments:[]},
+  {id:++pid, by:"ytviralprankdail", snap:{yt:"SkBBmoEkZKA"}, text:"The Most Satisfying Prank Payback EVER! 😈💥", likes:83866, shares:3061, sound:"Originalton – Viral Prank Daily", comments:[]},
+  {id:++pid, by:"ytpettsandbabiie", snap:{yt:"wEupTizGUsI"}, text:"Cat And Dog Funny Moments 😂😂😂", likes:155462, shares:3178, sound:"Originalton – Petts And Babiies", comments:[]},
+  {id:++pid, by:"ytanimaloops", snap:{yt:"rHqnmiSRwq4"}, text:"Funny Animal 🤣 | Try Not To Laugh!", likes:28540, shares:1128, sound:"Originalton – AnimalOops", comments:[]},
+  {id:++pid, by:"ytcarenthusiasts", snap:{yt:"IRNBfHDthq8"}, text:"INSANE Drifting Moments Ever Caught", likes:18624, shares:3474, sound:"Originalton – Car Enthusiasts Playground", comments:[]},
   {id:++pid, by:"outdoor", snap:vid("flower.mp4",{cap:"Frühling im Garten",capY:80}), likes:18300, shares:960, sound:"Natur – Outdoor Max", credit:"Video: MDN · CC0",
     comments:[C("road","So nah dran, krass.",35,9)]},
-  {id:++pid, by:"ytbhagwankigadi", snap:{yt:"LxPF_zR55_U"}, text:"The Most SATISFYING Supercar Unboxing 🤯🔥", likes:181362, shares:8811, sound:"Originalton – YouTube", credit:"Video: YouTube · Bhagwan Ki Gadi", comments:[]},
-  {id:++pid, by:"ytnigamminivlogg", snap:{yt:"4s4XS-Vkrrs"}, text:"Try Not to Laugh 😂 Ultimate Funny Fails Compilation", likes:206745, shares:5246, sound:"Originalton – YouTube", credit:"Video: YouTube · Nigam mini vlogger", comments:[]},
-  {id:++pid, by:"ytafvshorts", snap:{yt:"7XMyj7WpFlI"}, text:"Pranks that caught everyone off guard", likes:156501, shares:7524, sound:"Originalton – YouTube", credit:"Video: YouTube · AFV Shorts", comments:[]},
-  {id:++pid, by:"ytdizzzy", snap:{yt:"geofu_-SCpE"}, text:"Wait, what did the cat just say? 🐱", likes:81582, shares:4170, sound:"Originalton – YouTube", credit:"Video: YouTube · DizZzy", comments:[]},
+  {id:++pid, by:"ytbhagwankigadi", snap:{yt:"LxPF_zR55_U"}, text:"The Most SATISFYING Supercar Unboxing 🤯🔥", likes:181362, shares:8811, sound:"Originalton – Bhagwan Ki Gadi", comments:[]},
+  {id:++pid, by:"ytnigamminivlogg", snap:{yt:"4s4XS-Vkrrs"}, text:"Try Not to Laugh 😂 Ultimate Funny Fails Compilation", likes:206745, shares:5246, sound:"Originalton – Nigam mini vlogger", comments:[]},
+  {id:++pid, by:"ytafvshorts", snap:{yt:"7XMyj7WpFlI"}, text:"Pranks that caught everyone off guard", likes:156501, shares:7524, sound:"Originalton – AFV Shorts", comments:[]},
+  {id:++pid, by:"ytdizzzy", snap:{yt:"geofu_-SCpE"}, text:"Wait, what did the cat just say? 🐱", likes:81582, shares:4170, sound:"Originalton – DizZzy", comments:[]},
   {id:++pid, by:"road", snap:vid("street.mp4",{stamp:{time:"17:20",place:"Parkplatz von oben"}}), likes:7400, shares:210, sound:"Originalton – Roadtrip BW", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[]},
-  {id:++pid, by:"ytfunnyhub", snap:{yt:"O9KiCu1MRLQ"}, text:"Try Not To Laugh: Impossible Cat & Dog Moments! 🐾 🐈🤣", likes:50124, shares:4099, sound:"Originalton – YouTube", credit:"Video: YouTube · Funny Hub", comments:[]},
-  {id:++pid, by:"ytexoticrubber", snap:{yt:"7biTUUEIXNI"}, text:"He turned his driveway into a track", likes:153581, shares:5019, sound:"Originalton – YouTube", credit:"Video: YouTube · Exotic Rubber", comments:[]},
-  {id:++pid, by:"ytviralprankdail", snap:{yt:"7HYKNRdKeTc"}, text:"He Did NOT Expect That To Happen! 😳🔥", likes:140677, shares:8211, sound:"Originalton – YouTube", credit:"Video: YouTube · Viral Prank Daily", comments:[]},
-  {id:++pid, by:"ytxanami", snap:{yt:"Gc73LrtI8vw"}, text:"The Most Unexpected Animal Moments Ever Caught on Camera😱", likes:194219, shares:7453, sound:"Originalton – YouTube", credit:"Video: YouTube · Xanami", comments:[]},
+  {id:++pid, by:"ytfunnyhub", snap:{yt:"O9KiCu1MRLQ"}, text:"Try Not To Laugh: Impossible Cat & Dog Moments! 🐾 🐈🤣", likes:50124, shares:4099, sound:"Originalton – Funny Hub", comments:[]},
+  {id:++pid, by:"ytexoticrubber", snap:{yt:"7biTUUEIXNI"}, text:"He turned his driveway into a track", likes:153581, shares:5019, sound:"Originalton – Exotic Rubber", comments:[]},
+  {id:++pid, by:"ytviralprankdail", snap:{yt:"7HYKNRdKeTc"}, text:"He Did NOT Expect That To Happen! 😳🔥", likes:140677, shares:8211, sound:"Originalton – Viral Prank Daily", comments:[]},
+  {id:++pid, by:"ytxanami", snap:{yt:"Gc73LrtI8vw"}, text:"The Most Unexpected Animal Moments Ever Caught on Camera😱", likes:194219, shares:7453, sound:"Originalton – Xanami", comments:[]},
   {id:++pid, by:"night", snap:pic("road",{cap:"B27 um Mitternacht",capY:72}), likes:84100, shares:3200, sound:"Lofi Drive – Night Drive",
     comments:[C("road","Die Strecke fahr ich jeden Tag.",30,12),C("kick","Wie heißt der Song?",22,40),C("urban","Starke Farben.",90,3)]},
-  {id:++pid, by:"ytabusufyan", snap:{yt:"56cn1rZ6x8w"}, text:"Funny animals 😂😂", likes:162634, shares:1299, sound:"Originalton – YouTube", credit:"Video: YouTube · Abu sufyan", comments:[]},
-  {id:++pid, by:"ytanimalsfunyt", snap:{yt:"e-7Glg4FJQw"}, text:"Funny animals video🤣🤣🤩", likes:137200, shares:6950, sound:"Originalton – YouTube", credit:"Video: YouTube · Animals fun yt", comments:[]},
-  {id:++pid, by:"ytgalinhofc", snap:{yt:"Qn-uN1YjtFE"}, text:"Crazy Skills in Football 😍", likes:201479, shares:5704, sound:"Originalton – YouTube", credit:"Video: YouTube · Galinho FC", comments:[]},
-  {id:++pid, by:"ytviralfunnyvide", snap:{yt:"vA98lOaUe4U"}, text:"Weirdest Things People Do For Fun Caught On Camera!", likes:247651, shares:8111, sound:"Originalton – YouTube", credit:"Video: YouTube · Viral Funny Videos", comments:[]},
+  {id:++pid, by:"ytabusufyan", snap:{yt:"56cn1rZ6x8w"}, text:"Funny animals 😂😂", likes:162634, shares:1299, sound:"Originalton – Abu sufyan", comments:[]},
+  {id:++pid, by:"ytanimalsfunyt", snap:{yt:"e-7Glg4FJQw"}, text:"Funny animals video🤣🤣🤩", likes:137200, shares:6950, sound:"Originalton – Animals fun yt", comments:[]},
+  {id:++pid, by:"ytgalinhofc", snap:{yt:"Qn-uN1YjtFE"}, text:"Crazy Skills in Football 😍", likes:201479, shares:5704, sound:"Originalton – Galinho FC", comments:[]},
+  {id:++pid, by:"ytviralfunnyvide", snap:{yt:"vA98lOaUe4U"}, text:"Weirdest Things People Do For Fun Caught On Camera!", likes:247651, shares:8111, sound:"Originalton – Viral Funny Videos", comments:[]},
   {id:++pid, by:"urban", snap:pic("city",{stamp:{time:"23:58",place:"Stuttgart Mitte"}}), likes:53100, shares:1800, sound:"Originalton – Urban Shots",
     comments:[C("kino","Mega Aufnahme.",40,22),C("outdoor","Wo ist das genau?",60,9)]},
-  {id:++pid, by:"ytadamshowtv", snap:{yt:"nI270TuaoQw"}, text:"Comedy Fails Compilation 😂 | You Won’t Believe These Fails!", likes:13277, shares:1371, sound:"Originalton – YouTube", credit:"Video: YouTube · Adam_Show Tv", comments:[]},
-  {id:++pid, by:"ytechonova", snap:{yt:"xvKjKDOMUPY"}, text:"Hilariously prank VIDEO funny reaction tiktok meme America", likes:149296, shares:5240, sound:"Originalton – YouTube", credit:"Video: YouTube · EchoNova", comments:[]},
-  {id:++pid, by:"ytpsilocybinium", snap:{yt:"nbni9OiJJkw"}, text:"Animals Caught Doing the Most Unexpected Things", likes:185267, shares:5837, sound:"Originalton – YouTube", credit:"Video: YouTube · Psilocybinium", comments:[]},
-  {id:++pid, by:"ytusatadramjogal", snap:{yt:"lKXNZbBmd_0"}, text:"new funny 😂 cats Vs Dogs 😅", likes:133200, shares:7574, sound:"Originalton – YouTube", credit:"Video: YouTube · usatad ram jogal", comments:[]},
+  {id:++pid, by:"ytadamshowtv", snap:{yt:"nI270TuaoQw"}, text:"Comedy Fails Compilation 😂 | You Won’t Believe These Fails!", likes:13277, shares:1371, sound:"Originalton – Adam_Show Tv", comments:[]},
+  {id:++pid, by:"ytechonova", snap:{yt:"xvKjKDOMUPY"}, text:"Hilariously prank VIDEO funny reaction tiktok meme America", likes:149296, shares:5240, sound:"Originalton – EchoNova", comments:[]},
+  {id:++pid, by:"ytpsilocybinium", snap:{yt:"nbni9OiJJkw"}, text:"Animals Caught Doing the Most Unexpected Things", likes:185267, shares:5837, sound:"Originalton – Psilocybinium", comments:[]},
+  {id:++pid, by:"ytusatadramjogal", snap:{yt:"lKXNZbBmd_0"}, text:"new funny 😂 cats Vs Dogs 😅", likes:133200, shares:7574, sound:"Originalton – usatad ram jogal", comments:[]},
   {id:++pid, by:"kino", snap:vid("classroom.mp4",{cap:"Montagmorgen, erste Stunde.",capY:20}), likes:33900, shares:1400, sound:"Originalton – Kino Kurz", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[C("kick","Genau so sieht's aus.",45,27)]},
-  {id:++pid, by:"ytdbeditz", snap:{yt:"3hiuF2P2dy8"}, text:"Ranking Funniest Animal Moment 🤣🤣", likes:223192, shares:1633, sound:"Originalton – YouTube", credit:"Video: YouTube · DB EditZ", comments:[]},
-  {id:++pid, by:"ytcritterrank", snap:{yt:"JpZbpBAbOLU"}, text:"UNBELIEVABLE ANIMAL MOMENTS CAUGHT ON CAMERA 😲 🐕 😅", likes:127282, shares:1164, sound:"Originalton – YouTube", credit:"Video: YouTube · Critter Rank", comments:[]},
-  {id:++pid, by:"ytthepetcollecti", snap:{yt:"byeYjhNr_no"}, text:"FUNNIEST Animal Videos of 2024", likes:194669, shares:5172, sound:"Originalton – YouTube", credit:"Video: YouTube · The Pet Collective", comments:[]},
-  {id:++pid, by:"ytworldoff", snap:{yt:"1NoSKMOtWGU"}, text:"A minute with the most meme‑worthy animals 🐱🐶", likes:154505, shares:7401, sound:"Originalton – YouTube", credit:"Video: YouTube · WorldOff", comments:[]},
+  {id:++pid, by:"ytdbeditz", snap:{yt:"3hiuF2P2dy8"}, text:"Ranking Funniest Animal Moment 🤣🤣", likes:223192, shares:1633, sound:"Originalton – DB EditZ", comments:[]},
+  {id:++pid, by:"ytcritterrank", snap:{yt:"JpZbpBAbOLU"}, text:"UNBELIEVABLE ANIMAL MOMENTS CAUGHT ON CAMERA 😲 🐕 😅", likes:127282, shares:1164, sound:"Originalton – Critter Rank", comments:[]},
+  {id:++pid, by:"ytthepetcollecti", snap:{yt:"byeYjhNr_no"}, text:"FUNNIEST Animal Videos of 2024", likes:194669, shares:5172, sound:"Originalton – The Pet Collective", comments:[]},
+  {id:++pid, by:"ytworldoff", snap:{yt:"1NoSKMOtWGU"}, text:"A minute with the most meme‑worthy animals 🐱🐶", likes:154505, shares:7401, sound:"Originalton – WorldOff", comments:[]},
   {id:++pid, by:"street", snap:pic("food",{cap:"Beste Pasta in der Stadt?",capY:84}), likes:12040, shares:2500, sound:"Originalton – Streetfood Stuttgart",
     comments:[C("urban","Da muss ich mal hin.",120,15)]},
-  {id:++pid, by:"ytflashshorts15", snap:{yt:"T0ITJt_6CPA"}, text:"Ranking The Funniest Animal Moment 🤣 Caught on Camera", likes:190859, shares:6420, sound:"Originalton – YouTube", credit:"Video: YouTube · FlashShorts15", comments:[]},
-  {id:++pid, by:"ytsoccereducatio", snap:{yt:"93i0L_U18yQ"}, text:"Try Not To Laugh: Football Edition 😂🔥", likes:93965, shares:469, sound:"Originalton – YouTube", credit:"Video: YouTube · Soccer Education", comments:[]},
-  {id:++pid, by:"ytanimalsfunnymo", snap:{yt:"gG8HNfYTDrA"}, text:"Funny Dog & Cat Moments 🐾😂🤣", likes:96182, shares:2853, sound:"Originalton – YouTube", credit:"Video: YouTube · Animals Funny Moments", comments:[]},
-  {id:++pid, by:"ytpulseframe", snap:{yt:"Wa9vIskDnLE"}, text:"Funny Animals & People Moments That Will Make You Laugh! 😂", likes:33695, shares:8188, sound:"Originalton – YouTube", credit:"Video: YouTube · Pulseframe", comments:[]},
+  {id:++pid, by:"ytflashshorts15", snap:{yt:"T0ITJt_6CPA"}, text:"Ranking The Funniest Animal Moment 🤣 Caught on Camera", likes:190859, shares:6420, sound:"Originalton – FlashShorts15", comments:[]},
+  {id:++pid, by:"ytsoccereducatio", snap:{yt:"93i0L_U18yQ"}, text:"Try Not To Laugh: Football Edition 😂🔥", likes:93965, shares:469, sound:"Originalton – Soccer Education", comments:[]},
+  {id:++pid, by:"ytanimalsfunnymo", snap:{yt:"gG8HNfYTDrA"}, text:"Funny Dog & Cat Moments 🐾😂🤣", likes:96182, shares:2853, sound:"Originalton – Animals Funny Moments", comments:[]},
+  {id:++pid, by:"ytpulseframe", snap:{yt:"Wa9vIskDnLE"}, text:"Funny Animals & People Moments That Will Make You Laugh! 😂", likes:33695, shares:8188, sound:"Originalton – Pulseframe", comments:[]},
   {id:++pid, by:"kick", snap:pic("pitch",{cap:"Was für ein Abend.",capY:22}), likes:28770, shares:900, sound:"Stadion – Live",
     comments:[C("night","Unglaubliche Stimmung!",300,30)]},
-  {id:++pid, by:"ytfavball", snap:{yt:"oGsq3p7KwpA"}, text:"Funny Moments in Football 🤪😂", likes:60201, shares:4809, sound:"Originalton – YouTube", credit:"Video: YouTube · FavBall", comments:[]},
-  {id:++pid, by:"ytridhimartsmafi", snap:{yt:"PIfbVer230I"}, text:"INSANE CAR DRIFT 😱🔥 | Perfect Drift | #", likes:196557, shares:4156, sound:"Originalton – YouTube", credit:"Video: YouTube · Ridhima RT's Mafia", comments:[]},
-  {id:++pid, by:"ytmaclordrank", snap:{yt:"yW1dcrSFiVU"}, text:"Wait For The Last Animal Moment🤯🌊", likes:105485, shares:8234, sound:"Originalton – YouTube", credit:"Video: YouTube · MACLORD RANK", comments:[]},
-  {id:++pid, by:"ytdbeditz", snap:{yt:"ZM7TCNXUj6Y"}, text:"Ranking The Funniest Animal Moment 🤣🤣", likes:24123, shares:2825, sound:"Originalton – YouTube", credit:"Video: YouTube · DB EditZ", comments:[]},
+  {id:++pid, by:"ytfavball", snap:{yt:"oGsq3p7KwpA"}, text:"Funny Moments in Football 🤪😂", likes:60201, shares:4809, sound:"Originalton – FavBall", comments:[]},
+  {id:++pid, by:"ytridhimartsmafi", snap:{yt:"PIfbVer230I"}, text:"INSANE CAR DRIFT 😱🔥 | Perfect Drift | #", likes:196557, shares:4156, sound:"Originalton – Ridhima RT's Mafia", comments:[]},
+  {id:++pid, by:"ytmaclordrank", snap:{yt:"yW1dcrSFiVU"}, text:"Wait For The Last Animal Moment🤯🌊", likes:105485, shares:8234, sound:"Originalton – MACLORD RANK", comments:[]},
+  {id:++pid, by:"ytdbeditz", snap:{yt:"ZM7TCNXUj6Y"}, text:"Ranking The Funniest Animal Moment 🤣🤣", likes:24123, shares:2825, sound:"Originalton – DB EditZ", comments:[]},
   {id:++pid, by:"road", snap:pic("mountains",{stamp:{time:"08:15",place:"Albtrauf",style:"boxed"}}), likes:9320, shares:640, sound:"Natur – Roadtrip BW",
     comments:[C("outdoor","Da war ich auch schon wandern.",200,5)]},
-  {id:++pid, by:"yttaranking", snap:{yt:"8YIMQ6e7VUU"}, text:"Ranking the most satisfying drifts￼ part-1 😉🔊😬", likes:108288, shares:4652, sound:"Originalton – YouTube", credit:"Video: YouTube · TA ranking", comments:[]},
-  {id:++pid, by:"ytadamfunny97", snap:{yt:"amsx6w9FT3s"}, text:"🔥 Top Funny Fails You Need to See Today Part 0006:", likes:217769, shares:7153, sound:"Originalton – YouTube", credit:"Video: YouTube · Adam Funny 97", comments:[]},
-  {id:++pid, by:"ythardyshortz", snap:{yt:"oNfFpr67mSw"}, text:"Bro just wanted to show them skills 😂", likes:75986, shares:6904, sound:"Originalton – YouTube", credit:"Video: YouTube · HardyShortz", comments:[]},
+  {id:++pid, by:"yttaranking", snap:{yt:"8YIMQ6e7VUU"}, text:"Ranking the most satisfying drifts￼ part-1 😉🔊😬", likes:108288, shares:4652, sound:"Originalton – TA ranking", comments:[]},
+  {id:++pid, by:"ytadamfunny97", snap:{yt:"amsx6w9FT3s"}, text:"🔥 Top Funny Fails You Need to See Today Part 0006:", likes:217769, shares:7153, sound:"Originalton – Adam Funny 97", comments:[]},
+  {id:++pid, by:"ythardyshortz", snap:{yt:"oNfFpr67mSw"}, text:"Bro just wanted to show them skills 😂", likes:75986, shares:6904, sound:"Originalton – HardyShortz", comments:[]},
   {id:++pid, by:"night", snap:pic("neon",{cap:"Retro Nights",capY:30}), likes:41200, shares:2100, sound:"Synthwave Mix",
     comments:[C("urban","Mehr davon!",80,18)]},
   {id:++pid, by:"outdoor", snap:pic("forest",{stamp:{time:"06:40",place:"Schwarzwald"}}), likes:615, shares:44, sound:"Originalton – Outdoor Max", comments:[]},
@@ -704,23 +705,23 @@ const snapReplies = ["Starker Shot.","Wo bist du da?","Haha, nice.","Coole Lens.
 
 const lenses = [
   {id:"none", name:"Normal", sw:"#2a2d33"},
+  {id:"shade", name:"Shade", fx:"shade", face:true, sw:"radial-gradient(circle at 50% 45%,#22d3ee 0 18%,#0b1220 60%)"},
+  {id:"laser", name:"Laser Eyes", fx:"laser", face:true, sw:"radial-gradient(circle,#ff2a2a 0 20%,#300 70%)"},
+  {id:"glitch", name:"Glitch", fx:"glitch", sw:"linear-gradient(90deg,#ff004c,#00e5ff)"},
+  {id:"thermal", name:"Wärmebild", fx:"thermal", sw:"linear-gradient(135deg,#1b0b5a,#d4145a,#fbb03b,#fff)"},
+  {id:"night", name:"Nachtsicht", fx:"night", sw:"radial-gradient(circle,#7dff7a,#031a03)"},
+  {id:"neon", name:"Neon", fx:"neon", sw:"linear-gradient(135deg,#00e5ff,#ff00c8)"},
+  {id:"comic", name:"Comic", fx:"comic", sw:"linear-gradient(135deg,#ffd400,#ff3b3b)"},
+  {id:"xray", name:"Röntgen", fx:"xray", sw:"linear-gradient(135deg,#0a1a3a,#bfe3ff)"},
+  {id:"duo", name:"Ice", fx:"duo", sw:"linear-gradient(135deg,#000,#22d3ee)"},
+  {id:"pixel", name:"8-Bit", fx:"pixel", sw:"conic-gradient(#22d3ee 0 25%,#0b1220 0 50%,#22d3ee 0 75%,#0b1220 0)"},
+  {id:"mirror", name:"Spiegel", fx:"mirror", sw:"linear-gradient(90deg,#334155 50%,#94a3b8 50%)"},
+  {id:"vhs2", name:"Tape", fx:"vhs", sw:"linear-gradient(135deg,#5d4157,#a8caba)"},
   {id:"noir", name:"Noir", sw:"linear-gradient(135deg,#000,#888)", filter:"grayscale(1) contrast(1.45)", grain:true},
   {id:"gold", name:"Golden Hour", sw:"linear-gradient(135deg,#ffb347,#ff6a1a)", filter:"sepia(.35) saturate(1.5) brightness(1.05)", tint:"linear-gradient(180deg,#ffb34777,#ff6a1a33)"},
   {id:"cyber", name:"Cyber", sw:"linear-gradient(135deg,#00e5ff,#ff00c8)", filter:"saturate(1.5) contrast(1.1)", tint:"linear-gradient(135deg,#00e5ff88,#ff00c888)"},
   {id:"frost", name:"Frost", sw:"linear-gradient(135deg,#dff3ff,#6aa9ff)", filter:"hue-rotate(-15deg) saturate(.8) brightness(1.1)", tint:"linear-gradient(180deg,#bfe6ff88,#ffffff22)"},
   {id:"vhs", name:"VHS", sw:"linear-gradient(135deg,#5d4157,#a8caba)", filter:"sepia(.5) contrast(1.15) saturate(1.2)", grain:true, frame:true},
-  {id:"shades", name:"Shades", icon:"🕶️", stickers:[{e:"🕶️",x:50,y:42,s:42}], face:[{e:"🕶️",at:"eyes",k:1.05}], filter:"contrast(1.1)"},
-  {id:"crown", name:"Crown", icon:"👑", stickers:[{e:"👑",x:50,y:18,s:34}], face:[{e:"👑",at:"top",k:.8}], filter:"saturate(1.2)"},
-  {id:"hearts", name:"Verliebt", icon:"😍", stickers:[{e:"❤️",x:40,y:42,s:14},{e:"❤️",x:60,y:42,s:14}], face:[{e:"❤️",at:"reye",k:.32},{e:"❤️",at:"leye",k:.32}], tint:"linear-gradient(180deg,#ff4d8d55,#0000)"},
-  {id:"lasers", name:"Laser", icon:"🔥", stickers:[{e:"🔥",x:40,y:42,s:14},{e:"🔥",x:60,y:42,s:14}], face:[{e:"🔥",at:"reye",k:.34},{e:"🔥",at:"leye",k:.34}], filter:"contrast(1.2) saturate(1.3)", tint:"linear-gradient(180deg,#ff3d0044,#0000)"},
-  {id:"skull", name:"Skull", icon:"💀", stickers:[{e:"💀",x:50,y:45,s:60}], face:[{e:"💀",at:"face",k:1.35}], filter:"grayscale(1) contrast(1.3)"},
-  {id:"alien", name:"Alien", icon:"👽", stickers:[{e:"👽",x:50,y:45,s:60}], face:[{e:"👽",at:"face",k:1.35}], filter:"hue-rotate(60deg) saturate(1.3)"},
-  {id:"clown", name:"Clown", icon:"🔴", stickers:[{e:"🔴",x:50,y:50,s:12}], face:[{e:"🔴",at:"nose",k:.28}]},
-  {id:"pig", name:"Schwein", icon:"🐽", stickers:[{e:"🐽",x:50,y:50,s:16}], face:[{e:"🐽",at:"nose",k:.38}]},
-  {id:"tophat", name:"Gentleman", icon:"🎩", stickers:[{e:"🎩",x:50,y:16,s:36},{e:"🥸",x:50,y:48,s:10}], face:[{e:"🎩",at:"top",k:.9}], filter:"sepia(.25) contrast(1.1)"},
-  {id:"party", name:"Party", icon:"🥳", stickers:[{e:"🎉",x:50,y:16,s:30}], face:[{e:"🎉",at:"top",k:.75}], rain:"🎊", filter:"saturate(1.3)"},
-  {id:"cool", name:"Cool", icon:"😎", stickers:[{e:"😎",x:50,y:45,s:60}], face:[{e:"😎",at:"face",k:1.3}]},
-  {id:"fire", name:"On Fire", icon:"🔥", rain:"🔥", filter:"saturate(1.4) contrast(1.1)", tint:"linear-gradient(0deg,#ff3d0088,#0000)"},
   {id:"matrix", name:"Matrix", sw:"linear-gradient(135deg,#001a00,#00ff66)", filter:"grayscale(1) contrast(1.3)", tint:"linear-gradient(180deg,#00ff6688,#003300aa)", grain:true},
   {id:"film", name:"Kino", sw:"linear-gradient(135deg,#1a2a3a,#e0a060)", filter:"contrast(1.15) saturate(.9)", tint:"linear-gradient(180deg,#0b3a5a66,#e0a06055)", frame:true}
 ];
@@ -1116,6 +1117,21 @@ function anchor(f, a){
 function drawFx(){
   cancelAnimationFrame(faceLoop);
   const l = lenses.find(x => x.id === camLens) || lenses[0];
+  if (l.fx){
+    camFx.replaceChildren(fxCanvas); camVideo.style.filter = "none";
+    const tick = () => {
+      if (!camOn || curTab !== 2 || camLens !== l.id) return;
+      const ew = camVideo.clientWidth || 360, eh = camVideo.clientHeight || 640, W = 360, H = Math.round(W * eh / ew);
+      if (fxCanvas.width !== W || fxCanvas.height !== H){ fxCanvas.width = W; fxCanvas.height = H; }
+      if (camVideo.videoWidth){
+        if (l.face && (fxFrame++ % 2 === 0)) lastFace = detectFace();
+        FX.render(fxCanvas, camVideo, camVideo.videoWidth, camVideo.videoHeight, LiveCam.facing === "user", l.fx, l.face ? scaleFace(lastFace, W / ew) : null, performance.now());
+      }
+      faceLoop = requestAnimationFrame(tick);
+    };
+    faceLoop = requestAnimationFrame(tick);
+    return;
+  }
   camVideo.style.filter = l.filter || "none";
   const parts = [];
   if (l.tint) parts.push(h("div",{class:"tint",style:`background:${l.tint}`}));
@@ -1144,8 +1160,13 @@ function captureCam(target){
   const sc = Math.max(W / vw, H / vh), dw = vw * sc, dh = vh * sc, x = c.getContext("2d");
   if (LiveCam.facing === "user"){ x.translate(W, 0); x.scale(-1, 1); }
   x.drawImage(camVideo, (W - dw) / 2, (H - dh) / 2, dw, dh);
-  const img = c.toDataURL("image/jpeg", .9);
   const l = lenses.find(q => q.id === camLens) || lenses[0];
+  if (l.fx){
+    x.setTransform(1, 0, 0, 1, 0, 0);
+    FX.render(c, camVideo, vw, vh, LiveCam.facing === "user", l.fx, l.face ? scaleFace(lastFace, W / ew) : null, performance.now());
+    flashFx(); openEditor(target || {}, {img:c.toDataURL("image/jpeg", .9)}, "none"); return;
+  }
+  const img = c.toDataURL("image/jpeg", .9);
   const f = lastFace, extra = [];
   if (f && l.face) l.face.forEach(a => { const p = anchor(f, a); extra.push({e:a.e, x:Math.max(0,Math.min(100,p.x / ew * 100)), y:Math.max(0,Math.min(100,p.y / eh * 100)), s:Math.min(80, f.fw * a.k / ew * 100)}); });
   flashFx();
@@ -1158,12 +1179,90 @@ function toggleRec(){
   const st = LiveCam.stream; if (!st || !window.MediaRecorder) return takePhoto(false,{});
   const type = ["video/mp4","video/webm;codecs=vp9","video/webm"].find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || "";
   const chunks = []; let rec;
-  try { rec = new MediaRecorder(new MediaStream(st.getTracks().filter(t => t.readyState === "live")), type ? {mimeType:type} : undefined); } catch { return takePhoto(false,{}); }
+  const lf = (lenses.find(q => q.id === camLens) || {}).fx;
+  let tracks = st.getTracks().filter(t => t.readyState === "live");
+  if (lf && fxCanvas.captureStream){ try { tracks = [...fxCanvas.captureStream(30).getVideoTracks(), ...st.getAudioTracks()]; } catch {} }
+  try { rec = new MediaRecorder(new MediaStream(tracks), type ? {mimeType:type} : undefined); } catch { return takePhoto(false,{}); }
   rec.ondataavailable = e => e.data.size && chunks.push(e.data);
-  rec.onstop = () => { camRec = null; renderCam(); const b = new Blob(chunks, {type:rec.mimeType || "video/mp4"}); openEditor({}, {video:URL.createObjectURL(b)}, camLens); };
+  rec.onstop = () => { camRec = null; renderCam(); const b = new Blob(chunks, {type:rec.mimeType || "video/mp4"}); openEditor({}, {video:URL.createObjectURL(b)}, lf ? "none" : camLens); };
   rec.start(); camRec = rec; renderCam();
   setTimeout(() => { if (camRec === rec) rec.stop(); }, 15000);
 }
+
+// ================= Echte Kamera-Effekte (laufen live im Bild) =================
+const FX = (() => {
+  const lum = (d, i) => d[i] * .299 + d[i+1] * .587 + d[i+2] * .114;
+  const lut = stops => { const t = new Uint8ClampedArray(768); for (let i = 0; i < 256; i++){ const x = i / 255 * (stops.length - 1), a = Math.floor(x), b = Math.min(stops.length - 1, a + 1), k = x - a; for (let c = 0; c < 3; c++) t[i*3+c] = stops[a][c] + (stops[b][c] - stops[a][c]) * k; } return t; };
+  const THERMAL = lut([[0,0,20],[40,0,110],[150,0,160],[230,30,60],[255,140,0],[255,230,60],[255,255,255]]);
+  const ICE = lut([[0,0,0],[2,20,32],[8,90,110],[34,211,238],[220,250,255]]);
+  const XRAY = lut([[255,255,255],[190,225,255],[60,110,170],[10,25,60],[0,0,10]]);
+  const sobel = (d, w, h) => { const L = new Float32Array(w*h), E = new Float32Array(w*h);
+    for (let i = 0, j = 0; j < w*h; i += 4, j++) L[j] = lum(d, i);
+    for (let y = 1; y < h-1; y++) for (let x = 1; x < w-1; x++){ const o = y*w + x;
+      const gx = -L[o-w-1] - 2*L[o-1] - L[o+w-1] + L[o-w+1] + 2*L[o+1] + L[o+w+1];
+      const gy = -L[o-w-1] - 2*L[o-w] - L[o-w+1] + L[o+w-1] + 2*L[o+w] + L[o+w+1];
+      E[o] = Math.min(255, Math.hypot(gx, gy)); }
+    return {L, E}; };
+  const vignette = (d, w, h, cx, cy, R, min) => { for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){ const q = ((x-cx)**2 + (y-cy)**2) / (R*R); const k = q < 1 ? 1 : Math.max(min, 1 - (q-1) * .55); if (k < 1){ const i = (y*w + x) * 4; d[i] *= k; d[i+1] *= k; d[i+2] *= k; } } };
+  const glow = (ctx, x, y, r, col) => { const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, "#ffffff"); g.addColorStop(.25, col); g.addColorStop(1, "rgba(0,0,0,0)"); ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); ctx.restore(); };
+  const run = {
+    shade(d, w, h, f){
+      for (let i = 0; i < d.length; i += 4){ const l = lum(d, i); d[i] = l*.72; d[i+1] = l*.9; d[i+2] = Math.min(255, l*1.08 + 6); }
+      const cx = f ? f.cx : w/2, cy = f ? (f.re.y + f.le.y)/2 + f.fw*.2 : h*.42, R = f ? f.fw*.85 : w*.5;
+      vignette(d, w, h, cx, cy, R, .06);
+    },
+    shadeAfter(ctx, w, h, f, t){ if (!f) return; const r = f.fw * (.13 + Math.sin(t/250)*.015); glow(ctx, f.re.x, f.re.y, r, "rgba(34,211,238,.95)"); glow(ctx, f.le.x, f.le.y, r, "rgba(34,211,238,.95)"); },
+    laser(d){ for (let i = 0; i < d.length; i += 4){ d[i] = Math.min(255, d[i]*1.12 + 10); d[i+1] *= .9; d[i+2] *= .88; } },
+    laserAfter(ctx, w, h, f, t){ if (!f) return;
+      const cx = f.cx, lw = f.fw * .07;
+      for (const e of [f.re, f.le]){ const dx = (e.x - cx) * 9, ex = e.x + dx, ey = e.y + h * .9;
+        ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.lineCap = "round";
+        ctx.shadowColor = "#ff0000"; ctx.shadowBlur = lw * 3; ctx.strokeStyle = "rgba(255,30,30,.85)"; ctx.lineWidth = lw * (1 + Math.sin(t/60)*.15);
+        ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(ex, ey); ctx.stroke();
+        ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(255,240,240,.95)"; ctx.lineWidth = lw * .3; ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(ex, ey); ctx.stroke(); ctx.restore();
+        glow(ctx, e.x, e.y, f.fw * .16, "rgba(255,40,40,.9)"); } },
+    glitch(d, w, h, f, t){
+      const s = d.slice(), sh = (6 + Math.round(Math.sin(t/180) * 5)) * 4;
+      for (let i = 0; i < d.length; i += 4){ d[i] = s[i + sh] ?? s[i]; d[i+2] = s[i - sh] ?? s[i+2]; }
+      for (let k = 0; k < 4; k++) if (Math.random() < .35){ const y0 = Math.floor(Math.random()*h), bh = 4 + Math.floor(Math.random()*h*.06), off = Math.floor((Math.random()-.5) * w * .18);
+        for (let y = y0; y < Math.min(h, y0 + bh); y++){ const row = d.slice(y*w*4, (y+1)*w*4); for (let x = 0; x < w; x++){ const sx = ((x - off) % w + w) % w; d.set(row.subarray(sx*4, sx*4+3), (y*w + x)*4); } } }
+      for (let y = 0; y < h; y += 3) for (let x = 0; x < w; x++){ const i = (y*w + x)*4; d[i] *= .82; d[i+1] *= .82; d[i+2] *= .82; }
+    },
+    thermal(d){ for (let i = 0; i < d.length; i += 4){ const l = Math.round(lum(d, i)) * 3; d[i] = THERMAL[l]; d[i+1] = THERMAL[l+1]; d[i+2] = THERMAL[l+2]; } },
+    night(d, w, h){
+      for (let i = 0, p = 0; i < d.length; i += 4, p++){ const y = Math.floor(p / w); let l = lum(d, i) * 1.35 + (Math.random() - .5) * 38; if (y % 3 === 0) l *= .78; d[i] = l*.22; d[i+1] = l; d[i+2] = l*.25; }
+      vignette(d, w, h, w/2, h/2, Math.min(w, h)*.62, .05);
+    },
+    nightAfter(ctx, w, h, f, t){ ctx.save(); ctx.fillStyle = "rgba(160,255,160,.9)"; ctx.font = `700 ${Math.round(w*.045)}px ui-monospace,monospace`; ctx.fillText("● REC   NV-2", w*.06, h*.07); ctx.fillText(new Date().toLocaleTimeString("de-DE"), w*.06, h*.95); ctx.strokeStyle = "rgba(160,255,160,.6)"; ctx.lineWidth = 2; const c = w*.08; ctx.strokeRect(w/2 - c, h/2 - c, c*2, c*2); ctx.restore(); },
+    neon(d, w, h, f, t){ const {E} = sobel(d, w, h);
+      for (let y = 0, j = 0; y < h; y++) for (let x = 0; x < w; x++, j++){ const i = j*4, e = E[j] > 40 ? Math.min(1, E[j] / 160) : 0, k = (x / w + y / h + t / 3000) % 1;
+        d[i] = e * (255 * k); d[i+1] = e * (230 * (1 - k) + 25); d[i+2] = e * 255; } },
+    comic(d, w, h){ const {E} = sobel(d, w, h);
+      for (let j = 0, i = 0; i < d.length; i += 4, j++){ if (E[j] > 90){ d[i] = d[i+1] = d[i+2] = 15; continue; } for (let c = 0; c < 3; c++){ const v = Math.min(255, d[i+c] * 1.25); d[i+c] = Math.round(v / 64) * 64 + 20; } } },
+    xray(d){ for (let i = 0; i < d.length; i += 4){ const l = Math.round(lum(d, i)) * 3; d[i] = XRAY[l]; d[i+1] = XRAY[l+1]; d[i+2] = XRAY[l+2]; } },
+    duo(d){ for (let i = 0; i < d.length; i += 4){ const l = Math.round(Math.min(255, lum(d, i) * 1.1)) * 3; d[i] = ICE[l]; d[i+1] = ICE[l+1]; d[i+2] = ICE[l+2]; } },
+    pixel(d, w, h){ const b = Math.max(6, Math.round(w / 48));
+      for (let y = 0; y < h; y += b) for (let x = 0; x < w; x += b){ const si = (Math.min(h-1, y + (b>>1)) * w + Math.min(w-1, x + (b>>1))) * 4, r = d[si], g = d[si+1], bl = d[si+2];
+        for (let yy = y; yy < Math.min(h, y + b); yy++) for (let xx = x; xx < Math.min(w, x + b); xx++){ const i = (yy*w + xx)*4; d[i] = r; d[i+1] = g; d[i+2] = bl; } } },
+    mirror(d, w, h){ for (let y = 0; y < h; y++) for (let x = (w>>1); x < w; x++){ const a = (y*w + x)*4, b = (y*w + (w - 1 - x))*4; d[a] = d[b]; d[a+1] = d[b+1]; d[a+2] = d[b+2]; } },
+    vhs(d, w, h, f, t){ const s = d.slice(), sh = 4*4; const band = Math.floor((t / 12) % h);
+      for (let i = 0, p = 0; i < d.length; i += 4, p++){ const y = Math.floor(p / w); d[i] = s[i + sh] ?? s[i]; d[i+2] = s[i - sh] ?? s[i+2];
+        const n = (Math.random() - .5) * 26 + (Math.abs(y - band) < 6 ? 40 : 0); d[i] += n; d[i+1] += n; d[i+2] += n; d[i+1] *= .95; } },
+    vhsAfter(ctx, w, h){ ctx.save(); ctx.fillStyle = "#fff"; ctx.shadowColor = "#000"; ctx.shadowBlur = 4; ctx.font = `700 ${Math.round(w*.05)}px ui-monospace,monospace`; ctx.fillText("▶ PLAY", w*.06, h*.08); const dt = new Date(); ctx.fillText(dt.toLocaleDateString("de-DE") + " " + dt.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}), w*.06, h*.95); ctx.restore(); },
+  };
+  // Ein Bild (aus Video oder Foto) mit Effekt in ein Canvas zeichnen
+  function render(cv, src, sw, shh, mirror, lensFx, face, t){
+    const w = cv.width, h = cv.height, ctx = cv.getContext("2d", {willReadFrequently:true});
+    const sc = Math.max(w / sw, h / shh), dw = sw * sc, dh = shh * sc;
+    ctx.save(); if (mirror){ ctx.translate(w, 0); ctx.scale(-1, 1); } ctx.drawImage(src, (w - dw)/2, (h - dh)/2, dw, dh); ctx.restore();
+    if (run[lensFx]){ const im = ctx.getImageData(0, 0, w, h); run[lensFx](im.data, w, h, face, t); ctx.putImageData(im, 0, 0); }
+    if (run[lensFx + "After"]) run[lensFx + "After"](ctx, w, h, face, t);
+  }
+  return {render};
+})();
+const fxCanvas = (() => { const c = document.createElement("canvas"); c.className = "live fxc"; return c; })();
+let fxFrame = 0;
+function scaleFace(f, k){ if (!f) return null; const P = q => ({x:q.x*k, y:q.y*k}); return {re:P(f.re), le:P(f.le), nose:P(f.nose), mouth:P(f.mouth), fw:f.fw*k, top:f.top*k, cx:f.cx*k}; }
 
 function renderCam(){
   const el = document.getElementById("p-cam");
@@ -1215,7 +1314,7 @@ function openEditor(target, media, lensId){
     tabs.replaceChildren(...[["lens","mask","Lenses"],["filter","filter","Filter"],["zeit","pin","Zeit & Ort"],["sticker","smile","Sticker"],["regen","spark","Effekte"],["text","text","Text"],["timer","timer","Timer"]]
       .map(([k,i,l])=>h("button",{class:"chip","aria-pressed":tab===k?"true":"false",onclick:()=>{tab=k; drawTools();}}, ic(i), l)));
     let items = [];
-    if (tab === "lens") items = lenses.map(l=>lensButton(l, snap.lens===l.id, ()=>{ applyLens(snap,l.id); sel=-1; if(l.id!=="none") unlock("lens"); redraw(); drawTools(); }, 46));
+    if (tab === "lens") items = lenses.filter(l=>!l.fx).map(l=>lensButton(l, snap.lens===l.id, ()=>{ applyLens(snap,l.id); sel=-1; if(l.id!=="none") unlock("lens"); redraw(); drawTools(); }, 46));
     if (tab === "filter") items = colorFilters.map(([n,f])=>h("button",{class:"chip","aria-pressed":snap.filter===f?"true":"false",onclick:()=>{snap.filter=f; redraw(); drawTools();}},n));
     if (tab === "zeit") items = [
       h("button",{class:"chip","aria-pressed":snap.stamp&&snap.stamp.style!=="boxed"?"true":"false",onclick:()=>{snap.stamp={time:nowTime(),place,style:"plain"}; redraw(); drawTools();}}, ic("timer"), nowTime()+" · "+place),
@@ -1297,11 +1396,12 @@ function openSendTo(snap){
 
 // ================= Spotlight =================
 let spotDirty = true, feedSound = false;
-function ytSrc(id){ return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${id}&controls=1&rel=0&modestbranding=1`; }
+function ytSrc(id){ return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${id}&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`; }
+function ytCmd(f, func){ try { f.contentWindow.postMessage(JSON.stringify({event:"command", func, args:[]}), "*"); } catch {} }
 const ytio = new IntersectionObserver(entries => entries.forEach(en => {
   const sh = en.target, id = sh.dataset.yt;
   const f = sh.querySelector("iframe.yt");
-  if (en.isIntersecting && en.intersectionRatio > .6){ if (!f) sh.append(h("iframe",{class:"yt",src:ytSrc(id),allow:"autoplay; encrypted-media; picture-in-picture; fullscreen",allowfullscreen:true,title:"Video"})); }
+  if (en.isIntersecting && en.intersectionRatio > .6){ if (!f){ const nf = h("iframe",{class:"yt",src:ytSrc(id),allow:"autoplay; encrypted-media; picture-in-picture",title:"Video"}); nf.onload = () => { if (feedSound) setTimeout(() => ytCmd(nf, "unMute"), 600); }; sh.append(nf); } }
   else if (f) f.remove();
 }), {threshold:[0,.6,1]});
 const vio = new IntersectionObserver(entries => entries.forEach(en => {
@@ -1331,6 +1431,7 @@ function buildPost(p){
   const post = h("div",{class:"post",onclick:e=>{
       const t = Date.now();
       if (t - lastTap < 320){ clearTimeout(tapTimer); toggleLike(true); const r = post.getBoundingClientRect(); const b = h("span",{class:"burst",style:`left:${e.clientX-r.left-55}px;top:${e.clientY-r.top-70}px`}, ic("heart")); post.append(b); setTimeout(()=>b.remove(),850); }
+      else if (ytShot) tapTimer = setTimeout(()=>{ feedSound = !feedSound; const f = ytShot.querySelector("iframe.yt"); if (f){ ytCmd(f, feedSound ? "unMute" : "mute"); ytCmd(f, "playVideo"); } snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }, 320);
       else if (vid) tapTimer = setTimeout(()=>{ feedSound = !feedSound; document.querySelectorAll(".post video").forEach(v=>v.muted=!feedSound); if (feedSound) vid.play().catch(()=>{}); snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }, 320);
       lastTap = t; }},
     media, snd, vid ? h("div",{class:"vbar"}, bar) : null,
