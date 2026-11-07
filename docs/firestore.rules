@@ -51,5 +51,8 @@ service cloud.firestore {
         allow create: if signedIn() && inCall() && request.resource.data.by == request.auth.uid;
       }
     }
+    match /push/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
   }
 }

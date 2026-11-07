@@ -377,6 +377,7 @@ const ICONS = {
   music:'<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
   badge:'<path d="M12 2.5l2.3 1.7 2.9-.2.9 2.7 2.4 1.7-.9 2.7.9 2.7-2.4 1.7-.9 2.7-2.9-.2L12 19.5l-2.3-1.7-2.9.2-.9-2.7-2.4-1.7.9-2.7-.9-2.7 2.4-1.7.9-2.7 2.9.2z"/><path d="m8.5 11 2.5 2.5 4.5-4.5" stroke="var(--bg)" stroke-width="2"/>',
   logout:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>',
+  bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/>',
   moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
   lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   flip:'<path d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2M20 4v4h-4M4 20v-4h4"/>',
@@ -740,6 +741,7 @@ function status(c){
 }
 
 // ================= Anrufe (ohne Server nicht möglich) =================
+let pushUI = () => null, pushRow = () => null;
 let startCall = () => toast("Anrufe gehen, wenn du über shadechat.github.io angemeldet bist.");
 
 // ================= Chats =================
@@ -752,6 +754,7 @@ function renderChats(){
   el.replaceChildren(
     header("Chats", iconBtn("edit","Neuer Chat",openNewChat)),
     isInstalled() ? null : h("button",{class:"installbar",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"shade als App holen"), h("small",{},"Auf den Home-Bildschirm legen")), ic("home")),
+    pushUI(),
     h("div",{class:"searchwrap"}, ic("search"), h("input",{class:"search",id:"chat-search",placeholder:"Chats durchsuchen",value:search,oninput:e=>{search=e.target.value; renderChats(); const i=document.getElementById("chat-search"); i.focus(); i.setSelectionRange(search.length,search.length);}})),
     ...list.map(c => { const s = status(c);
       return h("button",{class:"row",onclick:()=>openChat(c.id)},
@@ -1332,6 +1335,7 @@ function openSettings(){
       h("button",{class:"installbar",style:"width:100%",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"Zum Home-Bildschirm"), h("small",{},"shade wie eine App nutzen")), ic("home")),
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Aussehen"),
       h("div",{style:"display:flex;gap:8px"}, ...[["dark","Dunkel"],["light","Hell"]].map(([k,l])=>h("button",{class:"sbtn",style:theme===k?"background:var(--acc);color:var(--acc-ink)":"",onclick:()=>setTheme(k)}, ic(k==="dark"?"moon":"spark"), l))),
+      pushRow(),
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Konto & Privatsphäre"),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"E-Mail"), h("small",{},h("span",{},account.email)))),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer kann mir Shots schicken?"), h("small",{},h("span",{},"Nur Freunde")))),
@@ -1652,7 +1656,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
     }
     return true;
   };
-  logout = function(){ stopAll(); overlay.replaceChildren(); auth.signOut(); };
+  logout = async function(){ const u = UID, s = mySub; stopAll(); overlay.replaceChildren(); if (u && s) { try { await db.collection("push").doc(u).update({subs:FV.arrayRemove(s)}); } catch {} } mySub = null; auth.signOut(); };
 
   // ---------- Anmelden ----------
   async function submit(mode, err, photo){
@@ -1711,7 +1715,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
         lastUsername = d.username;
         watchFriends(d.friends || []);
         if (first){
-          loggedIn = true; authEl.replaceChildren(); watchChats(); watchCalls(); renderAll();
+          loggedIn = true; authEl.replaceChildren(); watchChats(); watchCalls(); renderAll(); savePush(false); setTimeout(() => openFromUrl(location.href), 1500);
           requestAnimationFrame(() => { pager.scrollLeft = 2 * pager.clientWidth; setTab(2); });
           setTimeout(() => { initialized = true; }, 3000);
         }
@@ -1891,6 +1895,60 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       });
     }, e => console.warn(e)));
   }
+
+
+  // ---------- Benachrichtigungen (Web Push) ----------
+  const VAPID_PUBLIC = "BGrJZ9KMNyDqfPjxTktH7IXccgnTvT3scQTYVpUlvJEJXT6ueJJZ5IVKlgvfD9u4Kdpd6Sr_cxFRiSw_NhTYwos";
+  const pushOK = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+  const b64u = s => { const r = atob((s + "=".repeat((4 - s.length % 4) % 4)).replace(/-/g,"+").replace(/_/g,"/")); return Uint8Array.from(r, c => c.charCodeAt(0)); };
+  let mySub = null;
+  async function savePush(ask){
+    if (!pushOK()){
+      if (ask){ if (isApple && !isInstalled()){ toast("Leg shade zuerst auf den Home-Bildschirm und öffne es von dort."); openInstall(); } else toast("Dieses Gerät kann keine Benachrichtigungen."); }
+      return;
+    }
+    if (ask && Notification.permission !== "granted"){
+      const p = await Notification.requestPermission();
+      if (p !== "granted"){ toast("Benachrichtigungen sind aus. Du kannst sie in den iPhone-Einstellungen bei shade erlauben."); refresh(); return; }
+    }
+    if (Notification.permission !== "granted") return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if (sub && sub.options && sub.options.applicationServerKey){
+        const k = new Uint8Array(sub.options.applicationServerKey), want = b64u(VAPID_PUBLIC);
+        if (k.length !== want.length || k.some((x, i) => x !== want[i])){ await sub.unsubscribe(); sub = null; }
+      }
+      if (!sub) sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64u(VAPID_PUBLIC)});
+      mySub = JSON.stringify(sub.toJSON());
+      await db.collection("push").doc(UID).set({subs:FV.arrayUnion(mySub)}, {merge:true});
+      if (ask) toast("Benachrichtigungen sind an.");
+    } catch(e){ console.warn(e); if (ask) toast("Benachrichtigungen gingen nicht: " + errText(e)); }
+    refresh();
+  }
+  pushUI = () => {
+    const apple = isApple && !isInstalled();
+    if (!apple && (!pushOK() || Notification.permission !== "default")) return null;
+    if (store.get("shade-push-later")) return null;
+    return h("div",{class:"installbar",style:"cursor:pointer",onclick:e=>{ if (!e.target.closest(".x")) savePush(true); }},
+      h("span",{style:"width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--acc);color:var(--acc-ink)"}, ic("bell",20)),
+      h("span",{style:"flex:1;text-align:left"}, h("b",{},"Benachrichtigungen an"), h("small",{}, apple ? "Geht, wenn shade auf dem Home-Bildschirm ist" : "Damit du siehst, wenn dir jemand schreibt")),
+      h("button",{class:"x","aria-label":"Später",style:"padding:6px;color:var(--muted)",onclick:()=>{ store.set("shade-push-later", true); refresh(); }}, ic("close",16)));
+  };
+  pushRow = () => {
+    const on = pushOK() && Notification.permission === "granted", denied = pushOK() && Notification.permission === "denied";
+    return h("button",{class:"row",style:"width:100%",onclick:()=>{ if (denied) toast("Erlaube Benachrichtigungen in den iPhone-Einstellungen → Mitteilungen → shade."); else savePush(true).then(()=>openSettings()); }},
+      h("span",{class:"t"}, h("b",{},"Benachrichtigungen"), h("small",{}, h("span",{}, on ? "An – auch wenn shade zu ist" : denied ? "Aus – in den iPhone-Einstellungen erlauben" : "Aus – tippen zum Einschalten"))),
+      on ? h("span",{class:"pill dim"},"An") : h("span",{class:"pill"},"Einschalten"));
+  };
+  function openFromUrl(u){
+    const hsh = (u || "").split("#")[1] || ""; if (!hsh || !loggedIn) return;
+    const m = hsh.match(/^chat=(.+)$/);
+    if (m && myFriends.includes(m[1])){ goTab(0); chatWith(m[1]); openChat(m[1]); }
+    else if (hsh === "stories") goTab(1);
+    try { history.replaceState(null, "", location.pathname); } catch {}
+  }
+  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", e => { if (e.data && e.data.type === "open") openFromUrl(e.data.url); });
 
   return {start, submit, seenStory: id => db.collection("stories").doc(id).update({viewedBy:FV.arrayUnion(UID)}).catch(()=>{})};
 })();
