@@ -311,6 +311,7 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 // ================= Hilfen =================
+{ const rc = Element.prototype.replaceChildren; Element.prototype.replaceChildren = function(...k){ return rc.apply(this, k.filter(x => x != null && x !== false)); }; }
 function h(tag, attrs, ...kids){
   const el = document.createElement(tag);
   for (const [k,v] of Object.entries(attrs||{})){
@@ -712,6 +713,8 @@ let search = "";
 function renderChats(){
   const el = document.getElementById("p-chats");
   const list = [...chats].filter(c=>c.msgs.length).sort((a,b)=>b.msgs.at(-1).at - a.msgs.at(-1).at).filter(c => c.title.toLowerCase().includes(search.toLowerCase()));
+  const idle = Object.keys(people).filter(id => people[id].friend && people[id].real !== false && !list.some(c => c.id === id) && !chats.some(c => c.id === id && c.msgs.length)
+    && (pname(id) || "").toLowerCase().includes(search.toLowerCase()));
   el.replaceChildren(
     header("Chats", iconBtn("edit","Neuer Chat",openNewChat)),
     isInstalled() ? null : h("button",{class:"installbar",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"shade als App holen"), h("small",{},"Auf den Home-Bildschirm legen")), ic("home")),
@@ -721,7 +724,11 @@ function renderChats(){
         c.group ? groupAvatar() : avatar(c.members[0]),
         h("span",{class:"t"}, h("b",{},c.title), h("small",{class:s.cls}, s.mark, h("span",{},s.text))),
         flame(c.streak)); }),
-    list.length ? null : h("div",{class:"empty",style:"margin-top:24px"}, h("b",{style:"display:block;color:var(--fg);margin-bottom:6px"},"Noch keine Chats"), "Füge Freunde hinzu, dann siehst du hier eure Chats.", h("br"), h("button",{class:"send",style:"margin-top:14px",onclick:openAddFriend}, ic("userplus"),"Freunde hinzufügen")));
+    ...idle.map(id => h("button",{class:"row",onclick:()=>{ chatWith(id); openChat(id); }},
+        avatar(id),
+        h("span",{class:"t"}, h("b",{},pname(id)), h("small",{}, h("span",{},"Neuer Freund · Tippe zum Schreiben"))),
+        ic("chat",18))),
+    list.length || idle.length ? null : h("div",{class:"empty",style:"margin-top:24px"}, h("b",{style:"display:block;color:var(--fg);margin-bottom:6px"},"Noch keine Chats"), "Füge Freunde hinzu, dann siehst du hier eure Chats.", h("br"), h("button",{class:"send",style:"margin-top:14px",onclick:openAddFriend}, ic("userplus"),"Freunde hinzufügen")));
   const unread = chats.filter(c => status(c).cls).length;
   const badge = document.getElementById("badge"); if (badge){ badge.textContent = unread; badge.hidden = !unread; }
 }
@@ -1462,11 +1469,12 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
         c.docId = d.id; c.streak = data.streak || 0; c.lastAt = data.lastAt || 0; c.title = pname(other);
         c.read = data.lastBy === UID || (data.readBy || []).includes(UID);
         c.opened = data.lastBy === UID && (data.readBy || []).includes(other);
-        if (!msgUnsubs[d.id]) msgUnsubs[d.id] = d.ref.collection("messages").orderBy("at").limitToLast(80).onSnapshot(mq => {
+        const sub = (tries) => { msgUnsubs[d.id] = d.ref.collection("messages").orderBy("at").limitToLast(80).onSnapshot(mq => {
           c.msgs = mq.docs.map(md => { const m = md.data(), v = m.viewedBy || [];
             return {id:md.id, by:toLocal(m.by), text:m.text || "", snap:m.snap || null, share:m.share || null, at:m.at, viewed:v.includes(UID), opened:v.includes(other)}; });
           refresh();
-        }, e => console.warn(e));
+        }, e => { console.warn(e); if (tries < 8 && msgUnsubs[d.id]) setTimeout(() => { if (UID) sub(tries + 1); }, 1500); }); };
+        if (!msgUnsubs[d.id]) sub(0);
         if (initialized && data.lastBy && data.lastBy !== UID && data.lastAt > prevAt && !overlay.querySelector(`[data-chat="${other}"]`))
           toast(`${pname(other)}: ${data.lastKind === "snap" ? "Neuer Snap" : "Neue Nachricht"}`);
       });
@@ -1551,7 +1559,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
         if (uid === UID) return msg.textContent = "Das bist du selbst.";
         if (myFriends.includes(uid)) return msg.textContent = "Ihr seid schon befreundet.";
         const u = await db.collection("users").doc(uid).get(); if (u.exists) setPerson(uid, u.data());
-        await befriend(uid); closeOverlay();
+        await befriend(uid); closeOverlay(); goTab(0);
       } catch(e){ msg.textContent = errText(e); }
     }
     overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
