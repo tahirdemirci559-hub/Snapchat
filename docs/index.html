@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>ShadeChat</title>
 <meta name="description" content="Snaps, Lenses, Stories und Spotlight – mit Familie und Freunden.">
-<meta name="theme-color" content="#0d0e11">
+<meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ShadeChat">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=50">
+<link rel="icon" type="image/png" href="icon-192.png?v=50">
 <style>
 *,*::before,*::after{box-sizing:border-box}
 html{height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:#0d0e11;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
@@ -426,13 +426,13 @@ function ic(name, size){ const s = document.createElementNS("http://www.w3.org/2
 
 // ================= Logos (zum Aussuchen) =================
 const LOGOS = [
-  {id:"shade", name:"ShadeChat", bg:"linear-gradient(150deg,#334155,#0b1220)", border:true, acc:"#22d3ee", ink:"#031216",
-   svg:'<path d="M50 9C75 9 89 30 89 55 89 75 80 89 70 93H30C20 89 11 75 11 55 11 30 25 9 50 9Z" fill="#111827"/><ellipse cx="50" cy="56" rx="23" ry="27" fill="#020306"/><rect x="36" y="51" width="10" height="5" rx="2.5" fill="#22d3ee"/><rect x="54" y="51" width="10" height="5" rx="2.5" fill="#22d3ee"/><path d="M40 84v9M60 84v9" stroke="#e5e7eb" stroke-width="3" stroke-linecap="round"/>'}
+  {id:"shade", name:"ShadeChat", bg:"linear-gradient(150deg,#ffd60a,#ffc300)", round:true, acc:"#ffd60a", ink:"#0a0a0a",
+   svg:'<circle cx="50" cy="50" r="48.5" fill="none" stroke="#ffd60a" stroke-opacity=".5" stroke-width="1.6"/><g transform="translate(6 7) scale(.88)"><path d="M50 9C75 9 89 30 89 55 89 75 80 89 70 93H30C20 89 11 75 11 55 11 30 25 9 50 9Z" fill="#111827"/><ellipse cx="50" cy="56" rx="23" ry="27" fill="#020306"/><rect x="36" y="51" width="10" height="5" rx="2.5" fill="#ffd60a"/><rect x="54" y="51" width="10" height="5" rx="2.5" fill="#ffd60a"/><path d="M40 84v9M60 84v9" stroke="#e5e7eb" stroke-width="3" stroke-linecap="round"/></g>'}
 ];
 let logoId = "shade";
 const curLogo = () => LOGOS.find(l=>l.id===logoId) || LOGOS[0];
 function applyLogo(){ const l = curLogo(); document.documentElement.style.setProperty("--acc", l.acc); document.documentElement.style.setProperty("--acc-ink", l.ink); }
-function logo(size, l){ l = l || curLogo(); const d = h("div",{class:"logo",style:`background:${l.bg};${l.border?"border:1.5px solid #2a2d33;":""}${size?`width:${size}px;height:${size}px;border-radius:${size*.28}px`:""}`}); d.innerHTML = `<svg viewBox="0 0 100 100" aria-hidden="true">${l.svg}</svg>`; return d; }
+function logo(size, l){ l = l || curLogo(); const d = h("div",{class:"logo",style:`background:${l.bg};${l.border?"border:1.5px solid #2a2d33;":""}${size?`width:${size}px;height:${size}px;border-radius:${l.round?"50%":size*.28+"px"}`:""}`}); d.innerHTML = `<svg viewBox="0 0 100 100" aria-hidden="true">${l.svg}</svg>`; return d; }
 
 function ago(t){ const s=(Date.now()-t)/1000; if(s<60)return"jetzt"; if(s<3600)return Math.floor(s/60)+" Min."; if(s<86400)return Math.floor(s/3600)+" Std."; return Math.floor(s/86400)+" T."; }
 function clock(t){ return new Date(t).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}); }
@@ -593,7 +593,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 14:26";
+const SHADE_VERSION = "07.11. 14:31";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
