@@ -1332,7 +1332,14 @@ function openInstall(fromFullscreen){
 
 // ================= Online (Firebase) =================
 // Sobald hier die Firebase-Daten stehen, laufen Konto, Freunde, Chats, Snaps und Stories über den Server.
-const FIREBASE_CONFIG = null;
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCOqLHQaBwEP4aLag2SRWjiO2WMTHdA5yU",
+  authDomain: "shade-56574.firebaseapp.com",
+  projectId: "shade-56574",
+  storageBucket: "shade-56574.firebasestorage.app",
+  messagingSenderId: "9369803410",
+  appId: "1:9369803410:web:75954ee9cb8ed791c0a44b"
+};
 let NET = null;
 if (FIREBASE_CONFIG && window.firebase) NET = (() => {
   firebase.initializeApp(FIREBASE_CONFIG);
