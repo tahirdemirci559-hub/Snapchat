@@ -840,7 +840,7 @@ function status(c){
 }
 
 // ================= Anrufe (ohne Server nicht möglich) =================
-let pushUI = () => null, pushRow = () => null;
+let pushUI = () => null, pushRow = () => null, openNtfy = () => toast("Benachrichtigungen gehen, wenn du über shadechat.github.io angemeldet bist.");
 let deleteStory = async (st) => { const i = myStories.indexOf(st); if (i >= 0) myStories.splice(i, 1); };
 let startCall = () => toast("Anrufe gehen, wenn du über shadechat.github.io angemeldet bist.");
 
@@ -855,6 +855,10 @@ function renderChats(){
     header("Chats", iconBtn("edit","Neuer Chat",openNewChat)),
     isInstalled() ? null : h("button",{class:"installbar",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"shade als App holen"), h("small",{},"Auf den Home-Bildschirm legen")), ic("home")),
     pushUI(),
+    NET && !store.get("shade-ntfy-done") ? h("div",{class:"installbar",style:"cursor:pointer",onclick:e=>{ if (!e.target.closest(".x")) openNtfy(); }},
+      h("span",{style:"width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--acc);color:var(--acc-ink)"}, ic("bell",20)),
+      h("span",{style:"flex:1;text-align:left"}, h("b",{},"Benachrichtigungen einrichten"), h("small",{},"Damit Nachrichten & Anrufe ankommen, wenn shade zu ist")),
+      h("button",{class:"x","aria-label":"Später",style:"padding:6px;color:var(--muted)",onclick:()=>{ store.set("shade-ntfy-done", true); renderChats(); }}, ic("close",16))) : null,
     h("div",{class:"searchwrap"}, ic("search"), h("input",{class:"search",id:"chat-search",placeholder:"Chats durchsuchen",value:search,oninput:e=>{search=e.target.value; renderChats(); const i=document.getElementById("chat-search"); i.focus(); i.setSelectionRange(search.length,search.length);}})),
     ...list.map(c => { const s = status(c);
       return h("button",{class:"row",onclick:()=>openChat(c.id)},
@@ -1042,8 +1046,7 @@ const LiveCam = (() => {
     if (pending) return pending;
     if (!navigator.mediaDevices?.getUserMedia) throw new Error("Kamera geht hier nicht.");
     const v = {facingMode:facing, width:{ideal:1280}, height:{ideal:720}};
-    pending = navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}, video:v})
-      .catch(() => navigator.mediaDevices.getUserMedia({video:v}))
+    pending = navigator.mediaDevices.getUserMedia({audio:false, video:v})
       .then(st => { master = st; store.set("shade-cam-ok", true); return st; })
       .finally(() => { pending = null; });
     return pending;
@@ -1059,8 +1062,8 @@ const LiveCam = (() => {
   async function av(video){
     let st = null; try { st = await ensure(); } catch {}
     let audio = st ? st.getAudioTracks().filter(t => t.readyState === "live") : [];
-    if (!audio.length){ const a = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}}); if (st) a.getAudioTracks().forEach(t => st.addTrack(t)); audio = a.getAudioTracks(); }
-    const tracks = audio.map(t => { const c = t.clone(); c.enabled = true; return c; });
+    if (!audio.length){ const a = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}}); audio = a.getAudioTracks(); }
+    const tracks = audio.slice();
     if (video){
       const vt = st ? st.getVideoTracks().filter(t => t.readyState === "live") : [];
       if (!vt.length) throw new Error("Keine Kamera");
@@ -1073,8 +1076,9 @@ const LiveCam = (() => {
 })();
 const camVideo = (() => { const v = document.createElement("video"); v.className = "live mirror"; v.autoplay = true; v.muted = true; v.playsInline = true; v.setAttribute("playsinline",""); v.setAttribute("muted",""); return v; })();
 const camFx = h("div",{class:"fx"});
-let camOn = false, camRec = null, faceDet = null, faceLoad = null, faceLoop = 0, lastFace = null;
+let camUserStarted = false, camOn = false, camRec = null, faceDet = null, faceLoad = null, faceLoop = 0, lastFace = null;
 async function startCam(){
+  camUserStarted = true;
   try {
     const st = await LiveCam.ensure();
     camVideo.srcObject = st; camVideo.classList.toggle("mirror", LiveCam.facing === "user");
@@ -1182,8 +1186,8 @@ function toggleRec(){
   const type = ["video/mp4","video/webm;codecs=vp9","video/webm"].find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || "";
   const chunks = []; let rec;
   const lf = (lenses.find(q => q.id === camLens) || {}).fx;
-  let tracks = st.getTracks().filter(t => t.readyState === "live");
-  if (lf && fxCanvas.captureStream){ try { tracks = [...fxCanvas.captureStream(30).getVideoTracks(), ...st.getAudioTracks()]; } catch {} }
+  let tracks = st.getVideoTracks().filter(t => t.readyState === "live");
+  if (lf && fxCanvas.captureStream){ try { tracks = [...fxCanvas.captureStream(30).getVideoTracks()]; } catch {} }
   try { rec = new MediaRecorder(new MediaStream(tracks), type ? {mimeType:type} : undefined); } catch { return takePhoto(false,{}); }
   rec.ondataavailable = e => e.data.size && chunks.push(e.data);
   rec.onstop = () => { camRec = null; renderCam(); const b = new Blob(chunks, {type:rec.mimeType || "video/mp4"}); openEditor({}, {video:URL.createObjectURL(b)}, lf ? "none" : camLens); };
@@ -1690,6 +1694,7 @@ function openSettings(){
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Aussehen"),
       h("div",{style:"display:flex;gap:8px"}, ...[["dark","Dunkel"],["light","Hell"]].map(([k,l])=>h("button",{class:"sbtn",style:theme===k?"background:var(--acc);color:var(--acc-ink)":"",onclick:()=>setTheme(k)}, ic(k==="dark"?"moon":"spark"), l))),
       pushRow(),
+      NET ? h("button",{class:"row",style:"width:100%",onclick:()=>openNtfy()}, h("span",{class:"t"}, h("b",{},"Benachrichtigungen (ntfy)"), h("small",{}, h("span",{},"Nachrichten, Anrufe & Stories, auch wenn shade zu ist"))), h("span",{class:"pill"},"Einrichten")) : null,
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Konto & Privatsphäre"),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"E-Mail"), h("small",{},h("span",{},account.email)))),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer kann mir Shots schicken?"), h("small",{},h("span",{},"Nur Freunde")))),
@@ -1828,7 +1833,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
     Object.keys(people).forEach(k => { if (people[k].real) people[k].friend = myFriends.includes(k); });
     for (const f of myFriends) if (!friendUnsubs[f]){
       ensurePerson(f); people[f].friend = true;
-      friendUnsubs[f] = db.collection("users").doc(f).onSnapshot(s => { if (s.exists){ setPerson(f, s.data()); const c = chats.find(x => x.id === f); if (c) c.title = people[f].name; refresh(); } }, ()=>{});
+      friendUnsubs[f] = db.collection("users").doc(f).onSnapshot(s => { if (s.exists){ setPerson(f, s.data()); ntfyOf[f] = s.data().ntfy || null; const c = chats.find(x => x.id === f); if (c) c.title = people[f].name; refresh(); } }, ()=>{});
     }
     for (const f of Object.keys(friendUnsubs)) if (!myFriends.includes(f)){ friendUnsubs[f](); delete friendUnsubs[f]; }
     if (changed || !storyUnsubs.length) watchStories();
@@ -2067,7 +2072,8 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       unsubs.push(db.collection("users").doc(UID).onSnapshot(s => {
         if (!s.exists) return;
         const d = s.data(), first = !loggedIn;
-        account = {email:user.email, name:d.name, username:d.username, photo:d.photo || null, bio:d.bio || "", birth:d.birth, joined:d.joined || Date.now()};
+        account = {email:user.email, name:d.name, username:d.username, photo:d.photo || null, bio:d.bio || "", birth:d.birth, joined:d.joined || Date.now(), ntfy:d.ntfy || null};
+        if (!d.ntfy) ensureTopic(d);
         lastUsername = d.username;
         watchFriends(d.friends || []);
         if (first){
@@ -2263,7 +2269,39 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
     const r = await fetch(PUSH_URL + path, {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({idToken, ...body}), keepalive:true});
     return r.ok ? r.json() : null;
   }
-  function notify(to, kind, text){ pushApi("/send", {to, kind, text}).catch(e => console.warn(e)); }
+  const ntfyOf = {};
+  const NTFY_TEXT = {msg:t => t || "Neue Nachricht", shot:() => "hat dir einen Shot geschickt", share:() => "hat dir etwas geteilt", story:() => "hat eine neue Story gepostet",
+    call:() => "ruft dich an 📞 – tippe, um shade zu öffnen", vcall:() => "ruft dich per Video an 🎥 – tippe, um shade zu öffnen", missed:() => "Verpasster Anruf"};
+  function notify(to, kind, text){
+    pushApi("/send", {to, kind, text}).catch(e => console.warn(e));
+    const list = kind === "story" ? myFriends : (Array.isArray(to) ? to : [to]);
+    const base = location.origin + location.pathname;
+    for (const u of list){ const topic = ntfyOf[u]; if (!topic) continue;
+      fetch("https://ntfy.sh/", {method:"POST", body:JSON.stringify({topic, title:"shade · " + (account?.name || "Jemand"), message:(NTFY_TEXT[kind] || NTFY_TEXT.msg)(text).slice(0, 200),
+        click: base + (kind === "story" ? "#stories" : "#chat=" + UID), priority: kind.includes("call") ? 5 : 4, tags: kind.includes("call") ? ["telephone_receiver"] : ["speech_balloon"]})}).catch(e => console.warn(e)); }
+  }
+  function myTopic(){ let t = account && account.ntfy; return t; }
+  async function ensureTopic(d){
+    if (d.ntfy) return d.ntfy;
+    const t = "shade-" + Array.from(crypto.getRandomValues(new Uint8Array(12)), b => "abcdefghijkmnpqrstuvwxyz23456789"[b % 32]).join("");
+    try { await db.collection("users").doc(UID).update({ntfy:t}); } catch(e){ console.warn(e); }
+    return t;
+  }
+  openNtfy = function(){
+    const t = myTopic();
+    const steps = h("div",{class:"empty",style:"text-align:left;line-height:1.55"},
+      h("b",{style:"color:var(--fg);display:block;margin-bottom:6px"},"So kommen Benachrichtigungen, auch wenn shade zu ist:"),
+      "1. Lade die kostenlose App ", h("b",{style:"color:var(--fg)"},"ntfy"), " aus dem App Store.", h("br"),
+      h("a",{href:"https://apps.apple.com/app/ntfy/id1625396347",target:"_blank",class:"sbtn",style:"margin:8px 0;display:inline-flex"}, ic("link"),"ntfy im App Store öffnen"), h("br"),
+      "2. Tippe hier auf ", h("b",{style:"color:var(--fg)"},"„Code kopieren“"), ".", h("br"),
+      "3. Öffne ntfy, tippe oben rechts auf ", h("b",{style:"color:var(--fg)"},"„+“"), ", füge den Code ein und tippe auf ", h("b",{style:"color:var(--fg)"},"„Subscribe“"), ".", h("br"),
+      "4. Erlaube in ntfy die Mitteilungen. Fertig!");
+    overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
+      h("div",{class:"sheet"}, h("h2",{},"Benachrichtigungen", iconBtn("close","Schließen",closeOverlay)), steps,
+        h("div",{style:"margin:12px 0;padding:12px 14px;border-radius:14px;background:var(--surface2);font:700 16px ui-monospace,monospace;word-break:break-all;color:var(--fg)"}, t || "…"),
+        h("button",{class:"send",style:"width:100%",onclick:async()=>{ try { await navigator.clipboard.writeText(t); toast("Code kopiert – jetzt in ntfy einfügen"); store.set("shade-ntfy-done", true); } catch { toast(t); } }}, ic("check"),"Code kopieren"))));
+  };
+
   const VAPID_PUBLIC = "BGrJZ9KMNyDqfPjxTktH7IXccgnTvT3scQTYVpUlvJEJXT6ueJJZ5IVKlgvfD9u4Kdpd6Sr_cxFRiSw_NhTYwos";
   const pushOK = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
   const b64u = s => { const r = atob((s + "=".repeat((4 - s.length % 4) % 4)).replace(/-/g,"+").replace(/_/g,"/")); return Uint8Array.from(r, c => c.charCodeAt(0)); };
@@ -2333,7 +2371,7 @@ const TABS = [["chat","Chats"],["users","Stories"],["camera","Kamera"],["play","
 document.getElementById("tabs").replaceChildren(...TABS.map(([i,l],k)=>h("button",{"data-i":k,"aria-label":l}, ic(i), l, k===0?h("span",{class:"badge",id:"badge",hidden:true}):null)));
 const tabBtns = [...document.querySelectorAll("#tabs button")];
 let curTab = 2;
-function setTab(i){ if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (store.get("shade-cam-ok") && loggedIn) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
+function setTab(i){ if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (store.get("shade-cam-ok") && loggedIn && camUserStarted) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
 function goTab(i){ if (overlay.childElementCount) closeOverlay(); pager.scrollTo({left:i*pager.clientWidth,behavior:"smooth"}); setTab(i); }
 tabBtns.forEach(b=>b.addEventListener("click",()=>goTab(+b.dataset.i)));
 pager.addEventListener("scroll",()=>setTab(Math.round(pager.scrollLeft/pager.clientWidth)),{passive:true});
