@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
-<title>shade</title>
+<title>ShadeChat</title>
 <meta name="description" content="Snaps, Lenses, Stories und Spotlight – mit Familie und Freunden.">
 <meta name="theme-color" content="#0d0e11">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="shade">
+<meta name="apple-mobile-web-app-title" content="ShadeChat">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -426,7 +426,7 @@ function ic(name, size){ const s = document.createElementNS("http://www.w3.org/2
 
 // ================= Logos (zum Aussuchen) =================
 const LOGOS = [
-  {id:"shade", name:"shade", bg:"linear-gradient(150deg,#334155,#0b1220)", border:true, acc:"#22d3ee", ink:"#031216",
+  {id:"shade", name:"ShadeChat", bg:"linear-gradient(150deg,#334155,#0b1220)", border:true, acc:"#22d3ee", ink:"#031216",
    svg:'<path d="M50 9C75 9 89 30 89 55 89 75 80 89 70 93H30C20 89 11 75 11 55 11 30 25 9 50 9Z" fill="#111827"/><ellipse cx="50" cy="56" rx="23" ry="27" fill="#020306"/><rect x="36" y="51" width="10" height="5" rx="2.5" fill="#22d3ee"/><rect x="54" y="51" width="10" height="5" rx="2.5" fill="#22d3ee"/><path d="M40 84v9M60 84v9" stroke="#e5e7eb" stroke-width="3" stroke-linecap="round"/>'}
 ];
 let logoId = "shade";
@@ -550,7 +550,7 @@ function showAuth(mode){
       if (!bm) return err.textContent = "Bitte gib dein Geburtsdatum vollständig ein: Tag, Monat und Jahr.";
       const bd = new Date(+bm[3], +bm[2]-1, +bm[1]);
       if (bd.getDate() !== +bm[1] || bd.getMonth() !== +bm[2]-1 || +bm[3] < 1900 || bd > new Date()) return err.textContent = "Dieses Datum gibt es nicht. Bitte prüf es noch einmal.";
-      if (ageFrom(bd) < 13) return err.textContent = "shade ist erst ab 13 Jahren erlaubt.";
+      if (ageFrom(bd) < 13) return err.textContent = "ShadeChat ist erst ab 13 Jahren erlaubt.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err.textContent = "Bitte gib eine gültige E-Mail-Adresse ein.";
       if (!pass) return err.textContent = "Bitte gib ein Passwort ein.";
       account = {email, name, username:user, photo, bio:"", birth, passHash: await hash(pass), joined: Date.now()};
@@ -576,10 +576,10 @@ function showAuth(mode){
     f("a-pass","Passwort","password",null, mode==="signup"?"new-password":"current-password"),
     err,
     h("button",{class:"big",type:"submit"}, mode === "signup" ? "Weiter" : "Anmelden"),
-    mode === "signup" ? h("p",{class:"note",style:"padding:0"},"shade ist ab 13 Jahren.") : null,
+    mode === "signup" ? h("p",{class:"note",style:"padding:0"},"ShadeChat ist ab 13 Jahren.") : null,
     h("button",{type:"button",class:"link",onclick:()=>showAuth(mode==="signup"?"login":"signup")}, mode === "signup" ? "Schon ein Konto? Anmelden" : "Neu hier? Konto erstellen"));
   authEl.replaceChildren(h("div",{class:"auth"}, h("div",{class:"inner"},
-    h("div",{class:"brand"}, logo(96), h("h1",{},"shade"), h("span",{class:"tag"},"Bleib im Schatten.")),
+    h("div",{class:"brand"}, logo(96), h("h1",{},"ShadeChat"), h("span",{class:"tag"},"Bleib im Schatten.")),
     card,
     h("p",{style:"text-align:center;font-size:12px;margin:0;color:#8b919d"}, NET ? "Dein Konto ist online gespeichert – du kannst dich auf jedem Handy anmelden." : "Vorschau – dein Konto wird nur auf diesem Gerät gespeichert."))));
 }
@@ -588,12 +588,12 @@ function finishLogin(isNew){
   if (!account.joined) account.joined = Date.now();
   authEl.replaceChildren(); renderAll(); requestAnimationFrame(()=>{ pager.scrollLeft = 2*pager.clientWidth; setTab(2); });
   if (isNew) unlock("start");
-  toast(isNew ? `Willkommen bei shade, ${account.name}.` : `Willkommen zurück, ${account.name}.`);
+  toast(isNew ? `Willkommen bei ShadeChat, ${account.name}.` : `Willkommen zurück, ${account.name}.`);
 }
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 14:01";
+const SHADE_VERSION = "07.11. 14:26";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -862,11 +862,11 @@ function renderChats(){
     && (pname(id) || "").toLowerCase().includes(search.toLowerCase()));
   el.replaceChildren(
     header("Chats", iconBtn("edit","Neuer Chat",openNewChat)),
-    isInstalled() ? null : h("button",{class:"installbar",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"shade als App holen"), h("small",{},"Auf den Home-Bildschirm legen")), ic("home")),
+    isInstalled() ? null : h("button",{class:"installbar",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"ShadeChat als App holen"), h("small",{},"Auf den Home-Bildschirm legen")), ic("home")),
     pushUI(),
     NET && !store.get("shade-ntfy-done") ? h("div",{class:"installbar",style:"cursor:pointer",onclick:e=>{ if (!e.target.closest(".x")) openNtfy(); }},
       h("span",{style:"width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--acc);color:var(--acc-ink)"}, ic("bell",20)),
-      h("span",{style:"flex:1;text-align:left"}, h("b",{},"Benachrichtigungen einrichten"), h("small",{},"Damit Nachrichten & Anrufe ankommen, wenn shade zu ist")),
+      h("span",{style:"flex:1;text-align:left"}, h("b",{},"Benachrichtigungen einrichten"), h("small",{},"Damit Nachrichten & Anrufe ankommen, wenn ShadeChat zu ist")),
       h("button",{class:"x","aria-label":"Später",style:"padding:6px;color:var(--muted)",onclick:()=>{ store.set("shade-ntfy-done", true); renderChats(); }}, ic("close",16))) : null,
     h("div",{class:"searchwrap"}, ic("search"), h("input",{class:"search",id:"chat-search",placeholder:"Chats durchsuchen",value:search,oninput:e=>{search=e.target.value; renderChats(); const i=document.getElementById("chat-search"); i.focus(); i.setSelectionRange(search.length,search.length);}})),
     ...list.map(c => { const s = status(c);
@@ -1571,7 +1571,7 @@ function openSearch(){
       isFriend(id) ? h("span",{class:"pill dim"},"Freund") : null);
     res.replaceChildren(
       friends.length ? h("h2",{},"Freunde") : null, ...friends.map(rowFor),
-      others.length ? h("h2",{}, q ? "Weitere Ergebnisse" : "Beliebt auf shade") : null, ...others.map(rowFor),
+      others.length ? h("h2",{}, q ? "Weitere Ergebnisse" : "Beliebt auf ShadeChat") : null, ...others.map(rowFor),
       !ids.length ? h("p",{class:"note",style:"padding:30px 0"},"Keine Treffer. Versuch einen anderen Namen.") : null);
   };
   overlay.replaceChildren(h("div",{class:"ov"},
@@ -1667,7 +1667,7 @@ function renderProfile(){
       h("div",{class:"tools2"},
         iconBtn("search","Suchen",openSearch,"round glass"),
         h("span",{style:"display:flex;gap:8px"},
-          iconBtn("share","Profil teilen",async()=>{ try{ await navigator.clipboard.writeText("Füg mich bei shade hinzu: @"+account.username); toast("Profil-Link kopiert"); }catch{ toast("Dein Benutzername: @"+account.username); } },"round glass"),
+          iconBtn("share","Profil teilen",async()=>{ try{ await navigator.clipboard.writeText("Füg mich bei ShadeChat hinzu: @"+account.username); toast("Profil-Link kopiert"); }catch{ toast("Dein Benutzername: @"+account.username); } },"round glass"),
           iconBtn("sliders","Einstellungen",openSettings,"round glass"),
           iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass")))),
     h("div",{class:"pbody"},
@@ -1738,11 +1738,11 @@ function openSettings(){
   overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
     h("div",{class:"sheet"},
       h("h2",{},"Einstellungen", iconBtn("close","Schließen",closeOverlay)),
-      h("button",{class:"installbar",style:"width:100%",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"Zum Home-Bildschirm"), h("small",{},"shade wie eine App nutzen")), ic("home")),
+      h("button",{class:"installbar",style:"width:100%",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"Zum Home-Bildschirm"), h("small",{},"ShadeChat wie eine App nutzen")), ic("home")),
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Aussehen"),
       h("div",{style:"display:flex;gap:8px"}, ...[["dark","Dunkel"],["light","Hell"]].map(([k,l])=>h("button",{class:"sbtn",style:theme===k?"background:var(--acc);color:var(--acc-ink)":"",onclick:()=>setTheme(k)}, ic(k==="dark"?"moon":"spark"), l))),
       pushRow(),
-      NET ? h("button",{class:"row",style:"width:100%",onclick:()=>openNtfy()}, h("span",{class:"t"}, h("b",{},"Benachrichtigungen (ntfy)"), h("small",{}, h("span",{},"Nachrichten, Anrufe & Stories, auch wenn shade zu ist"))), h("span",{class:"pill"},"Einrichten")) : null,
+      NET ? h("button",{class:"row",style:"width:100%",onclick:()=>openNtfy()}, h("span",{class:"t"}, h("b",{},"Benachrichtigungen (ntfy)"), h("small",{}, h("span",{},"Nachrichten, Anrufe & Stories, auch wenn ShadeChat zu ist"))), h("span",{class:"pill"},"Einrichten")) : null,
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Konto & Privatsphäre"),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"E-Mail"), h("small",{},h("span",{},account.email)))),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer kann mir Shots schicken?"), h("small",{},h("span",{},"Nur Freunde")))),
@@ -1769,19 +1769,19 @@ function openInstall(fromFullscreen){
   const steps = isApple
     ? [ ["Tippe in Safari unten auf ", k("more",""), " – oder auf ", k("shareios","Teilen"), "."],
         ["Tippe auf ", k(null,"Zum Home-Bildschirm"), ". Falls du es nicht siehst: im Menü nach unten wischen."],
-        ["Tippe oben rechts auf ", k(null,"Hinzufügen"), ". Fertig – shade ist jetzt auf deinem Home-Bildschirm."] ]
+        ["Tippe oben rechts auf ", k(null,"Hinzufügen"), ". Fertig – ShadeChat ist jetzt auf deinem Home-Bildschirm."] ]
     : [ ["Tippe im Browser oben rechts auf ", k("more",""), "."],
         ["Tippe auf ", k(null,"App installieren"), " oder ", k(null,"Zum Startbildschirm"), "."],
         ["Bestätige mit ", k(null,"Installieren"), "."] ];
   overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
     h("div",{class:"sheet"},
-      h("h2",{},"shade als App", iconBtn("close","Schließen",closeOverlay)),
+      h("h2",{},"ShadeChat als App", iconBtn("close","Schließen",closeOverlay)),
       fromFullscreen === true ? h("p",{class:"empty",style:"margin:0 0 12px;text-align:left"},"Dieses Gerät erlaubt kein Vollbild per Knopf. Auf dem iPhone geht Vollbild nur über den Home-Bildschirm:") : h("button",{class:"send",style:"width:100%;margin-bottom:12px",onclick:()=>{ closeOverlay(); goFullscreen(); }}, ic("expand"),"Vollbild jetzt"),
-      h("div",{style:"display:flex;gap:14px;align-items:center;margin-bottom:12px"}, logo(60), h("span",{}, h("b",{style:"display:block;font-size:17px"},"shade auf deinen Home-Bildschirm"), h("small",{style:"color:var(--muted)"},"Startet im Vollbild wie eine echte App."))),
-      isInstalled() ? h("p",{class:"empty"},"shade ist schon als App installiert.") : null,
-      installEvt ? h("button",{class:"send",style:"width:100%;margin-bottom:12px",onclick:async()=>{ installEvt.prompt(); const r = await installEvt.userChoice; installEvt = null; if (r.outcome==="accepted"){ closeOverlay(); toast("shade wird installiert"); } }}, ic("home"),"Jetzt installieren") : null,
+      h("div",{style:"display:flex;gap:14px;align-items:center;margin-bottom:12px"}, logo(60), h("span",{}, h("b",{style:"display:block;font-size:17px"},"ShadeChat auf deinen Home-Bildschirm"), h("small",{style:"color:var(--muted)"},"Startet im Vollbild wie eine echte App."))),
+      isInstalled() ? h("p",{class:"empty"},"ShadeChat ist schon als App installiert.") : null,
+      installEvt ? h("button",{class:"send",style:"width:100%;margin-bottom:12px",onclick:async()=>{ installEvt.prompt(); const r = await installEvt.userChoice; installEvt = null; if (r.outcome==="accepted"){ closeOverlay(); toast("ShadeChat wird installiert"); } }}, ic("home"),"Jetzt installieren") : null,
       h("ol",{class:"steps"}, ...steps.map(st=>h("li",{}, h("span",{}, ...st)))),
-      isApple ? h("p",{class:"note",style:"text-align:left"},"Wichtig: Das klappt nur in Safari. Wenn du shade gerade in einer anderen App geöffnet hast, öffne den Link zuerst in Safari.") : null,
+      isApple ? h("p",{class:"note",style:"text-align:left"},"Wichtig: Das klappt nur in Safari. Wenn du ShadeChat gerade in einer anderen App geöffnet hast, öffne den Link zuerst in Safari.") : null,
       h("button",{class:"sbtn",style:"width:100%;justify-content:center",onclick:closeOverlay},"Verstanden"))));
 }
 
@@ -2018,7 +2018,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
         h("button",{class:"send",style:"width:100%",onclick:go}, ic("userplus"),"Hinzufügen"),
         h("div",{class:"empty",style:"margin-top:14px;text-align:left"}, "Dein Benutzername: ", h("b",{style:"color:var(--fg)"},"@"+account.username), h("br"),
           "Schick ihn deinen Freunden, damit sie dich hinzufügen können.",
-          h("div",{style:"margin-top:10px"}, h("button",{class:"sbtn",onclick:async()=>{ const t = "Füg mich bei shade hinzu: @"+account.username+" – "+location.href.split("#")[0];
+          h("div",{style:"margin-top:10px"}, h("button",{class:"sbtn",onclick:async()=>{ const t = "Füg mich bei ShadeChat hinzu: @"+account.username+" – "+location.href.split("#")[0];
             try { await navigator.clipboard.writeText(t); toast("Kopiert – jetzt deinen Freunden schicken"); } catch { toast(t); } }}, ic("link"),"Einladung kopieren"))))));
     input.focus();
   };
@@ -2042,7 +2042,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
         friends.length ? h("h2",{},"Freunde") : null, ...friends.map(rowFor),
         found.length ? h("h2",{},"Personen") : null, ...found.map(rowFor),
         q.length === 1 ? h("p",{class:"note",style:"text-align:left"},"Tippe mindestens 2 Buchstaben, um Personen zu finden.") : null,
-        creators.length ? h("h2",{},"Beliebt auf shade") : null, ...creators.map(rowFor),
+        creators.length ? h("h2",{},"Beliebt auf ShadeChat") : null, ...creators.map(rowFor),
         !friends.length && !found.length && !creators.length && q.length >= 2 ? h("p",{class:"note",style:"padding:30px 0"},"Keine Treffer. Versuch einen anderen Namen.") : null);
     }
     overlay.replaceChildren(h("div",{class:"ov"},
@@ -2082,7 +2082,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       if (!bm) return err.textContent = "Bitte gib dein Geburtsdatum vollständig ein: Tag, Monat und Jahr.";
       const bd = new Date(+bm[3], +bm[2]-1, +bm[1]);
       if (bd.getDate() !== +bm[1] || bd.getMonth() !== +bm[2]-1 || +bm[3] < 1900 || bd > new Date()) return err.textContent = "Dieses Datum gibt es nicht. Bitte prüf es noch einmal.";
-      if (ageFrom(bd) < 13) return err.textContent = "shade ist erst ab 13 Jahren erlaubt.";
+      if (ageFrom(bd) < 13) return err.textContent = "ShadeChat ist erst ab 13 Jahren erlaubt.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err.textContent = "Bitte gib eine gültige E-Mail-Adresse ein.";
       if (pass.length < 6) return err.textContent = "Das Passwort braucht mindestens 6 Zeichen.";
       busy(true);
@@ -2099,7 +2099,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
           });
         } catch(e){ await cred.user.delete().catch(()=>{}); throw e; }
         unlock("start");
-        toast(`Willkommen bei shade, ${name}.`);
+        toast(`Willkommen bei ShadeChat, ${name}.`);
       } catch(e){ err.textContent = errText(e); toast(errText(e)); busy(false); }
     } else {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err.textContent = "Bitte gib eine gültige E-Mail-Adresse ein.";
@@ -2111,7 +2111,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
   }
 
   function start(){
-    authEl.replaceChildren(h("div",{class:"auth"}, h("div",{class:"inner"}, h("div",{class:"brand"}, logo(96), h("h1",{},"shade"), h("span",{class:"tag"},"Wird geladen …")))));
+    authEl.replaceChildren(h("div",{class:"auth"}, h("div",{class:"inner"}, h("div",{class:"brand"}, logo(96), h("h1",{},"ShadeChat"), h("span",{class:"tag"},"Wird geladen …")))));
     auth.onAuthStateChanged(user => {
       stopAll(); initialized = false;
       chats.length = 0; stories.length = 0; myStories.length = 0; myFriends = [];
@@ -2341,13 +2341,13 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
   }
   const ntfyOf = {};
   const NTFY_TEXT = {msg:t => t || "Neue Nachricht", shot:() => "hat dir einen Shot geschickt", share:() => "hat dir etwas geteilt", story:() => "hat eine neue Story gepostet",
-    call:() => "ruft dich an 📞 – tippe, um shade zu öffnen", vcall:() => "ruft dich per Video an 🎥 – tippe, um shade zu öffnen", missed:() => "Verpasster Anruf"};
+    call:() => "ruft dich an 📞 – tippe, um ShadeChat zu öffnen", vcall:() => "ruft dich per Video an 🎥 – tippe, um ShadeChat zu öffnen", missed:() => "Verpasster Anruf"};
   function notify(to, kind, text){
     pushApi("/send", {to, kind, text}).catch(e => console.warn(e));
     const list = kind === "story" ? myFriends : (Array.isArray(to) ? to : [to]);
     const base = location.origin + location.pathname;
     for (const u of list){ const topic = ntfyOf[u]; if (!topic) continue;
-      fetch("https://ntfy.sh/", {method:"POST", body:JSON.stringify({topic, title:"shade · " + (account?.name || "Jemand"), message:(NTFY_TEXT[kind] || NTFY_TEXT.msg)(text).slice(0, 200),
+      fetch("https://ntfy.sh/", {method:"POST", body:JSON.stringify({topic, title:"ShadeChat · " + (account?.name || "Jemand"), message:(NTFY_TEXT[kind] || NTFY_TEXT.msg)(text).slice(0, 200),
         click: base + (kind === "story" ? "#stories" : "#chat=" + UID), priority: kind.includes("call") ? 5 : 4, tags: kind.includes("call") ? ["telephone_receiver"] : ["speech_balloon"]})}).catch(e => console.warn(e)); }
   }
   function myTopic(){ let t = account && account.ntfy; return t; }
@@ -2360,7 +2360,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
   openNtfy = function(){
     const t = myTopic();
     const steps = h("div",{class:"empty",style:"text-align:left;line-height:1.55"},
-      h("b",{style:"color:var(--fg);display:block;margin-bottom:6px"},"So kommen Benachrichtigungen, auch wenn shade zu ist:"),
+      h("b",{style:"color:var(--fg);display:block;margin-bottom:6px"},"So kommen Benachrichtigungen, auch wenn ShadeChat zu ist:"),
       "1. Lade die kostenlose App ", h("b",{style:"color:var(--fg)"},"ntfy"), " aus dem App Store.", h("br"),
       h("a",{href:"https://apps.apple.com/app/ntfy/id1625396347",target:"_blank",class:"sbtn",style:"margin:8px 0;display:inline-flex"}, ic("link"),"ntfy im App Store öffnen"), h("br"),
       "2. Tippe hier auf ", h("b",{style:"color:var(--fg)"},"„Code kopieren“"), ".", h("br"),
@@ -2382,12 +2382,12 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
   let mySub = null;
   async function savePush(ask){
     if (!pushOK()){
-      if (ask){ if (isApple && !isInstalled()){ toast("Leg shade zuerst auf den Home-Bildschirm und öffne es von dort."); openInstall(); } else toast("Dieses Gerät kann keine Benachrichtigungen."); }
+      if (ask){ if (isApple && !isInstalled()){ toast("Leg ShadeChat zuerst auf den Home-Bildschirm und öffne es von dort."); openInstall(); } else toast("Dieses Gerät kann keine Benachrichtigungen."); }
       return;
     }
     if (ask && Notification.permission !== "granted"){
       const p = await Notification.requestPermission();
-      if (p !== "granted"){ toast("Benachrichtigungen sind aus. Du kannst sie in den iPhone-Einstellungen bei shade erlauben."); refresh(); return; }
+      if (p !== "granted"){ toast("Benachrichtigungen sind aus. Du kannst sie in den iPhone-Einstellungen bei ShadeChat erlauben."); refresh(); return; }
     }
     if (Notification.permission !== "granted") return;
     try {
@@ -2413,14 +2413,14 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
     if (store.get("shade-push-later")) return null;
     return h("div",{class:"installbar",style:"cursor:pointer",onclick:e=>{ if (!e.target.closest(".x")) savePush(true); }},
       h("span",{style:"width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--acc);color:var(--acc-ink)"}, ic("bell",20)),
-      h("span",{style:"flex:1;text-align:left"}, h("b",{},"Benachrichtigungen an"), h("small",{}, apple ? "Geht, wenn shade auf dem Home-Bildschirm ist" : "Damit du siehst, wenn dir jemand schreibt")),
+      h("span",{style:"flex:1;text-align:left"}, h("b",{},"Benachrichtigungen an"), h("small",{}, apple ? "Geht, wenn ShadeChat auf dem Home-Bildschirm ist" : "Damit du siehst, wenn dir jemand schreibt")),
       h("button",{class:"x","aria-label":"Später",style:"padding:6px;color:var(--muted)",onclick:()=>{ store.set("shade-push-later", true); refresh(); }}, ic("close",16)));
   };
   pushRow = () => {
     if (!PUSH_URL.startsWith("https://")) return null;
     const on = pushOK() && Notification.permission === "granted", denied = pushOK() && Notification.permission === "denied";
     return h("button",{class:"row",style:"width:100%",onclick:()=>{ if (denied) toast("Erlaube Benachrichtigungen in den iPhone-Einstellungen → Mitteilungen → shade."); else savePush(true).then(()=>openSettings()); }},
-      h("span",{class:"t"}, h("b",{},"Benachrichtigungen"), h("small",{}, h("span",{}, on ? "An – auch wenn shade zu ist" : denied ? "Aus – in den iPhone-Einstellungen erlauben" : "Aus – tippen zum Einschalten"))),
+      h("span",{class:"t"}, h("b",{},"Benachrichtigungen"), h("small",{}, h("span",{}, on ? "An – auch wenn ShadeChat zu ist" : denied ? "Aus – in den iPhone-Einstellungen erlauben" : "Aus – tippen zum Einschalten"))),
       on ? h("span",{class:"pill dim"},"An") : h("span",{class:"pill"},"Einschalten"));
   };
   function openFromUrl(u){

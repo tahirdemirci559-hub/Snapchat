@@ -1,7 +1,7 @@
 {
-  "name": "shade",
-  "short_name": "shade",
-  "description": "Snaps, Lenses, Stories und Spotlight – mit Familie und Freunden.",
+  "name": "ShadeChat",
+  "short_name": "ShadeChat",
+  "description": "Shots, Lenses, Stories und Spotlight – mit Familie und Freunden.",
   "lang": "de",
   "start_url": "./",
   "scope": "./",
