@@ -876,11 +876,12 @@ function openStoryViewer(groups, gi){
   };
   const next = () => { prog = 0; const g=groups[gi]; if(si+1<g.list.length) si++; else if(gi+1<groups.length){gi++; si=0;} else return closeOverlay(); show(); };
   const prev = () => { prog = 0; if(si>0) si--; else if(gi>0){gi--; si=groups[gi].list.length-1;} show(); };
-  overlay.replaceChildren(h("div",{class:"ov dark",onclick:e=>{ (e.clientX < window.innerWidth/3) ? prev() : next(); }}, bars, head, stage, foot));
+  overlay.replaceChildren(h("div",{class:"ov dark",onclick:e=>{ (e.clientX < window.innerWidth/3) ? prev() : next(); }}, bars, head, stage,
+    h("p",{class:"note",style:"color:#fff8;padding:4px 0 0"},"Tippe rechts für weiter · links für zurück"), foot));
   show();
   timers.push(setInterval(()=>{ if(paused) return; const v = stage.querySelector("video");
-    if (v){ if (v.duration) prog = Math.min(100, v.currentTime/v.duration*100); if (v.ended) prog = 100; } else prog += 2;
-    const b = bars.children[si]?.firstChild; if(b) b.style.width = prog+"%"; if(prog>=100) next(); },100));
+    if (v){ if (v.duration) prog = Math.min(100, v.currentTime/v.duration*100); if (v.ended) prog = 100; } else prog = 100;
+    const b = bars.children[si]?.firstChild; if(b) b.style.width = prog+"%"; },100));
 }
 function sendStoryReply(by, text){
   if (!isFriend(by)) return toast("Füge "+pname(by)+" zuerst als Freund hinzu.");
