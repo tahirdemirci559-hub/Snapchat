@@ -301,6 +301,8 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 .call .lbl{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;color:#ffffffc0}
 .call .pulse{animation:callpulse 1.6s ease-in-out infinite}
 @keyframes callpulse{0%,100%{box-shadow:0 0 0 0 #22d3ee55}50%{box-shadow:0 0 0 22px #22d3ee00}}
+.shot .yt{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.shot img.ytp{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.85)}
 </style>
 
 </head>
@@ -374,6 +376,7 @@ const ICONS = {
   timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/>',
   spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/>',
   mask:'<path d="M3 7c3-1.5 15-1.5 18 0 0 6-2.5 10-6 10-1.6 0-2.2-2-3-2s-1.4 2-3 2c-3.5 0-6-4-6-10z"/><path d="M7.5 10.5h2.5M14 10.5h2.5"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
   music:'<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
   badge:'<path d="M12 2.5l2.3 1.7 2.9-.2.9 2.7 2.4 1.7-.9 2.7.9 2.7-2.4 1.7-.9 2.7-2.9-.2L12 19.5l-2.3-1.7-2.9.2-.9-2.7-2.4-1.7.9-2.7-.9-2.7 2.4-1.7.9-2.7 2.9.2z"/><path d="m8.5 11 2.5 2.5 4.5-4.5" stroke="var(--bg)" stroke-width="2"/>',
   logout:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>',
@@ -578,6 +581,40 @@ const people = {
   road:   {name:"Roadtrip BW", username:"roadtrip.bw", color:"#2a9bb0", bio:"Touren durch Baden-Württemberg.", followers:9800},
   night:  {name:"Night Drive", username:"nightdrive", color:"#9b3bd1", bio:"Lofi · Autos · Nacht.", followers:254000, verified:true},
   kino:   {name:"Kino Kurz", username:"kino.kurz", color:"#e0533b", bio:"Die besten Szenen aus freien Kurzfilmen.", followers:61300, verified:true},
+  ytrankrushes:{"name": "RankRushes", "username": "rankrushes", "color": "#c2562b", "bio": "Videos von YouTube", "followers": 167000},
+  ytviralprankdail:{"name": "Viral Prank Daily", "username": "viral.prank.daily", "color": "#4b5bd6", "bio": "Videos von YouTube", "followers": 604000},
+  ytpettsandbabiie:{"name": "Petts And Babiies", "username": "petts.and.babiies", "color": "#1f8f4a", "bio": "Videos von YouTube", "followers": 125000},
+  ytanimaloops:{"name": "AnimalOops", "username": "animaloops", "color": "#2a9bb0", "bio": "Videos von YouTube", "followers": 401000},
+  ytcarenthusiasts:{"name": "Car Enthusiasts Playground", "username": "car.enthusiasts.play", "color": "#9b3bd1", "bio": "Videos von YouTube", "followers": 597000},
+  ytbhagwankigadi:{"name": "Bhagwan Ki Gadi", "username": "bhagwan.ki.gadi", "color": "#e0533b", "bio": "Videos von YouTube", "followers": 528000},
+  ytnigamminivlogg:{"name": "Nigam mini vlogger", "username": "nigam.mini.vlogger", "color": "#5f7d3a", "bio": "Videos von YouTube", "followers": 457000},
+  ytafvshorts:{"name": "AFV Shorts", "username": "afv.shorts", "color": "#b8862b", "bio": "Videos von YouTube", "followers": 496000},
+  ytdizzzy:{"name": "DizZzy", "username": "dizzzy", "color": "#2d6cdf", "bio": "Videos von YouTube", "followers": 390000},
+  ytfunnyhub:{"name": "Funny Hub", "username": "funny.hub", "color": "#d04f8a", "bio": "Videos von YouTube", "followers": 833000},
+  ytexoticrubber:{"name": "Exotic Rubber", "username": "exotic.rubber", "color": "#c2562b", "bio": "Videos von YouTube", "followers": 103000},
+  ytxanami:{"name": "Xanami", "username": "xanami", "color": "#4b5bd6", "bio": "Videos von YouTube", "followers": 371000},
+  ytabusufyan:{"name": "Abu sufyan", "username": "abu.sufyan", "color": "#1f8f4a", "bio": "Videos von YouTube", "followers": 314000},
+  ytanimalsfunyt:{"name": "Animals fun yt", "username": "animals.fun.yt", "color": "#2a9bb0", "bio": "Videos von YouTube", "followers": 140000},
+  ytgalinhofc:{"name": "Galinho FC", "username": "galinho.fc", "color": "#9b3bd1", "bio": "Videos von YouTube", "followers": 188000},
+  ytviralfunnyvide:{"name": "Viral Funny Videos", "username": "viral.funny.videos", "color": "#e0533b", "bio": "Videos von YouTube", "followers": 175000},
+  ytadamshowtv:{"name": "Adam_Show Tv", "username": "adam_show.tv", "color": "#5f7d3a", "bio": "Videos von YouTube", "followers": 451000},
+  ytechonova:{"name": "EchoNova", "username": "echonova", "color": "#b8862b", "bio": "Videos von YouTube", "followers": 802000},
+  ytpsilocybinium:{"name": "Psilocybinium", "username": "psilocybinium", "color": "#2d6cdf", "bio": "Videos von YouTube", "followers": 368000},
+  ytusatadramjogal:{"name": "usatad ram jogal", "username": "usatad.ram.jogal", "color": "#d04f8a", "bio": "Videos von YouTube", "followers": 628000},
+  ytdbeditz:{"name": "DB EditZ", "username": "db.editz", "color": "#c2562b", "bio": "Videos von YouTube", "followers": 90000},
+  ytcritterrank:{"name": "Critter Rank", "username": "critter.rank", "color": "#4b5bd6", "bio": "Videos von YouTube", "followers": 296000},
+  ytthepetcollecti:{"name": "The Pet Collective", "username": "the.pet.collective", "color": "#1f8f4a", "bio": "Videos von YouTube", "followers": 82000},
+  ytworldoff:{"name": "WorldOff", "username": "worldoff", "color": "#2a9bb0", "bio": "Videos von YouTube", "followers": 682000},
+  ytflashshorts15:{"name": "FlashShorts15", "username": "flashshorts15", "color": "#9b3bd1", "bio": "Videos von YouTube", "followers": 311000},
+  ytsoccereducatio:{"name": "Soccer Education", "username": "soccer.education", "color": "#e0533b", "bio": "Videos von YouTube", "followers": 704000},
+  ytanimalsfunnymo:{"name": "Animals Funny Moments", "username": "animals.funny.moment", "color": "#5f7d3a", "bio": "Videos von YouTube", "followers": 492000},
+  ytpulseframe:{"name": "Pulseframe", "username": "pulseframe", "color": "#b8862b", "bio": "Videos von YouTube", "followers": 645000},
+  ytfavball:{"name": "FavBall", "username": "favball", "color": "#2d6cdf", "bio": "Videos von YouTube", "followers": 80000},
+  ytridhimartsmafi:{"name": "Ridhima RT's Mafia", "username": "ridhima.rts.mafia", "color": "#d04f8a", "bio": "Videos von YouTube", "followers": 152000},
+  ytmaclordrank:{"name": "MACLORD RANK", "username": "maclord.rank", "color": "#c2562b", "bio": "Videos von YouTube", "followers": 427000},
+  yttaranking:{"name": "TA ranking", "username": "ta.ranking", "color": "#4b5bd6", "bio": "Videos von YouTube", "followers": 479000},
+  ytadamfunny97:{"name": "Adam Funny 97", "username": "adam.funny.97", "color": "#1f8f4a", "bio": "Videos von YouTube", "followers": 160000},
+  ythardyshortz:{"name": "HardyShortz", "username": "hardyshortz", "color": "#2a9bb0", "bio": "Videos von YouTube", "followers": 583000},
   outdoor:{name:"Outdoor Max", username:"outdoor.max", color:"#5f7d3a", bio:"Wandern, Klettern, Draußen sein.", followers:5100}
 };
 const pname = id => id === ME ? (account?.name || "Du") : (people[id]?.name || "…");
@@ -594,24 +631,60 @@ const vid = (src, extra={}) => ({video:src, ...extra});
 const posts = [
   {id:++pid, by:"kino", snap:vid("bunny.mp4"), likes:96400, shares:5100, sound:"Originalton – Big Buck Bunny", credit:"Big Buck Bunny © Blender Foundation · CC BY 3.0",
     comments:[C("night","Haha, der ist so gut gemacht.",25,31),C("street","Kenn ich noch!",50,8)]},
+  {id:++pid, by:"ytrankrushes", snap:{yt:"jMD5LUthooQ"}, text:"Ranking the Most Unexpected Moments 😳😂", likes:144737, shares:2029, sound:"Originalton – YouTube", credit:"Video: YouTube · RankRushes", comments:[]},
   {id:++pid, by:"urban", snap:vid("traffic.mp4",{cap:"Rush Hour von oben",capY:80}), likes:22800, shares:740, sound:"Stadt – Urban Shots", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[C("road","Schöne Perspektive.",70,6)]},
+  {id:++pid, by:"ytviralprankdail", snap:{yt:"SkBBmoEkZKA"}, text:"The Most Satisfying Prank Payback EVER! 😈💥", likes:83866, shares:3061, sound:"Originalton – YouTube", credit:"Video: YouTube · Viral Prank Daily", comments:[]},
+  {id:++pid, by:"ytpettsandbabiie", snap:{yt:"wEupTizGUsI"}, text:"Cat And Dog Funny Moments 😂😂😂", likes:155462, shares:3178, sound:"Originalton – YouTube", credit:"Video: YouTube · Petts And Babiies", comments:[]},
+  {id:++pid, by:"ytanimaloops", snap:{yt:"rHqnmiSRwq4"}, text:"Funny Animal 🤣 | Try Not To Laugh!", likes:28540, shares:1128, sound:"Originalton – YouTube", credit:"Video: YouTube · AnimalOops", comments:[]},
+  {id:++pid, by:"ytcarenthusiasts", snap:{yt:"IRNBfHDthq8"}, text:"INSANE Drifting Moments Ever Caught", likes:18624, shares:3474, sound:"Originalton – YouTube", credit:"Video: YouTube · Car Enthusiasts Playground", comments:[]},
   {id:++pid, by:"outdoor", snap:vid("flower.mp4",{cap:"Frühling im Garten",capY:80}), likes:18300, shares:960, sound:"Natur – Outdoor Max", credit:"Video: MDN · CC0",
     comments:[C("road","So nah dran, krass.",35,9)]},
+  {id:++pid, by:"ytbhagwankigadi", snap:{yt:"LxPF_zR55_U"}, text:"The Most SATISFYING Supercar Unboxing 🤯🔥", likes:181362, shares:8811, sound:"Originalton – YouTube", credit:"Video: YouTube · Bhagwan Ki Gadi", comments:[]},
+  {id:++pid, by:"ytnigamminivlogg", snap:{yt:"4s4XS-Vkrrs"}, text:"Try Not to Laugh 😂 Ultimate Funny Fails Compilation", likes:206745, shares:5246, sound:"Originalton – YouTube", credit:"Video: YouTube · Nigam mini vlogger", comments:[]},
+  {id:++pid, by:"ytafvshorts", snap:{yt:"7XMyj7WpFlI"}, text:"Pranks that caught everyone off guard", likes:156501, shares:7524, sound:"Originalton – YouTube", credit:"Video: YouTube · AFV Shorts", comments:[]},
+  {id:++pid, by:"ytdizzzy", snap:{yt:"geofu_-SCpE"}, text:"Wait, what did the cat just say? 🐱", likes:81582, shares:4170, sound:"Originalton – YouTube", credit:"Video: YouTube · DizZzy", comments:[]},
   {id:++pid, by:"road", snap:vid("street.mp4",{stamp:{time:"17:20",place:"Parkplatz von oben"}}), likes:7400, shares:210, sound:"Originalton – Roadtrip BW", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[]},
+  {id:++pid, by:"ytfunnyhub", snap:{yt:"O9KiCu1MRLQ"}, text:"Try Not To Laugh: Impossible Cat & Dog Moments! 🐾 🐈🤣", likes:50124, shares:4099, sound:"Originalton – YouTube", credit:"Video: YouTube · Funny Hub", comments:[]},
+  {id:++pid, by:"ytexoticrubber", snap:{yt:"7biTUUEIXNI"}, text:"He turned his driveway into a track", likes:153581, shares:5019, sound:"Originalton – YouTube", credit:"Video: YouTube · Exotic Rubber", comments:[]},
+  {id:++pid, by:"ytviralprankdail", snap:{yt:"7HYKNRdKeTc"}, text:"He Did NOT Expect That To Happen! 😳🔥", likes:140677, shares:8211, sound:"Originalton – YouTube", credit:"Video: YouTube · Viral Prank Daily", comments:[]},
+  {id:++pid, by:"ytxanami", snap:{yt:"Gc73LrtI8vw"}, text:"The Most Unexpected Animal Moments Ever Caught on Camera😱", likes:194219, shares:7453, sound:"Originalton – YouTube", credit:"Video: YouTube · Xanami", comments:[]},
   {id:++pid, by:"night", snap:pic("road",{cap:"B27 um Mitternacht",capY:72}), likes:84100, shares:3200, sound:"Lofi Drive – Night Drive",
     comments:[C("road","Die Strecke fahr ich jeden Tag.",30,12),C("kick","Wie heißt der Song?",22,40),C("urban","Starke Farben.",90,3)]},
+  {id:++pid, by:"ytabusufyan", snap:{yt:"56cn1rZ6x8w"}, text:"Funny animals 😂😂", likes:162634, shares:1299, sound:"Originalton – YouTube", credit:"Video: YouTube · Abu sufyan", comments:[]},
+  {id:++pid, by:"ytanimalsfunyt", snap:{yt:"e-7Glg4FJQw"}, text:"Funny animals video🤣🤣🤩", likes:137200, shares:6950, sound:"Originalton – YouTube", credit:"Video: YouTube · Animals fun yt", comments:[]},
+  {id:++pid, by:"ytgalinhofc", snap:{yt:"Qn-uN1YjtFE"}, text:"Crazy Skills in Football 😍", likes:201479, shares:5704, sound:"Originalton – YouTube", credit:"Video: YouTube · Galinho FC", comments:[]},
+  {id:++pid, by:"ytviralfunnyvide", snap:{yt:"vA98lOaUe4U"}, text:"Weirdest Things People Do For Fun Caught On Camera!", likes:247651, shares:8111, sound:"Originalton – YouTube", credit:"Video: YouTube · Viral Funny Videos", comments:[]},
   {id:++pid, by:"urban", snap:pic("city",{stamp:{time:"23:58",place:"Stuttgart Mitte"}}), likes:53100, shares:1800, sound:"Originalton – Urban Shots",
     comments:[C("kino","Mega Aufnahme.",40,22),C("outdoor","Wo ist das genau?",60,9)]},
+  {id:++pid, by:"ytadamshowtv", snap:{yt:"nI270TuaoQw"}, text:"Comedy Fails Compilation 😂 | You Won’t Believe These Fails!", likes:13277, shares:1371, sound:"Originalton – YouTube", credit:"Video: YouTube · Adam_Show Tv", comments:[]},
+  {id:++pid, by:"ytechonova", snap:{yt:"xvKjKDOMUPY"}, text:"Hilariously prank VIDEO funny reaction tiktok meme America", likes:149296, shares:5240, sound:"Originalton – YouTube", credit:"Video: YouTube · EchoNova", comments:[]},
+  {id:++pid, by:"ytpsilocybinium", snap:{yt:"nbni9OiJJkw"}, text:"Animals Caught Doing the Most Unexpected Things", likes:185267, shares:5837, sound:"Originalton – YouTube", credit:"Video: YouTube · Psilocybinium", comments:[]},
+  {id:++pid, by:"ytusatadramjogal", snap:{yt:"lKXNZbBmd_0"}, text:"new funny 😂 cats Vs Dogs 😅", likes:133200, shares:7574, sound:"Originalton – YouTube", credit:"Video: YouTube · usatad ram jogal", comments:[]},
   {id:++pid, by:"kino", snap:vid("classroom.mp4",{cap:"Montagmorgen, erste Stunde.",capY:20}), likes:33900, shares:1400, sound:"Originalton – Kino Kurz", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[C("kick","Genau so sieht's aus.",45,27)]},
+  {id:++pid, by:"ytdbeditz", snap:{yt:"3hiuF2P2dy8"}, text:"Ranking Funniest Animal Moment 🤣🤣", likes:223192, shares:1633, sound:"Originalton – YouTube", credit:"Video: YouTube · DB EditZ", comments:[]},
+  {id:++pid, by:"ytcritterrank", snap:{yt:"JpZbpBAbOLU"}, text:"UNBELIEVABLE ANIMAL MOMENTS CAUGHT ON CAMERA 😲 🐕 😅", likes:127282, shares:1164, sound:"Originalton – YouTube", credit:"Video: YouTube · Critter Rank", comments:[]},
+  {id:++pid, by:"ytthepetcollecti", snap:{yt:"byeYjhNr_no"}, text:"FUNNIEST Animal Videos of 2024", likes:194669, shares:5172, sound:"Originalton – YouTube", credit:"Video: YouTube · The Pet Collective", comments:[]},
+  {id:++pid, by:"ytworldoff", snap:{yt:"1NoSKMOtWGU"}, text:"A minute with the most meme‑worthy animals 🐱🐶", likes:154505, shares:7401, sound:"Originalton – YouTube", credit:"Video: YouTube · WorldOff", comments:[]},
   {id:++pid, by:"street", snap:pic("food",{cap:"Beste Pasta in der Stadt?",capY:84}), likes:12040, shares:2500, sound:"Originalton – Streetfood Stuttgart",
     comments:[C("urban","Da muss ich mal hin.",120,15)]},
+  {id:++pid, by:"ytflashshorts15", snap:{yt:"T0ITJt_6CPA"}, text:"Ranking The Funniest Animal Moment 🤣 Caught on Camera", likes:190859, shares:6420, sound:"Originalton – YouTube", credit:"Video: YouTube · FlashShorts15", comments:[]},
+  {id:++pid, by:"ytsoccereducatio", snap:{yt:"93i0L_U18yQ"}, text:"Try Not To Laugh: Football Edition 😂🔥", likes:93965, shares:469, sound:"Originalton – YouTube", credit:"Video: YouTube · Soccer Education", comments:[]},
+  {id:++pid, by:"ytanimalsfunnymo", snap:{yt:"gG8HNfYTDrA"}, text:"Funny Dog & Cat Moments 🐾😂🤣", likes:96182, shares:2853, sound:"Originalton – YouTube", credit:"Video: YouTube · Animals Funny Moments", comments:[]},
+  {id:++pid, by:"ytpulseframe", snap:{yt:"Wa9vIskDnLE"}, text:"Funny Animals & People Moments That Will Make You Laugh! 😂", likes:33695, shares:8188, sound:"Originalton – YouTube", credit:"Video: YouTube · Pulseframe", comments:[]},
   {id:++pid, by:"kick", snap:pic("pitch",{cap:"Was für ein Abend.",capY:22}), likes:28770, shares:900, sound:"Stadion – Live",
     comments:[C("night","Unglaubliche Stimmung!",300,30)]},
+  {id:++pid, by:"ytfavball", snap:{yt:"oGsq3p7KwpA"}, text:"Funny Moments in Football 🤪😂", likes:60201, shares:4809, sound:"Originalton – YouTube", credit:"Video: YouTube · FavBall", comments:[]},
+  {id:++pid, by:"ytridhimartsmafi", snap:{yt:"PIfbVer230I"}, text:"INSANE CAR DRIFT 😱🔥 | Perfect Drift | #", likes:196557, shares:4156, sound:"Originalton – YouTube", credit:"Video: YouTube · Ridhima RT's Mafia", comments:[]},
+  {id:++pid, by:"ytmaclordrank", snap:{yt:"yW1dcrSFiVU"}, text:"Wait For The Last Animal Moment🤯🌊", likes:105485, shares:8234, sound:"Originalton – YouTube", credit:"Video: YouTube · MACLORD RANK", comments:[]},
+  {id:++pid, by:"ytdbeditz", snap:{yt:"ZM7TCNXUj6Y"}, text:"Ranking The Funniest Animal Moment 🤣🤣", likes:24123, shares:2825, sound:"Originalton – YouTube", credit:"Video: YouTube · DB EditZ", comments:[]},
   {id:++pid, by:"road", snap:pic("mountains",{stamp:{time:"08:15",place:"Albtrauf",style:"boxed"}}), likes:9320, shares:640, sound:"Natur – Roadtrip BW",
     comments:[C("outdoor","Da war ich auch schon wandern.",200,5)]},
+  {id:++pid, by:"yttaranking", snap:{yt:"8YIMQ6e7VUU"}, text:"Ranking the most satisfying drifts￼ part-1 😉🔊😬", likes:108288, shares:4652, sound:"Originalton – YouTube", credit:"Video: YouTube · TA ranking", comments:[]},
+  {id:++pid, by:"ytadamfunny97", snap:{yt:"amsx6w9FT3s"}, text:"🔥 Top Funny Fails You Need to See Today Part 0006:", likes:217769, shares:7153, sound:"Originalton – YouTube", credit:"Video: YouTube · Adam Funny 97", comments:[]},
+  {id:++pid, by:"ythardyshortz", snap:{yt:"oNfFpr67mSw"}, text:"Bro just wanted to show them skills 😂", likes:75986, shares:6904, sound:"Originalton – YouTube", credit:"Video: YouTube · HardyShortz", comments:[]},
   {id:++pid, by:"night", snap:pic("neon",{cap:"Retro Nights",capY:30}), likes:41200, shares:2100, sound:"Synthwave Mix",
     comments:[C("urban","Mehr davon!",80,18)]},
   {id:++pid, by:"outdoor", snap:pic("forest",{stamp:{time:"06:40",place:"Schwarzwald"}}), likes:615, shares:44, sound:"Originalton – Outdoor Max", comments:[]},
@@ -678,6 +751,11 @@ function rainSpots(seedChar){
 }
 function renderShot(snap, opts={}){
   const el = h("div",{class:"shot"+(opts.small?" small":"")});
+  if (snap.yt){
+    el.dataset.yt = snap.yt;
+    el.append(h("img",{class:"ytp",src:`https://i.ytimg.com/vi/${snap.yt}/hqdefault.jpg`,alt:"",loading:"lazy"}));
+    return el;
+  }
   if (snap.video){
     const v = h("video",{class:"photo",src:snap.video+(opts.thumb?"#t=0.5":""),playsinline:true,preload:opts.thumb?"metadata":"auto",style:`filter:${snap.filter||"none"}`});
     v.muted = !opts.sound; v.playsInline = true;
@@ -742,6 +820,7 @@ function status(c){
 
 // ================= Anrufe (ohne Server nicht möglich) =================
 let pushUI = () => null, pushRow = () => null;
+let deleteStory = async (st) => { const i = myStories.indexOf(st); if (i >= 0) myStories.splice(i, 1); };
 let startCall = () => toast("Anrufe gehen, wenn du über shadechat.github.io angemeldet bist.");
 
 // ================= Chats =================
@@ -892,7 +971,15 @@ function openStoryViewer(groups, gi){
       h("button",{class:"round glass","aria-label":"Schließen",onclick:e=>{e.stopPropagation(); closeOverlay();}}, ic("close",19)));
     stage.replaceChildren(renderShot(s.snap,{sound:true,once:true}));
     const sv = stage.querySelector("video"); if (sv) sv.play().catch(()=>{ sv.muted=true; sv.play().catch(()=>{}); });
-    if (g.by===ME) foot.replaceChildren(h("span",{style:"display:flex;gap:6px;align-items:center;font-weight:700"}, ic("eye",18), s.views+" Aufrufe"));
+    if (g.by===ME) foot.replaceChildren(h("div",{style:"display:flex;align-items:center;gap:10px"},
+      h("span",{style:"display:flex;gap:6px;align-items:center;font-weight:700;flex:1"}, ic("eye",18), s.views+" Aufrufe"),
+      h("button",{class:"sbtn",style:"background:#ffffff22;color:#fff",onclick:async e=>{ e.stopPropagation(); paused = true;
+        if (!confirm("Diese Story löschen?")){ paused = false; return; }
+        try { await deleteStory(s); } catch(err){ paused = false; return toast("Löschen ging nicht."); }
+        const i = g.list.indexOf(s); if (i >= 0) g.list.splice(i, 1);
+        toast("Story gelöscht"); paused = false;
+        if (!g.list.length) return closeOverlay();
+        si = Math.min(si, g.list.length - 1); prog = 0; show(); }}, ic("trash",17), "Löschen")));
     else {
       const inp = h("input",{placeholder:"Antworten …",style:"flex:1;min-width:0;padding:11px 14px;border-radius:22px;border:1.5px solid #ffffff55;background:transparent;color:#fff",onfocus:()=>paused=true,onblur:()=>paused=false,
         onkeydown:e=>{ if(e.key==="Enter" && inp.value.trim()){ sendStoryReply(g.by, inp.value.trim()); inp.value=""; inp.blur(); } }});
@@ -1054,6 +1141,13 @@ function openSendTo(snap){
 
 // ================= Spotlight =================
 let spotDirty = true, feedSound = false;
+function ytSrc(id){ return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${id}&controls=1&rel=0&modestbranding=1`; }
+const ytio = new IntersectionObserver(entries => entries.forEach(en => {
+  const sh = en.target, id = sh.dataset.yt;
+  const f = sh.querySelector("iframe.yt");
+  if (en.isIntersecting && en.intersectionRatio > .6){ if (!f) sh.append(h("iframe",{class:"yt",src:ytSrc(id),allow:"autoplay; encrypted-media; picture-in-picture; fullscreen",allowfullscreen:true,title:"Video"})); }
+  else if (f) f.remove();
+}), {threshold:[0,.6,1]});
 const vio = new IntersectionObserver(entries => entries.forEach(en => {
   const v = en.target;
   if (en.isIntersecting && en.intersectionRatio > .6){ v.muted = !feedSound; v.play().catch(()=>{ v.muted = true; v.play().catch(()=>{}); }); }
@@ -1075,6 +1169,7 @@ function buildPost(p){
   let lastTap = 0, tapTimer = null;
   const media = miniShot(p.snap,"art",null,{thumb:false, manual:true});
   const vid = media.querySelector("video");
+  const ytShot = media.querySelector("[data-yt]"); if (ytShot) ytio.observe(ytShot);
   const bar = h("i",{}), snd = h("div",{class:"snd"});
   if (vid){ vio.observe(vid); vid.addEventListener("timeupdate",()=>{ if(vid.duration) bar.style.width = (vid.currentTime/vid.duration*100)+"%"; }); }
   const post = h("div",{class:"post",onclick:e=>{
@@ -1089,7 +1184,7 @@ function buildPost(p){
         followBtn),
       p.text ? h("span",{},p.text) : null,
       p.credit ? h("span",{style:"font-size:11.5px;opacity:.7"}, p.credit) : null,
-      h("span",{class:"sound"}, ic("music"), p.sound, p.by!==ME && !p.snap.video ? h("span",{class:"demo"},"Beispiel") : null)),
+      h("span",{class:"sound"}, ic("music"), p.sound, p.by!==ME && !p.snap.video && !p.snap.yt ? h("span",{class:"demo"},"Beispiel") : null)),
     h("div",{class:"side"}, likeBtn, cmtBtn, shareBtn, saveBtn));
   upd();
   return post;
@@ -1950,6 +2045,10 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
   }
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", e => { if (e.data && e.data.type === "open") openFromUrl(e.data.url); });
 
+  deleteStory = async function(st){
+    if (st.id) await db.collection("stories").doc(st.id).delete();
+    const i = myStories.indexOf(st); if (i >= 0) myStories.splice(i, 1);
+  };
   return {start, submit, seenStory: id => db.collection("stories").doc(id).update({viewedBy:FV.arrayUnion(UID)}).catch(()=>{})};
 })();
 
