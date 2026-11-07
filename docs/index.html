@@ -2371,7 +2371,7 @@ const TABS = [["chat","Chats"],["users","Stories"],["camera","Kamera"],["play","
 document.getElementById("tabs").replaceChildren(...TABS.map(([i,l],k)=>h("button",{"data-i":k,"aria-label":l}, ic(i), l, k===0?h("span",{class:"badge",id:"badge",hidden:true}):null)));
 const tabBtns = [...document.querySelectorAll("#tabs button")];
 let curTab = 2;
-function setTab(i){ if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (store.get("shade-cam-ok") && loggedIn && camUserStarted) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
+function setTab(i){ if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (store.get("shade-cam-ok") && loggedIn) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
 function goTab(i){ if (overlay.childElementCount) closeOverlay(); pager.scrollTo({left:i*pager.clientWidth,behavior:"smooth"}); setTab(i); }
 tabBtns.forEach(b=>b.addEventListener("click",()=>goTab(+b.dataset.i)));
 pager.addEventListener("scroll",()=>setTab(Math.round(pager.scrollLeft/pager.clientWidth)),{passive:true});
