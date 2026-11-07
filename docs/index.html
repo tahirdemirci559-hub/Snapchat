@@ -603,7 +603,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 18:15";
+const SHADE_VERSION = "07.11. 18:36";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -2253,6 +2253,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
   const colorFor = s => { let x = 0; for (const c of s) x = (x * 31 + c.charCodeAt(0)) >>> 0; return `hsl(${x % 360} 55% 45%)`; };
 
   function errText(e){
+    if (/suspend|CONSUMER_SUSPENDED/i.test(String(e && (e.message || e.code) || ""))) return "Der ShadeChat-Server ist gerade gesperrt. Das liegt nicht an deinem Passwort – bitte später nochmal versuchen.";
     const map = {
       "auth/email-already-in-use":"Mit dieser E-Mail gibt es schon ein Konto. Melde dich an.",
       "auth/invalid-email":"Bitte gib eine gültige E-Mail-Adresse ein.",
