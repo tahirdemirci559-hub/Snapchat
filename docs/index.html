@@ -593,7 +593,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 13:34";
+const SHADE_VERSION = "07.11. 14:01";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -2177,6 +2177,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
     else ctl = [btn(c.muted ? "micoff" : "mic", c.muted ? "Stumm" : "Mikro", toggleMute, c.muted ? "on" : ""),
       c.video ? btn(c.camOn ? "video" : "camoff","Kamera",toggleCam, c.camOn ? "" : "on") : null,
       c.video ? btn("flip","Drehen",flipCam) : null,
+      btn("vol","Audio",chooseOutput),
       btn("hangup","Auflegen",()=>endCall(true),"end")];
     if (!c.root){
       c.root = h("div",{class:"call"}); c.statusEl = h("small",{});
@@ -2188,6 +2189,26 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
     c.root.querySelector(".ctl").replaceChildren(...ctl.filter(Boolean));
   }
 
+  // Ton-Ausgabe wählen: Lautsprecher, Hörer, AirPods/Kopfhörer
+  async function chooseOutput(){
+    const c = call; if (!c) return;
+    const el = c.remoteEl;
+    let outs = [];
+    if (el && typeof el.setSinkId === "function" && navigator.mediaDevices?.enumerateDevices){
+      try { outs = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === "audiooutput"); } catch {}
+    }
+    const pick = async d => { try { await el.setSinkId(d.deviceId); c.sink = d.deviceId; toast("Ton über: " + (d.label || "Gerät")); } catch { toast("Ging nicht."); } sheet.remove(); };
+    const sheet = h("div",{class:"ov dim",style:"z-index:70",onclick:e=>{ if(e.target===e.currentTarget) sheet.remove(); }},
+      h("div",{class:"sheet"}, h("h2",{},"Ton ausgeben über", h("button",{class:"round","aria-label":"Schließen",onclick:()=>sheet.remove()}, ic("close",19))),
+        outs.length ? h("div",{style:"display:grid;gap:8px"}, ...outs.map(d => h("button",{class:"sbtn",style:"width:100%;justify-content:flex-start"+(c.sink===d.deviceId?";background:var(--acc);color:var(--acc-ink)":""),onclick:()=>pick(d)}, ic("vol"), d.label || (d.deviceId === "default" ? "Standard" : "Audio-Gerät"))))
+        : h("div",{class:"empty",style:"text-align:left;line-height:1.6"},
+            h("b",{style:"color:var(--fg);display:block;margin-bottom:6px"},"Auf dem iPhone geht das so:"),
+            "1. Wische von ", h("b",{style:"color:var(--fg)"},"oben rechts"), " nach unten (Kontrollzentrum).", h("br"),
+            "2. Tippe beim Musik-Feld auf das ", h("b",{style:"color:var(--fg)"},"AirPlay-Symbol"), " (Kreise mit Dreieck).", h("br"),
+            "3. Wähle ", h("b",{style:"color:var(--fg)"},"iPhone"), ", ", h("b",{style:"color:var(--fg)"},"Lautsprecher"), " oder deine ", h("b",{style:"color:var(--fg)"},"AirPods"), ".", h("br"),
+            "AirPods und Kopfhörer werden automatisch benutzt, sobald sie verbunden sind.")));
+    callEl.append(sheet);
+  }
   function toggleMute(){ if (!call || !call.local) return; call.muted = !call.muted; call.local.getAudioTracks().forEach(t => t.enabled = !call.muted); renderCall(); }
   function toggleCam(){ if (!call || !call.local) return; call.camOn = !call.camOn; call.local.getVideoTracks().forEach(t => t.enabled = call.camOn); renderCall(); }
   async function flipCam(){
