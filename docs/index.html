@@ -587,11 +587,13 @@ function showAuth(mode){
     err,
     h("button",{class:"big",type:"submit"}, mode === "signup" ? "Weiter" : "Anmelden"),
     mode === "signup" ? h("p",{class:"note",style:"padding:0"},"ShadeChat ist ab 13 Jahren.") : null,
-    h("button",{type:"button",class:"link",onclick:()=>showAuth(mode==="signup"?"login":"signup")}, mode === "signup" ? "Schon ein Konto? Anmelden" : "Neu hier? Konto erstellen"));
+    h("button",{type:"button",class:"link",onclick:()=>showAuth(mode==="signup"?"login":"signup")}, mode === "signup" ? "Schon ein Konto? Anmelden" : "Neu hier? Konto erstellen"),
+    NET ? h("button",{type:"button",class:"link",style:"color:#b9bec8",onclick:()=>{ store.set("shade-preview", true); location.reload(); }}, "Ohne Konto ansehen (Vorschau)")
+      : store.get("shade-preview") ? h("button",{type:"button",class:"link",style:"color:#b9bec8",onclick:()=>{ store.del("shade-preview"); location.reload(); }}, "Zurück zum Online-Konto") : null);
   authEl.replaceChildren(h("div",{class:"auth"}, h("div",{class:"inner"},
     h("div",{class:"brand"}, logo(96), h("h1",{},"ShadeChat"), h("span",{class:"tag"},"Bleib im Schatten.")),
     card,
-    h("p",{style:"text-align:center;font-size:12px;margin:0;color:#8b919d"}, NET ? "Dein Konto ist online gespeichert – du kannst dich auf jedem Handy anmelden." : "Vorschau – dein Konto wird nur auf diesem Gerät gespeichert."))));
+    h("p",{style:"text-align:center;font-size:12px;margin:0;color:#8b919d"}, NET ? "Dein Konto ist online gespeichert – du kannst dich auf jedem Handy anmelden." : "Vorschau – Chats mit Freunden, Anrufe und Benachrichtigungen gehen erst mit dem Online-Konto. Dein Vorschau-Konto wird nur auf diesem Gerät gespeichert."))));
 }
 function finishLogin(isNew){
   loggedIn = true; store.set("pling-session", true);
@@ -603,7 +605,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 18:36";
+const SHADE_VERSION = "07.11. 18:49";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -2192,6 +2194,7 @@ function openSettings(){
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer kann mir Shots schicken?"), h("small",{},h("span",{},"Nur Freunde")))),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer sieht meine Story?"), h("small",{},h("span",{},"Freunde")))),
       h("p",{class:"note",style:"text-align:left;margin-top:10px"}, NET ? "Online: Konto, Freunde, Chats und Stories werden sicher auf dem Server gespeichert." : "Vorschau: Konto, Fotos und Chats bleiben nur auf diesem Gerät."),
+      !NET && store.get("shade-preview") ? h("button",{class:"sbtn",style:"width:100%;justify-content:center",onclick:()=>{ store.del("shade-preview"); location.reload(); }}, ic("user"),"Zurück zum Online-Konto") : null,
       h("button",{class:"sbtn",style:"color:var(--snap);width:100%;justify-content:center",onclick:logout}, ic("logout"),"Abmelden"),
       h("p",{class:"note",style:"margin-top:10px"},"Version " + SHADE_VERSION))));
 }
@@ -2240,7 +2243,7 @@ const FIREBASE_CONFIG = {
   appId: "1:9369803410:web:75954ee9cb8ed791c0a44b"
 };
 let NET = null;
-if (FIREBASE_CONFIG && window.firebase) NET = (() => {
+if (FIREBASE_CONFIG && window.firebase && !store.get("shade-preview")) NET = (() => {
   firebase.initializeApp(FIREBASE_CONFIG);
   const auth = firebase.auth(), db = firebase.firestore(), FV = firebase.firestore.FieldValue;
   // Angemeldet bleiben: Anmeldung dauerhaft speichern und den Speicher vor dem Aufräumen schützen
