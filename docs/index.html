@@ -372,6 +372,8 @@ const ICONS = {
   chat:'<path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 20.5l1.4-5A8.5 8.5 0 1 1 21 11.5z"/>',
   users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/>',
   camera:'<path d="M3 8h3.5L8.5 5h7l2 3H21v11H3z"/><circle cx="12" cy="13.5" r="3.8"/>',
+  pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1.2" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2" fill="currentColor"/>',
+  resume:'<path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/>',
   play:'<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/>',
   user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
   search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
@@ -597,7 +599,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 15:28";
+const SHADE_VERSION = "07.11. 15:36";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -725,6 +727,43 @@ const people = {
   ytxincottonwalls:{"name": "Xin cotton wall stickers", "username": "xin.cotton.wall.stic", "color": "#1f8f4a", "bio": "Food · Videos", "followers": 446000},
   yttopthis:{"name": "Top This", "username": "top.this", "color": "#d04f8a", "bio": "Nails · Videos", "followers": 186000},
   ytnolimitsgymnas:{"name": "Nolimitsgymnast", "username": "nolimitsgymnast", "color": "#9b3bd1", "bio": "Gymnastics · Videos", "followers": 33000},
+  ytislamicchannel:{"name": "Islamic channel", "username": "islamic.channel", "color": "#d04f8a", "bio": "Islam · Videos", "followers": 798000},
+  ytinnerpeace:{"name": "Inner Peace", "username": "inner.peace", "color": "#9b3bd1", "bio": "Islam · Videos", "followers": 662000},
+  ytthequranicvibe:{"name": "The Quranic Vibes", "username": "the.quranic.vibes", "color": "#2a9bb0", "bio": "Islam · Videos", "followers": 150000},
+  ytthevoiceofqura:{"name": "The Voice Of Quran Majeed", "username": "the.voice.of.quran.m", "color": "#e0533b", "bio": "Islam · Videos", "followers": 23000},
+  ytjustfaithtv:{"name": "JustFaithTV", "username": "justfaithtv", "color": "#b8862b", "bio": "Christentum · Videos", "followers": 506000},
+  ytonechurch:{"name": "One Church", "username": "one.church", "color": "#1f8f4a", "bio": "Christentum · Videos", "followers": 751000},
+  ytdesertspringsc:{"name": "Desert Springs Church", "username": "desert.springs.churc", "color": "#4b5bd6", "bio": "Christentum · Videos", "followers": 686000},
+  ytwoodridgebapti:{"name": "Woodridge Baptist Church", "username": "woodridge.baptist.ch", "color": "#d04f8a", "bio": "Christentum · Videos", "followers": 468000},
+  ytextremesportsp:{"name": "Extreme Sports Point", "username": "extreme.sports.point", "color": "#9b3bd1", "bio": "Wheelies · Videos", "followers": 670000},
+  ytgearsngrips:{"name": "Gears N Grips", "username": "gears.n.grips", "color": "#2a9bb0", "bio": "Wheelies · Videos", "followers": 233000},
+  ytredline01:{"name": "RedLine01", "username": "redline01", "color": "#e0533b", "bio": "Wheelies · Videos", "followers": 24000},
+  yttylersherwin:{"name": "Tyler Sherwin", "username": "tyler.sherwin", "color": "#b8862b", "bio": "Magie · Videos", "followers": 147000},
+  ytnafizasmr:{"name": "Nafiz ASMR", "username": "nafiz.asmr", "color": "#1f8f4a", "bio": "Magie · Videos", "followers": 456000},
+  ytskillcraft:{"name": "Skill craft", "username": "skill.craft", "color": "#4b5bd6", "bio": "Magie · Videos", "followers": 136000},
+  ytmustkidfun:{"name": "Must Kid Fun", "username": "must.kid.fun", "color": "#d04f8a", "bio": "Satisfying · Videos", "followers": 712000},
+  ythydrauliasmr:{"name": "Hydrauli Asmr", "username": "hydrauli.asmr", "color": "#9b3bd1", "bio": "Satisfying · Videos", "followers": 484000},
+  ytnexisbm:{"name": "Nexis bm", "username": "nexis.bm", "color": "#2a9bb0", "bio": "Satisfying · Videos", "followers": 492000},
+  ytmoderncreator:{"name": "Modern Creator", "username": "modern.creator", "color": "#e0533b", "bio": "Satisfying · Videos", "followers": 751000},
+  yttoyplanet:{"name": "Toy Planet", "username": "toy.planet", "color": "#b8862b", "bio": "Satisfying · Videos", "followers": 394000},
+  ytvotcapgaming:{"name": "votcap gaming", "username": "votcap.gaming", "color": "#1f8f4a", "bio": "Gaming · Videos", "followers": 416000},
+  yttheoclips:{"name": "TheoClips", "username": "theoclips", "color": "#4b5bd6", "bio": "Gaming · Videos", "followers": 514000},
+  ytedithan:{"name": "edithan", "username": "edithan", "color": "#d04f8a", "bio": "Gaming · Videos", "followers": 211000},
+  ytgamity:{"name": "Gamity", "username": "gamity", "color": "#9b3bd1", "bio": "Gaming · Videos", "followers": 768000},
+  ytzflixedits:{"name": "Zflix Edits", "username": "zflix.edits", "color": "#2a9bb0", "bio": "Wildtiere · Videos", "followers": 59000},
+  ytabc7:{"name": "ABC7", "username": "abc7", "color": "#e0533b", "bio": "Wildtiere · Videos", "followers": 317000},
+  ytjustech:{"name": "justech", "username": "justech", "color": "#b8862b", "bio": "Wildtiere · Videos", "followers": 773000},
+  ytstoryversestud:{"name": "StoryVerse Studios", "username": "storyverse.studios", "color": "#1f8f4a", "bio": "Wildtiere · Videos", "followers": 743000},
+  ytsilentwhispers:{"name": "SilentWhispersPhotography", "username": "silentwhispersphotog", "color": "#4b5bd6", "bio": "Wildtiere · Videos", "followers": 297000},
+  ytdecodeuniverse:{"name": "Decode Universe", "username": "decode.universe", "color": "#d04f8a", "bio": "Wildtiere · Videos", "followers": 115000},
+  ytdanvsiexplains:{"name": "DanvsI Explains", "username": "danvsi.explains", "color": "#9b3bd1", "bio": "Life Hacks · Videos", "followers": 116000},
+  ytsmartlivinghac:{"name": "Smart Living Hacks", "username": "smart.living.hacks", "color": "#2a9bb0", "bio": "Life Hacks · Videos", "followers": 875000},
+  ytthebudgetrenov:{"name": "The Budget Renovator", "username": "the.budget.renovator", "color": "#e0533b", "bio": "Life Hacks · Videos", "followers": 282000},
+  ytadamroseusa:{"name": "Adam rose USA", "username": "adam.rose.usa", "color": "#b8862b", "bio": "Life Hacks · Videos", "followers": 237000},
+  ytthecomedycompo:{"name": "The Comedy Compound", "username": "the.comedy.compound", "color": "#1f8f4a", "bio": "Comedy DE · Videos", "followers": 289000},
+  ytbayerncomedyba:{"name": "Bayern-COMEDY Bayerischer Humor", "username": "bayerncomedy.bayeris", "color": "#4b5bd6", "bio": "Comedy DE · Videos", "followers": 472000},
+  ytunddann:{"name": "und dann...", "username": "und.dann...", "color": "#d04f8a", "bio": "Comedy DE · Videos", "followers": 393000},
+  ytasianstreetfoo:{"name": "Asian Street Food", "username": "asian.street.food", "color": "#9b3bd1", "bio": "Food · Videos", "followers": 698000},
   outdoor:{name:"Outdoor Max", username:"outdoor.max", color:"#5f7d3a", bio:"Wandern, Klettern, Draußen sein.", followers:5100}
 };
 const pname = id => id === ME ? (account?.name || "Du") : (people[id]?.name || "…");
@@ -891,7 +930,48 @@ const posts = [
   {id:++pid, by:"night", snap:pic("neon",{cap:"Retro Nights",capY:30}), likes:41200, shares:2100, sound:"Synthwave Mix",
     comments:[C("urban","Mehr davon!",80,18)]},
   {id:++pid, by:"outdoor", snap:pic("forest",{stamp:{time:"06:40",place:"Schwarzwald"}}), likes:615, shares:44, sound:"Originalton – Outdoor Max", comments:[]},
+  {id:++pid, by:"ytislamicchannel", snap:{yt:"nnlaBybZdds"}, cat:"Islam", text:"Emotional Quran recitation beautiful voice Islamic status #Islam", likes:136974, shares:218, sound:"Originalton – Islamic channel", comments:[]},
+  {id:++pid, by:"ytinnerpeace", snap:{yt:"b0uD72k-pT4"}, cat:"Islam", text:"Beautiful recitation of Quran #Islam", likes:145770, shares:8712, sound:"Originalton – Inner Peace", comments:[]},
+  {id:++pid, by:"ytthequranicvibe", snap:{yt:"wC8eBQOoIO0"}, cat:"Islam", text:"beautiful Quranic Vibes heart touching short #Islam", likes:258739, shares:7279, sound:"Originalton – The Quranic Vibes", comments:[]},
+  {id:++pid, by:"ytthevoiceofqura", snap:{yt:"d3poF0-s8C8"}, cat:"Islam", text:"Surah Al-Ikhlas | Beautiful Quran Recitation | Heart Touching Voice | Full HD #Islam", likes:335979, shares:5247, sound:"Originalton – The Voice Of Quran Majeed", comments:[]},
+  {id:++pid, by:"ytjustfaithtv", snap:{yt:"nSkbESQ-yxs"}, cat:"Christentum", text:"Upbeat R&B Worship Song | I’m Gonna Lift My Hands in This Place #Christentum", likes:346885, shares:1364, sound:"Originalton – JustFaithTV", comments:[]},
+  {id:++pid, by:"ytonechurch", snap:{yt:"iamHJC6semQ"}, cat:"Christentum", text:"Praise #Christentum", likes:235260, shares:6981, sound:"Originalton – One Church", comments:[]},
+  {id:++pid, by:"ytdesertspringsc", snap:{yt:"M7-reuudJok"}, cat:"Christentum", text:"Worship Short #Christentum", likes:399524, shares:7251, sound:"Originalton – Desert Springs Church", comments:[]},
+  {id:++pid, by:"ytwoodridgebapti", snap:{yt:"AB1x1cVBydE"}, cat:"Christentum", text:"When They Play Your Favorite Worship Song... #Christentum", likes:24662, shares:8985, sound:"Originalton – Woodridge Baptist Church", comments:[]},
+  {id:++pid, by:"ytextremesportsp", snap:{yt:"XUaOEq5Lt1I"}, cat:"Wheelies", text:"🤯 Mini Bike Wheelie Tricks! Unreal Balance 🏍️🔥 #Wheelies", likes:104772, shares:5925, sound:"Originalton – Extreme Sports Point", comments:[]},
+  {id:++pid, by:"ytgearsngrips", snap:{yt:"QylUq9-oHfg"}, cat:"Wheelies", text:"Girl Goes So Far Back on a Wheelie It's Insane #Wheelies", likes:175725, shares:4789, sound:"Originalton – Gears N Grips", comments:[]},
+  {id:++pid, by:"ytredline01", snap:{yt:"k_PsLkXjkTs"}, cat:"Wheelies", text:"This Kid Thought He Could Rev A Bike… 😳🏍️ #Wheelies", likes:378416, shares:11292, sound:"Originalton – RedLine01", comments:[]},
+  {id:++pid, by:"yttylersherwin", snap:{yt:"Z0qH8MOpCXU"}, cat:"Magie", text:"He was NOT ready for this magic trick! 🏀😂 #Magie", likes:209644, shares:10338, sound:"Originalton – Tyler Sherwin", comments:[]},
+  {id:++pid, by:"yttylersherwin", snap:{yt:"I3CZwbu1z6A"}, cat:"Magie", text:"He did the trick in front of her and she still doesn't know how #Magie", likes:5611, shares:9580, sound:"Originalton – Tyler Sherwin", comments:[]},
+  {id:++pid, by:"ytnafizasmr", snap:{yt:"hvxT1nDxFZw"}, cat:"Magie", text:"This Magic Trick Is Absolutely INSANE! 🤯🪄 #Magie", likes:122619, shares:9867, sound:"Originalton – Nafiz ASMR", comments:[]},
+  {id:++pid, by:"ytskillcraft", snap:{yt:"ZEtC_WsmvVY"}, cat:"Magie", text:"Title: The Magic Trick You Won’t Believe! 🪄😱 #Magie", likes:251483, shares:7295, sound:"Originalton – Skill craft", comments:[]},
+  {id:++pid, by:"ytmustkidfun", snap:{yt:"jYushbq9Zfs"}, cat:"Satisfying", text:"Hydraulic Press vs Everyday Objects – Satisfying Crush! #Satisfying", likes:299872, shares:1395, sound:"Originalton – Must Kid Fun", comments:[]},
+  {id:++pid, by:"ythydrauliasmr", snap:{yt:"X8hKHv8qlmA"}, cat:"Satisfying", text:"Press Crushing Satisfying Objects 😱🔥 | Extreme Crush ASMR #Satisfying", likes:115897, shares:4884, sound:"Originalton – Hydrauli Asmr", comments:[]},
+  {id:++pid, by:"ytnexisbm", snap:{yt:"uMbnWhOvsVk"}, cat:"Satisfying", text:"Almonds vs Hydraulic Press 🤯🌰 | Satisfying ASMR #Satisfying", likes:156589, shares:1377, sound:"Originalton – Nexis bm", comments:[]},
+  {id:++pid, by:"ytmoderncreator", snap:{yt:"teuxOJiDRAw"}, cat:"Satisfying", text:"Perfect for fans of hydraulic press videos, satisfying crushing, industrial #Satisfying", likes:79057, shares:2037, sound:"Originalton – Modern Creator", comments:[]},
+  {id:++pid, by:"yttoyplanet", snap:{yt:"IfKOeOkZctk"}, cat:"Satisfying", text:"Watch a Hydraulic Press Crush Everything! 😱 | Oddly Satisfying #Satisfying", likes:388583, shares:2335, sound:"Originalton – Toy Planet", comments:[]},
+  {id:++pid, by:"ytvotcapgaming", snap:{yt:"m6hpFWAp75A"}, cat:"Gaming", text:"Minecraft funny shorts gaming #Gaming", likes:296001, shares:2377, sound:"Originalton – votcap gaming", comments:[]},
+  {id:++pid, by:"yttheoclips", snap:{yt:"DkfWSgF_k4Y"}, cat:"Gaming", text:"Funniest Minecraft Moments 😂👀 #Gaming", likes:18058, shares:1970, sound:"Originalton – TheoClips", comments:[]},
+  {id:++pid, by:"ytedithan", snap:{yt:"rZr_1A4o0t4"}, cat:"Gaming", text:"we have minecraft at home 😭 #Gaming", likes:105941, shares:9950, sound:"Originalton – edithan", comments:[]},
+  {id:++pid, by:"yttheoclips", snap:{yt:"Nuk3derFSlw"}, cat:"Gaming", text:"Funniest Minecraft Moments 😂🤣 #Gaming", likes:50522, shares:2931, sound:"Originalton – TheoClips", comments:[]},
+  {id:++pid, by:"ytgamity", snap:{yt:"lLy9Oiocb_c"}, cat:"Gaming", text:"Minecraft Moments That Got WORSE Every Second 💀😂 #Gaming", likes:206922, shares:11070, sound:"Originalton – Gamity", comments:[]},
+  {id:++pid, by:"ytzflixedits", snap:{yt:"1AkqriSuCW0"}, cat:"Wildtiere", text:"Lion vs Tiger #Wildtiere", likes:78729, shares:9685, sound:"Originalton – Zflix Edits", comments:[]},
+  {id:++pid, by:"ytabc7", snap:{yt:"SCKv1Cmbplw"}, cat:"Wildtiere", text:"Sea lion takes down shark in dramatic attack off California coast #Wildtiere", likes:212097, shares:3490, sound:"Originalton – ABC7", comments:[]},
+  {id:++pid, by:"ytjustech", snap:{yt:"3ifhestvlKo"}, cat:"Wildtiere", text:"epic wildlife moment 😱 #Wildtiere", likes:338714, shares:4540, sound:"Originalton – justech", comments:[]},
+  {id:++pid, by:"ytstoryversestud", snap:{yt:"C56v9Ys9C5M"}, cat:"Wildtiere", text:"🦁 We Found a Lion! 🌍 Wild Animal Adventure | Part 1 #Wildtiere", likes:243168, shares:6146, sound:"Originalton – StoryVerse Studios", comments:[]},
+  {id:++pid, by:"ytsilentwhispers", snap:{yt:"KlHReeYKe44"}, cat:"Wildtiere", text:"The Noisy Sounds Of Lion Cubs In Their Natural Habitat #Wildtiere", likes:189279, shares:10983, sound:"Originalton – SilentWhispersPhotography", comments:[]},
+  {id:++pid, by:"ytdecodeuniverse", snap:{yt:"s9pmzJz-9ec"}, cat:"Wildtiere", text:"When a Tiger Picked The Wrong Fight 🦁🚫 #Wildtiere", likes:152236, shares:10740, sound:"Originalton – Decode Universe", comments:[]},
+  {id:++pid, by:"ytdanvsiexplains", snap:{yt:"DYQq63cUjFk"}, cat:"Life Hacks", text:"💡 Genius Life Hacks You Need! #LifeHacks", likes:74617, shares:325, sound:"Originalton – DanvsI Explains", comments:[]},
+  {id:++pid, by:"ytsmartlivinghac", snap:{yt:"9RjYg2-qdik"}, cat:"Life Hacks", text:"Genius Hacks to Save Your Time & Money Every Day 💰⏱️ #LifeHacks", likes:98561, shares:4374, sound:"Originalton – Smart Living Hacks", comments:[]},
+  {id:++pid, by:"ytthebudgetrenov", snap:{yt:"nr1QBf5SX30"}, cat:"Life Hacks", text:"Genius Diy Home Decor Hacks #LifeHacks", likes:358205, shares:9914, sound:"Originalton – The Budget Renovator", comments:[]},
+  {id:++pid, by:"ytadamroseusa", snap:{yt:"HnCfsWRwCak"}, cat:"Life Hacks", text:"A Genius Trick Everyone Should Know! 🤯 #LifeHacks", likes:331597, shares:3447, sound:"Originalton – Adam rose USA", comments:[]},
+  {id:++pid, by:"ytsmartlivinghac", snap:{yt:"7BC6a6TU74c"}, cat:"Life Hacks", text:"Life-Changing Hacks You’ll Wish You Knew Sooner! #LifeHacks", likes:190680, shares:3732, sound:"Originalton – Smart Living Hacks", comments:[]},
+  {id:++pid, by:"ytthecomedycompo", snap:{yt:"nxT4vHRIUqo"}, cat:"Comedy DE", text:"German Comedian Tricks Audience! #ComedyDE", likes:299650, shares:6712, sound:"Originalton – The Comedy Compound", comments:[]},
+  {id:++pid, by:"ytbayerncomedyba", snap:{yt:"lhG6Ar-HHwI"}, cat:"Comedy DE", text:"Was gibt's da zu lachen? 5 der besten Kurz-Sketche #ComedyDE", likes:79437, shares:9597, sound:"Originalton – Bayern-COMEDY Bayerischer Humor", comments:[]},
+  {id:++pid, by:"ytunddann", snap:{yt:"Nvfxy1ya4eo"}, cat:"Comedy DE", text:"Kein Widerstand ... 😄 #ComedyDE", likes:16555, shares:10574, sound:"Originalton – und dann...", comments:[]},
+  {id:++pid, by:"ytasianstreetfoo", snap:{yt:"Z8Y6t_vLU_E"}, cat:"Food", text:"Asian street food #Food", likes:205242, shares:1824, sound:"Originalton – Asian Street Food", comments:[]},
 ];
+for (let i = posts.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [posts[i], posts[j]] = [posts[j], posts[i]]; }
 posts.forEach(p=>{ p.liked=false; p.saved=false; p.at = now - Math.random()*20*60*MIN; });
 const replies = ["Haha, stark.","Nice!","Bin gleich da.","Was machst du heute noch?","Krass.","Ok, passt.","Erzähl mal.","Sieht gut aus."];
 const snapReplies = ["Starker Shot.","Wo bist du da?","Haha, nice.","Coole Lens.","Sieht gut aus."];
@@ -1171,7 +1251,7 @@ function openNewChat(){
 }
 
 // ================= Stories =================
-const CAT_ORDER = ["Lustig","Motocross","E-Scooter","Autos","Fußball","Basketball","Boxen","BMX & Skate","Gym","Dance","Beauty","Nails","Fashion","Gymnastics","Tiere","Travel","Food"];
+const CAT_ORDER = ["Lustig","Comedy DE","Gaming","Magie","Satisfying","Life Hacks","Wildtiere","Wheelies","Islam","Christentum","Motocross","E-Scooter","Autos","Fußball","Basketball","Boxen","BMX & Skate","Gym","Dance","Beauty","Nails","Fashion","Gymnastics","Tiere","Travel","Food"];
 function storyCats(){ const m = {}; posts.forEach(p => { if (p.cat && p.snap.yt) (m[p.cat] ||= []).push(p); });
   return CAT_ORDER.filter(c => m[c]).map(c => [c, m[c]]); }
 let picks = null;
@@ -1693,7 +1773,7 @@ const ytio = new IntersectionObserver(entries => entries.forEach(en => {
     const post = sh.closest(".post");
     if (en.isIntersecting && en.intersectionRatio > .6){
       if (ytCurPost && ytCurPost !== post) ytCurPost.classList.remove("ytlive");
-      ytCurPost = post; ytShared(id); setTimeout(() => { if (ytCurPost === post) post.classList.add("ytlive"); }, 700);
+      ytCurPost = post; post.paused = false; const sd = post.querySelector(".snd"); if (sd) sd.classList.remove("show"); ytShared(id); setTimeout(() => { if (ytCurPost === post) post.classList.add("ytlive"); }, 700);
     } else { post.classList.remove("ytlive"); if (ytCurPost === post){ ytCurPost = null; if (ytP) ytCmd(ytP, "pauseVideo"); } }
     return;
   }
@@ -1729,9 +1809,11 @@ function buildPost(p){
   const post = h("div",{class:"post",onclick:e=>{
       const t = Date.now();
       if (t - lastTap < 320){ clearTimeout(tapTimer); toggleLike(true); const r = post.getBoundingClientRect(); const b = h("span",{class:"burst",style:`left:${e.clientX-r.left-55}px;top:${e.clientY-r.top-70}px`}, ic("heart")); post.append(b); setTimeout(()=>b.remove(),850); }
-      else if (ytShot){ feedSound = true; const f = ytShot.closest("#spotfeed") ? ytP : ytShot.querySelector("iframe.yt"); if (f){ ytCmd(f, "unMute"); ytCmd(f, "playVideo"); setTimeout(() => ytCmd(f, "unMute"), 150); }
+      else if (ytShot){ feedSound = true; const f = ytShot.closest("#spotfeed") ? ytP : ytShot.querySelector("iframe.yt"); post.paused = !post.paused;
+        if (f){ ytCmd(f, "unMute"); ytCmd(f, post.paused ? "pauseVideo" : "playVideo"); }
+        snd.replaceChildren(ic(post.paused ? "resume" : "pause")); snd.classList.toggle("keep", !!post.paused); snd.classList.add("show"); if (!post.paused) setTimeout(()=>snd.classList.remove("show"),700);
         document.querySelectorAll(".snd.hint").forEach(x => x.remove()); snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }
-      else if (vid) tapTimer = setTimeout(()=>{ feedSound = true; document.querySelectorAll(".post video").forEach(v=>v.muted=false); vid.play().catch(()=>{}); snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }, 320);
+      else if (vid) tapTimer = setTimeout(()=>{ feedSound = true; document.querySelectorAll(".post video").forEach(v=>v.muted=false); if (vid.paused) vid.play().catch(()=>{}); else vid.pause(); post.paused = vid.paused; snd.replaceChildren(ic(vid.paused ? "resume" : "pause")); snd.classList.add("show"); if (vid.paused) return; snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }, 320);
       lastTap = t; }},
     media, snd, hint, vid ? h("div",{class:"vbar"}, bar) : null,
     h("div",{class:"info"},
