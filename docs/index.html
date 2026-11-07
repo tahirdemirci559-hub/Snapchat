@@ -317,6 +317,11 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 .viewfinder.on>p,.viewfinder.on>.chip{display:none}
 .shoot.rec{background:#e5484d;border-color:#fff;animation:recpulse 1s infinite}
 @keyframes recpulse{50%{transform:scale(.92)}}
+#p-spot>iframe.ytshared{position:absolute;top:50%;left:50%;width:100%;height:100%;border:0;transform:translate(-50%,-50%) scale(1.22);z-index:0;pointer-events:none;background:#000}
+#p-spot>.feed{position:relative;z-index:1}
+#spotfeed .post.ytlive{background:transparent}
+#spotfeed .post.ytlive .shot{background:transparent}
+#spotfeed .post.ytlive img.ytp{opacity:0;transition:opacity .4s}
 </style>
 
 </head>
@@ -1409,8 +1414,38 @@ function openSendTo(snap){
 let spotDirty = true, feedSound = false;
 function ytSrc(id, snd){ return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=${snd ? 0 : 1}&playsinline=1&loop=1&playlist=${id}&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`; }
 function ytCmd(f, func){ try { f.contentWindow.postMessage(JSON.stringify({event:"command", func, args:[]}), "*"); } catch {} }
+// Ein einziger Player für den Spotlight-Feed: Ton bleibt an, sobald er einmal an ist
+let ytP = null, ytCurPost = null;
+function ytShared(id){
+  const panel = document.getElementById("p-spot");
+  if (!ytP || !ytP.isConnected){
+    ytP = h("iframe",{class:"ytshared",src:ytSrc(id, false),allow:"autoplay; encrypted-media",title:"Video"});
+    ytP.dataset.id = id;
+    ytP.onload = () => { try { ytP.contentWindow.postMessage(JSON.stringify({event:"listening", id:"shade", channel:"widget"}), "*"); } catch {}
+      [300, 1000, 2200].forEach(t => setTimeout(() => { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }, t)); };
+    panel.prepend(ytP);
+  } else if (ytP.dataset.id !== id){
+    ytP.dataset.id = id;
+    try { ytP.contentWindow.postMessage(JSON.stringify({event:"command", func:"loadVideoById", args:[id, 0]}), "*"); } catch {}
+    setTimeout(() => { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }, 500);
+  } else { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }
+}
+window.addEventListener("message", e => {
+  if (!ytP || e.source !== ytP.contentWindow) return;
+  let d; try { d = typeof e.data === "string" ? JSON.parse(e.data) : e.data; } catch { return; }
+  if (d && d.event === "onStateChange" && d.info === 0){ try { ytP.contentWindow.postMessage(JSON.stringify({event:"command", func:"seekTo", args:[0, true]}), "*"); } catch {} ytCmd(ytP, "playVideo"); }
+});
+function ytSoundOn(){ feedSound = true; document.querySelectorAll(".snd.hint").forEach(x => x.remove()); if (ytP){ ytCmd(ytP, "unMute"); ytCmd(ytP, "playVideo"); } }
 const ytio = new IntersectionObserver(entries => entries.forEach(en => {
   const sh = en.target, id = sh.dataset.yt;
+  if (sh.closest("#spotfeed")){
+    const post = sh.closest(".post");
+    if (en.isIntersecting && en.intersectionRatio > .6){
+      if (ytCurPost && ytCurPost !== post) ytCurPost.classList.remove("ytlive");
+      ytCurPost = post; ytShared(id); setTimeout(() => { if (ytCurPost === post) post.classList.add("ytlive"); }, 700);
+    } else { post.classList.remove("ytlive"); if (ytCurPost === post){ ytCurPost = null; if (ytP) ytCmd(ytP, "pauseVideo"); } }
+    return;
+  }
   const f = sh.querySelector("iframe.yt");
   if (en.isIntersecting && en.intersectionRatio > .6){ if (!f){ const nf = h("iframe",{class:"yt",src:ytSrc(id, feedSound),allow:"autoplay; encrypted-media; picture-in-picture",title:"Video"}); nf.onload = () => { const kick = () => { ytCmd(nf, "playVideo"); if (feedSound) ytCmd(nf, "unMute"); }; [400, 1200, 2500].forEach(t => setTimeout(kick, t)); }; sh.append(nf); } }
   else if (f) f.remove();
@@ -1443,7 +1478,7 @@ function buildPost(p){
   const post = h("div",{class:"post",onclick:e=>{
       const t = Date.now();
       if (t - lastTap < 320){ clearTimeout(tapTimer); toggleLike(true); const r = post.getBoundingClientRect(); const b = h("span",{class:"burst",style:`left:${e.clientX-r.left-55}px;top:${e.clientY-r.top-70}px`}, ic("heart")); post.append(b); setTimeout(()=>b.remove(),850); }
-      else if (ytShot){ feedSound = !feedSound; const f = ytShot.querySelector("iframe.yt"); if (f){ ytCmd(f, feedSound ? "unMute" : "mute"); ytCmd(f, "playVideo"); if (feedSound) setTimeout(() => { ytCmd(f, "unMute"); ytCmd(f, "setVolume"); }, 150); }
+      else if (ytShot){ feedSound = !feedSound; const f = ytShot.closest("#spotfeed") ? ytP : ytShot.querySelector("iframe.yt"); if (f){ ytCmd(f, feedSound ? "unMute" : "mute"); ytCmd(f, "playVideo"); if (feedSound) setTimeout(() => { ytCmd(f, "unMute"); ytCmd(f, "setVolume"); }, 150); }
         document.querySelectorAll(".snd.hint").forEach(x => x.remove()); snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }
       else if (vid) tapTimer = setTimeout(()=>{ feedSound = !feedSound; document.querySelectorAll(".post video").forEach(v=>v.muted=!feedSound); if (feedSound) vid.play().catch(()=>{}); snd.replaceChildren(ic(feedSound?"vol":"mute")); snd.classList.add("show"); setTimeout(()=>snd.classList.remove("show"),700); }, 320);
       lastTap = t; }},
@@ -2383,7 +2418,7 @@ const TABS = [["chat","Chats"],["users","Stories"],["camera","Kamera"],["play","
 document.getElementById("tabs").replaceChildren(...TABS.map(([i,l],k)=>h("button",{"data-i":k,"aria-label":l}, ic(i), l, k===0?h("span",{class:"badge",id:"badge",hidden:true}):null)));
 const tabBtns = [...document.querySelectorAll("#tabs button")];
 let curTab = 2;
-function setTab(i){ if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (loggedIn && !camDenied && !camStarting) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
+function setTab(i){ if (i === 3 && i !== curTab && navigator.userActivation?.isActive !== false) setTimeout(ytSoundOn, 0); if (i !== 3 && curTab === 3 && ytP) ytCmd(ytP, "pauseVideo"); if (i === 3 && curTab !== 3 && ytP && ytCurPost) ytCmd(ytP, "playVideo"); if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (loggedIn && !camDenied && !camStarting) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
 function goTab(i){ if (overlay.childElementCount) closeOverlay(); pager.scrollTo({left:i*pager.clientWidth,behavior:"smooth"}); setTab(i); }
 tabBtns.forEach(b=>b.addEventListener("click",()=>goTab(+b.dataset.i)));
 pager.addEventListener("scroll",()=>setTab(Math.round(pager.scrollLeft/pager.clientWidth)),{passive:true});
