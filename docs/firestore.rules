@@ -38,5 +38,18 @@ service cloud.firestore {
       allow update: if signedIn() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewedBy']);
       allow delete: if signedIn() && resource.data.by == request.auth.uid;
     }
+    match /calls/{callId} {
+      allow read: if signedIn() && (resource == null || request.auth.uid == resource.data.from || request.auth.uid == resource.data.to);
+      allow create: if signedIn() && request.resource.data.from == request.auth.uid;
+      allow update: if signedIn() && (request.auth.uid == resource.data.from || request.auth.uid == resource.data.to);
+      match /cands/{candId} {
+        function inCall() {
+          let d = get(/databases/$(database)/documents/calls/$(callId)).data;
+          return request.auth.uid == d.from || request.auth.uid == d.to;
+        }
+        allow read: if signedIn() && inCall();
+        allow create: if signedIn() && inCall() && request.resource.data.by == request.auth.uid;
+      }
+    }
   }
 }

@@ -128,7 +128,7 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 .compose input{flex:1;min-width:0;padding:11px 14px;border-radius:20px;border:0;background:var(--surface2);color:var(--fg)}
 .abtn{width:42px;height:42px;border-radius:50%;background:var(--acc);color:var(--acc-ink);display:grid;place-items:center;flex:none}
 .stage{flex:1;position:relative;display:grid;place-items:center;min-height:0;padding:0 12px}
-/* Snap-Bild mit Ebenen */
+/* Shot-Bild mit Ebenen */
 .shot{width:min(100%,calc((100dvh - 270px)*0.5625));aspect-ratio:9/16;border-radius:16px;position:relative;overflow:hidden;display:grid;place-items:center;max-width:100%;container-type:inline-size;user-select:none;-webkit-user-select:none;touch-action:none;background:#111}
 .shot.small{width:100%;border-radius:0}
 .shot>.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
@@ -283,6 +283,24 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 .installbar b{display:block;font-size:14px}
 .installbar small{color:var(--muted);font-size:12.5px}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+/* Anrufe */
+#call:empty{display:none}
+.call{position:fixed;inset:0;z-index:60;background:radial-gradient(120% 80% at 50% 20%,#1e293b,#05080d);color:#fff;display:flex;flex-direction:column;align-items:center;max-width:560px;margin:0 auto;overflow:hidden}
+.call video.remote{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.call video.local{position:absolute;right:14px;top:calc(env(safe-area-inset-top,0px) + 14px);width:104px;height:150px;object-fit:cover;border-radius:16px;border:2px solid #fff3;transform:scaleX(-1);z-index:2;background:#111}
+.call .who{position:relative;z-index:1;margin-top:calc(env(safe-area-inset-top,0px) + 16vh);display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.call .who b{font-size:26px;letter-spacing:-.01em}
+.call .who small{color:#ffffffb0;font-size:15px}
+.call.live .who{margin-top:calc(env(safe-area-inset-top,0px) + 22px)}
+.call.live.vid .who{display:none}
+.call .ctl{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 36px);left:0;right:0;display:flex;justify-content:center;gap:22px;z-index:3}
+.call .cb{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#ffffff26;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff}
+.call .cb.on{background:#fff;color:#0b1220}
+.call .cb.end{background:#e5484d}
+.call .cb.ok{background:#22c55e}
+.call .lbl{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;color:#ffffffc0}
+.call .pulse{animation:callpulse 1.6s ease-in-out infinite}
+@keyframes callpulse{0%,100%{box-shadow:0 0 0 0 #22d3ee55}50%{box-shadow:0 0 0 22px #22d3ee00}}
 </style>
 
 </head>
@@ -300,6 +318,7 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 <div id="overlay"></div>
 <div id="auth"></div>
 <div id="toast" class="toast" hidden></div>
+<div id="call"></div>
 <input type="file" id="file-cam" accept="image/*" capture="environment" hidden>
 <input type="file" id="file-lib" accept="image/*,video/*" hidden>
 <input type="file" id="file-vid" accept="video/*" capture="environment" hidden>
@@ -365,6 +384,12 @@ const ICONS = {
   grid:'<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
   story:'<circle cx="12" cy="12" r="9" stroke-dasharray="4 3"/><path d="M12 8v8M8 12h8"/>',
   video:'<rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="m15.5 10 6-3.5v11l-6-3.5z"/>',
+  phone:'<path d="M5.2 3.5h3.3l1.9 4.8-2.4 1.5a11.5 11.5 0 0 0 6.2 6.2l1.5-2.4 4.8 1.9v3.3a2 2 0 0 1-2.1 2A17.4 17.4 0 0 1 3.2 5.6a2 2 0 0 1 2-2.1z"/>',
+  hangup:'<path transform="rotate(135 12 12)" d="M5.2 3.5h3.3l1.9 4.8-2.4 1.5a11.5 11.5 0 0 0 6.2 6.2l1.5-2.4 4.8 1.9v3.3a2 2 0 0 1-2.1 2A17.4 17.4 0 0 1 3.2 5.6a2 2 0 0 1 2-2.1z"/>',
+  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+  micoff:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M4 4l16 16"/>',
+  camoff:'<rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="m15.5 10 6-3.5v11l-6-3.5zM3 3l18 18"/>',
+  flip:'<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4"/>',
   mute:'<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m17 9.5 4 5M21 9.5l-4 5"/>',
   vol:'<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 9a4.5 4.5 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/>',
   more:'<circle cx="5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="19" cy="12" r="1.7" fill="currentColor"/>',
@@ -570,10 +595,16 @@ const posts = [
     comments:[C("night","Haha, der ist so gut gemacht.",25,31),C("street","Kenn ich noch!",50,8)]},
   {id:++pid, by:"urban", snap:vid("traffic.mp4",{cap:"Rush Hour von oben",capY:80}), likes:22800, shares:740, sound:"Stadt – Urban Shots", credit:"Video: Intel IoT DevKit · CC BY 4.0",
     comments:[C("road","Schöne Perspektive.",70,6)]},
+  {id:++pid, by:"outdoor", snap:vid("flower.mp4",{cap:"Frühling im Garten",capY:80}), likes:18300, shares:960, sound:"Natur – Outdoor Max", credit:"Video: MDN · CC0",
+    comments:[C("road","So nah dran, krass.",35,9)]},
+  {id:++pid, by:"road", snap:vid("street.mp4",{stamp:{time:"17:20",place:"Parkplatz von oben"}}), likes:7400, shares:210, sound:"Originalton – Roadtrip BW", credit:"Video: Intel IoT DevKit · CC BY 4.0",
+    comments:[]},
   {id:++pid, by:"night", snap:pic("road",{cap:"B27 um Mitternacht",capY:72}), likes:84100, shares:3200, sound:"Lofi Drive – Night Drive",
     comments:[C("road","Die Strecke fahr ich jeden Tag.",30,12),C("kick","Wie heißt der Song?",22,40),C("urban","Starke Farben.",90,3)]},
   {id:++pid, by:"urban", snap:pic("city",{stamp:{time:"23:58",place:"Stuttgart Mitte"}}), likes:53100, shares:1800, sound:"Originalton – Urban Shots",
     comments:[C("kino","Mega Aufnahme.",40,22),C("outdoor","Wo ist das genau?",60,9)]},
+  {id:++pid, by:"kino", snap:vid("classroom.mp4",{cap:"Montagmorgen, erste Stunde.",capY:20}), likes:33900, shares:1400, sound:"Originalton – Kino Kurz", credit:"Video: Intel IoT DevKit · CC BY 4.0",
+    comments:[C("kick","Genau so sieht's aus.",45,27)]},
   {id:++pid, by:"street", snap:pic("food",{cap:"Beste Pasta in der Stadt?",capY:84}), likes:12040, shares:2500, sound:"Originalton – Streetfood Stuttgart",
     comments:[C("urban","Da muss ich mal hin.",120,15)]},
   {id:++pid, by:"kick", snap:pic("pitch",{cap:"Was für ein Abend.",capY:22}), likes:28770, shares:900, sound:"Stadion – Live",
@@ -586,7 +617,7 @@ const posts = [
 ];
 posts.forEach(p=>{ p.liked=false; p.saved=false; p.at = now - Math.random()*20*60*MIN; });
 const replies = ["Haha, stark.","Nice!","Bin gleich da.","Was machst du heute noch?","Krass.","Ok, passt.","Erzähl mal.","Sieht gut aus."];
-const snapReplies = ["Starker Snap.","Wo bist du da?","Haha, nice.","Coole Lens.","Sieht gut aus."];
+const snapReplies = ["Starker Shot.","Wo bist du da?","Haha, nice.","Coole Lens.","Sieht gut aus."];
 
 const lenses = [
   {id:"none", name:"Normal", sw:"#2a2d33"},
@@ -605,7 +636,7 @@ let camLens = "none", camMode = "photo";
 
 const trophyList = [
   {id:"start", ic:"user", name:"Willkommen", how:"Konto erstellt"},
-  {id:"snap", ic:"camera", name:"Erster Snap", how:"Einen Snap senden"},
+  {id:"snap", ic:"camera", name:"Erster Shot", how:"Einen Shot senden"},
   {id:"lens", ic:"mask", name:"Lens-Profi", how:"Eine Lens benutzen"},
   {id:"story", ic:"story", name:"Storyteller", how:"Eine Story posten"},
   {id:"spot", ic:"play", name:"Spotlight", how:"Auf Spotlight posten"},
@@ -638,7 +669,7 @@ const verified = id => people[id]?.verified ? h("span",{class:"verified",title:"
 const isFriend = id => people[id]?.friend;
 const flame = n => n ? h("span",{class:"flame"}, String(n), ic("flame")) : null;
 
-// ================= Snap-Bild zeichnen =================
+// ================= Shot-Bild zeichnen =================
 function rainSpots(seedChar){
   let s = [...seedChar].reduce((a,c)=>a+c.codePointAt(0),7);
   const rnd = () => (s = (s*9301+49297)%233280)/233280;
@@ -703,10 +734,13 @@ function status(c){
     const col = last.snap ? "snap" : "chat";
     return {text:(last.snap ? (c.opened?"Geöffnet":"Zugestellt") : last.share ? "Geteilt" : (c.opened?"Gelesen":"Zugestellt"))+" · "+ago(last.at), cls:"", mark:h("span",{style:`color:var(--${col});display:inline-grid`}, ic("send",13))};
   }
-  if (last.snap && !last.viewed) return {text:"Neuer Snap · "+ago(last.at), cls:"new", mark:h("span",{class:"sq"})};
+  if (last.snap && !last.viewed) return {text:"Neuer Shot · "+ago(last.at), cls:"new", mark:h("span",{class:"sq"})};
   if (!c.read) return {text:(c.group?pname(last.by)+": ":"")+(last.text||"Neue Nachricht")+" · "+ago(last.at), cls:"newchat", mark:h("span",{class:"sq"})};
-  return {text:(last.snap?"Snap angesehen":last.text)+" · "+ago(last.at), cls:"", mark:h("span",{class:"sq o",style:`color:var(--${last.snap?"snap":"chat"})`})};
+  return {text:(last.snap?"Shot angesehen":last.text)+" · "+ago(last.at), cls:"", mark:h("span",{class:"sq o",style:`color:var(--${last.snap?"snap":"chat"})`})};
 }
+
+// ================= Anrufe (ohne Server nicht möglich) =================
+let startCall = () => toast("Anrufe gehen, wenn du über shadechat.github.io angemeldet bist.");
 
 // ================= Chats =================
 let search = "";
@@ -747,8 +781,8 @@ function openChat(id){
       const out = [], mine = m.by === ME;
       if (c.group && !mine && c.msgs[i-1]?.by !== m.by) out.push(h("div",{class:"who",style:`color:${people[m.by].color}`},pname(m.by)));
       if (m.snap){
-        if (mine) out.push(h("div",{class:"snaptile me"}, ic("send",16), m.opened ? "Geöffnet" : "Snap zugestellt"));
-        else if (!m.viewed) out.push(h("button",{class:"snaptile wait",onclick:()=>viewSnap(c,m)}, h("span",{class:"sq",style:"background:#fff"}),"Snap ansehen"));
+        if (mine) out.push(h("div",{class:"snaptile me"}, ic("send",16), m.opened ? "Geöffnet" : "Shot zugestellt"));
+        else if (!m.viewed) out.push(h("button",{class:"snaptile wait",onclick:()=>viewSnap(c,m)}, h("span",{class:"sq",style:"background:#fff"}),"Shot ansehen"));
         else out.push(h("div",{class:"snaptile"}, h("span",{class:"sq o"}),"Angesehen"));
       } else if (m.share){
         const p = posts.find(x=>x.id===m.share);
@@ -768,10 +802,12 @@ function openChat(id){
       h("button",{style:"display:flex;align-items:center;gap:10px;flex:1;min-width:0;text-align:left",onclick:()=>{ if(!c.group) openUserProfile(c.members[0]); }},
         c.group ? groupAvatar(38) : avatar(c.members[0],38),
         h("span",{style:"min-width:0"}, h("b",{style:"display:block"},c.title), h("small",{style:"color:var(--muted)"}, c.group ? (c.members.length+1)+" Mitglieder" : "@"+puser(c.members[0])))),
-      flame(c.streak)),
+      flame(c.streak),
+      c.group ? null : iconBtn("phone","Anrufen",()=>startCall(c.members[0],false)),
+      c.group ? null : iconBtn("video","Videoanruf",()=>startCall(c.members[0],true))),
     msgs,
     h("div",{class:"compose"},
-      h("button",{class:"round",style:"width:42px;height:42px","aria-label":"Foto als Snap",onclick:()=>takePhoto(false,{chat:c.id})}, ic("camera")),
+      h("button",{class:"round",style:"width:42px;height:42px","aria-label":"Foto als Shot",onclick:()=>takePhoto(false,{chat:c.id})}, ic("camera")),
       input,
       h("button",{class:"abtn","aria-label":"Senden",onclick:send}, ic("up",20)))));
   c.redraw = draw;
@@ -796,7 +832,7 @@ function viewSnap(c, m){
     overlay.append(h("div",{class:"ov dark",onclick:done},
       h("div",{style:"display:flex;justify-content:space-between;align-items:center;padding:12px 16px"}, h("span",{style:"display:flex;gap:10px;align-items:center"}, avatar(m.by,32), h("b",{},pname(m.by)), h("small",{style:"opacity:.7"},ago(m.at))), ic("video",20)),
       h("div",{class:"stage"}, shot),
-      h("p",{class:"note",style:"color:#fff9"},"Tippen zum Schließen · Der Snap wird danach gelöscht")));
+      h("p",{class:"note",style:"color:#fff9"},"Tippen zum Schließen · Der Shot wird danach gelöscht")));
     return;
   }
   let left = m.snap.sec || 5;
@@ -805,7 +841,7 @@ function viewSnap(c, m){
   overlay.append(h("div",{class:"ov dark",onclick:done},
     h("div",{style:"display:flex;justify-content:space-between;align-items:center;padding:12px 16px"}, h("span",{style:"display:flex;gap:10px;align-items:center"}, avatar(m.by,32), h("b",{},pname(m.by)), h("small",{style:"opacity:.7"},ago(m.at))), h("span",{style:"display:flex;gap:6px;align-items:center"}, ic("timer",18), counter)),
     h("div",{class:"stage"}, renderShot(m.snap)),
-    h("p",{class:"note",style:"color:#fff9"},"Tippen zum Schließen · Der Snap wird danach gelöscht")));
+    h("p",{class:"note",style:"color:#fff9"},"Tippen zum Schließen · Der Shot wird danach gelöscht")));
   timers.push(setInterval(()=>{ left--; counter.textContent=left; if(left<=0) done(); },1000));
 }
 function openNewChat(){
@@ -829,7 +865,7 @@ function renderStories(){
     h("div",{class:"mine"},
       h("button",{"aria-label":"Meine Story ansehen",onclick:()=> myStories.length ? openStoryViewer([{by:ME,list:myStories}],0) : takePhoto(false,{story:true})}, avatar(ME,52,myStories.length>0)),
       h("div",{style:"flex:1;min-width:0"}, h("b",{style:"display:block;font-size:15.5px"},"Meine Story"),
-        h("small",{style:"color:var(--muted);display:flex;gap:5px;align-items:center"}, myStories.length ? [ic("eye",15), `${views} Aufrufe · ${myStories.length} Snap${myStories.length>1?"s":""}`] : "Teile, was du gerade machst")),
+        h("small",{style:"color:var(--muted);display:flex;gap:5px;align-items:center"}, myStories.length ? [ic("eye",15), `${views} Aufrufe · ${myStories.length} Shot${myStories.length>1?"s":""}`] : "Teile, was du gerade machst")),
       h("button",{class:"abtn","aria-label":"Story aufnehmen",onclick:()=>takePhoto(false,{story:true})}, ic("plus"))),
     h("div",{class:"circles"}, ...groups.map((g,i)=>h("button",{onclick:()=>openStoryViewer(groups,i)}, avatar(g.by,60,g.unseen), pname(g.by)))),
     h("h2",{},"Freunde", h("small",{},"24 Stunden sichtbar")),
@@ -958,7 +994,7 @@ function openEditor(target, media, lensId){
   const doSend = () => {
     const final = JSON.parse(JSON.stringify(snap)); final.stickers.forEach(s=>delete s.fromLens);
     unlock("snap"); addScore(10);
-    if (target.chat){ const c = chats.find(x=>x.id===target.chat); c.msgs.push({by:ME,snap:final,at:Date.now()}); c.opened=false; reply(c,true); openChat(c.id); toast("Snap gesendet"); }
+    if (target.chat){ const c = chats.find(x=>x.id===target.chat); c.msgs.push({by:ME,snap:final,at:Date.now()}); c.opened=false; reply(c,true); openChat(c.id); toast("Shot gesendet"); }
     else if (target.story){ postStory(final); closeOverlay(); toast("Zu deiner Story hinzugefügt"); }
     else openSendTo(final);
   };
@@ -1007,7 +1043,7 @@ function openSendTo(snap){
         else if(id==="spot") postSpotlight(snap, capIn.value.trim());
         else { const c=chats.find(x=>x.id===id); c.msgs.push({by:ME,snap,at:Date.now()}); c.opened=false; reply(c,true); }
       });
-      closeOverlay(); toast(sel.has("spot") ? "Auf Spotlight veröffentlicht" : "Snap gesendet");
+      closeOverlay(); toast(sel.has("spot") ? "Auf Spotlight veröffentlicht" : "Shot gesendet");
     }}, sel.size ? `Senden (${sel.size})` : "Empfänger wählen", ic("send"))); };
   draw();
   overlay.firstChild.append(sheet);
@@ -1170,7 +1206,7 @@ function openUserProfile(id){
         h("div",{class:"pactions"},
           friend ? h("button",{class:"main",onclick:()=>{ chatWith(id); openChat(id); }}, ic("chat"),"Chat")
                  : h("button",{class:"main",onclick:()=>{ befriend(id); draw(); }}, ic("userplus"),"Hinzufügen"),
-          friend ? h("button",{onclick:()=>{ chatWith(id); takePhoto(false,{chat:id}); }}, ic("camera"),"Snap")
+          friend ? h("button",{onclick:()=>{ chatWith(id); takePhoto(false,{chat:id}); }}, ic("camera"),"Shot")
                  : h("button",{onclick:()=>{ p.following=!p.following; p.followers+=p.following?1:-1; draw(); }}, p.following?[ic("check"),"Abonniert"]:"Abonnieren")),
         h("h2",{},"Spotlight"),
         theirPosts.length ? postGrid(theirPosts, likeLabel) : h("div",{class:"empty"}, pname(id)+" hat noch nichts gepostet.")));
@@ -1298,7 +1334,7 @@ function openSettings(){
       h("div",{style:"display:flex;gap:8px"}, ...[["dark","Dunkel"],["light","Hell"]].map(([k,l])=>h("button",{class:"sbtn",style:theme===k?"background:var(--acc);color:var(--acc-ink)":"",onclick:()=>setTheme(k)}, ic(k==="dark"?"moon":"spark"), l))),
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Konto & Privatsphäre"),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"E-Mail"), h("small",{},h("span",{},account.email)))),
-      h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer kann mir Snaps schicken?"), h("small",{},h("span",{},"Nur Freunde")))),
+      h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer kann mir Shots schicken?"), h("small",{},h("span",{},"Nur Freunde")))),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer sieht meine Story?"), h("small",{},h("span",{},"Freunde")))),
       h("p",{class:"note",style:"text-align:left;margin-top:10px"}, NET ? "Online: Konto, Freunde, Chats und Stories werden sicher auf dem Server gespeichert." : "Vorschau: Konto, Fotos und Chats bleiben nur auf diesem Gerät."),
       h("button",{class:"sbtn",style:"color:var(--snap);width:100%;justify-content:center",onclick:logout}, ic("logout"),"Abmelden"))));
@@ -1338,7 +1374,7 @@ function openInstall(fromFullscreen){
 }
 
 // ================= Online (Firebase) =================
-// Sobald hier die Firebase-Daten stehen, laufen Konto, Freunde, Chats, Snaps und Stories über den Server.
+// Sobald hier die Firebase-Daten stehen, laufen Konto, Freunde, Chats, Shots und Stories über den Server.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCOqLHQaBwEP4aLag2SRWjiO2WMTHdA5yU",
   authDomain: "shade-56574.firebaseapp.com",
@@ -1422,6 +1458,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
 
   // ---------- Beobachten ----------
   function stopAll(){
+    if (call) endCall(true);
     unsubs.forEach(f => f()); unsubs = [];
     Object.values(friendUnsubs).forEach(f => f()); friendUnsubs = {};
     Object.values(msgUnsubs).forEach(f => f()); msgUnsubs = {};
@@ -1476,7 +1513,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
         }, e => { console.warn(e); if (tries < 8 && msgUnsubs[d.id]) setTimeout(() => { if (UID) sub(tries + 1); }, 1500); }); };
         if (!msgUnsubs[d.id]) sub(0);
         if (initialized && data.lastBy && data.lastBy !== UID && data.lastAt > prevAt && !overlay.querySelector(`[data-chat="${other}"]`))
-          toast(`${pname(other)}: ${data.lastKind === "snap" ? "Neuer Snap" : "Neue Nachricht"}`);
+          toast(`${pname(other)}: ${data.lastKind === "snap" ? "Neuer Shot" : "Neue Nachricht"}`);
       });
       refresh();
     }, e => { console.warn(e); toast(errText(e)); }));
@@ -1674,13 +1711,185 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
         lastUsername = d.username;
         watchFriends(d.friends || []);
         if (first){
-          loggedIn = true; authEl.replaceChildren(); watchChats(); renderAll();
+          loggedIn = true; authEl.replaceChildren(); watchChats(); watchCalls(); renderAll();
           requestAnimationFrame(() => { pager.scrollLeft = 2 * pager.clientWidth; setTab(2); });
           setTimeout(() => { initialized = true; }, 3000);
         }
         refresh();
       }, e => toast(errText(e))));
     });
+  }
+
+  // ---------- Anrufe (WebRTC, Verbindungsaufbau über Firestore) ----------
+  const ICE = {iceServers:[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302","stun:stun2.l.google.com:19302"]}]};
+  const callEl = document.getElementById("call");
+  let call = null;
+  const fmtDur = ms => { const t = Math.floor(ms/1000); return Math.floor(t/60) + ":" + String(t%60).padStart(2,"0"); };
+
+  function ring(on, outgoing){
+    if (call && call.ringer){ clearInterval(call.ringer); call.ringer = null; }
+    if (!on || !call) return;
+    let ctx; try { ctx = call.actx || (call.actx = new (window.AudioContext || window.webkitAudioContext)()); } catch { return; }
+    const beep = () => { try {
+      const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = outgoing ? 425 : 660; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(outgoing ? .06 : .12, t + .03);
+      g.gain.setValueAtTime(outgoing ? .06 : .12, t + (outgoing ? 1 : .35)); g.gain.linearRampToValueAtTime(0, t + (outgoing ? 1.05 : .4));
+      o.start(t); o.stop(t + 1.1);
+      if (!outgoing){ const o2 = ctx.createOscillator(), g2 = ctx.createGain(); o2.frequency.value = 880; o2.connect(g2); g2.connect(ctx.destination);
+        g2.gain.setValueAtTime(0, t + .45); g2.gain.linearRampToValueAtTime(.12, t + .48); g2.gain.setValueAtTime(.12, t + .8); g2.gain.linearRampToValueAtTime(0, t + .85); o2.start(t + .4); o2.stop(t + .9); }
+    } catch {} };
+    beep(); call.ringer = setInterval(beep, outgoing ? 4000 : 2000);
+    if (!outgoing && navigator.vibrate) try { navigator.vibrate([400, 200, 400]); } catch {}
+  }
+
+  function renderCall(){
+    if (!call){ callEl.replaceChildren(); return; }
+    const c = call, live = c.state === "live";
+    const status = c.state === "incoming" ? (c.video ? "Videoanruf …" : "Anruf …")
+      : c.state === "out" ? (c.video ? "Videoanruf – klingelt …" : "Klingelt …")
+      : c.state === "connecting" ? "Verbinde …" : fmtDur(Date.now() - c.started);
+    const btn = (icon, label, fn, cls="") => h("span",{class:"lbl"}, h("button",{class:"cb "+cls,"aria-label":label,onclick:fn}, ic(icon,26)), label);
+    if (!c.remoteEl){ c.remoteEl = h("video",{class:"remote",autoplay:true,playsinline:true}); c.remoteEl.setAttribute("webkit-playsinline",""); }
+    if (!c.localEl){ c.localEl = h("video",{class:"local",autoplay:true,playsinline:true,muted:true}); c.localEl.muted = true; }
+    if (c.remote && c.remoteEl.srcObject !== c.remote){ c.remoteEl.srcObject = c.remote; c.remoteEl.play().catch(()=>{}); }
+    if (c.local && c.video && c.localEl.srcObject !== c.local){ c.localEl.srcObject = c.local; c.localEl.play().catch(()=>{}); }
+    const showRemote = c.video && c.remote;
+    c.remoteEl.style.display = showRemote ? "" : "none"; c.remoteEl.style.opacity = showRemote ? 1 : 0;
+    c.localEl.style.display = c.video && c.local && c.camOn ? "" : "none";
+    let ctl;
+    if (c.state === "incoming") ctl = [btn("hangup","Ablehnen",()=>declineCall(),"end"), btn(c.video ? "video" : "phone","Annehmen",()=>acceptCall(),"ok pulse")];
+    else ctl = [btn(c.muted ? "micoff" : "mic", c.muted ? "Stumm" : "Mikro", toggleMute, c.muted ? "on" : ""),
+      c.video ? btn(c.camOn ? "video" : "camoff","Kamera",toggleCam, c.camOn ? "" : "on") : null,
+      c.video ? btn("flip","Drehen",flipCam) : null,
+      btn("hangup","Auflegen",()=>endCall(true),"end")];
+    if (!c.root){
+      c.root = h("div",{class:"call"}); c.statusEl = h("small",{});
+      c.root.append(c.remoteEl, c.localEl, h("div",{class:"who"}, avatar(c.other, 112), h("b",{}, pname(c.other)), c.statusEl), h("div",{class:"ctl"}));
+      callEl.replaceChildren(c.root);
+    }
+    c.root.className = "call" + (live ? " live" : "") + (showRemote ? " vid" : "");
+    c.statusEl.textContent = status;
+    c.root.querySelector(".ctl").replaceChildren(...ctl.filter(Boolean));
+  }
+
+  function toggleMute(){ if (!call || !call.local) return; call.muted = !call.muted; call.local.getAudioTracks().forEach(t => t.enabled = !call.muted); renderCall(); }
+  function toggleCam(){ if (!call || !call.local) return; call.camOn = !call.camOn; call.local.getVideoTracks().forEach(t => t.enabled = call.camOn); renderCall(); }
+  async function flipCam(){
+    if (!call || !call.local || !call.pc) return;
+    call.facing = call.facing === "user" ? "environment" : "user";
+    try {
+      const ns = await navigator.mediaDevices.getUserMedia({video:{facingMode:call.facing}});
+      const nt = ns.getVideoTracks()[0], sender = call.pc.getSenders().find(s => s.track && s.track.kind === "video");
+      if (sender) await sender.replaceTrack(nt);
+      call.local.getVideoTracks().forEach(t => { t.stop(); call.local.removeTrack(t); }); call.local.addTrack(nt);
+      call.localEl.style.transform = call.facing === "user" ? "scaleX(-1)" : "none";
+      call.localEl.srcObject = null; renderCall();
+    } catch { toast("Kamera konnte nicht gewechselt werden."); }
+  }
+
+  async function getMedia(video){
+    if (!navigator.mediaDevices?.getUserMedia) throw new Error("nomedia");
+    return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}, video: video ? {facingMode:"user", width:{ideal:640}, height:{ideal:960}} : false});
+  }
+
+  function makePc(){
+    const c = call, pc = new RTCPeerConnection(ICE);
+    c.pc = pc; c.candQueue = []; c.outCands = []; c.ready = false;
+    c.local.getTracks().forEach(t => pc.addTrack(t, c.local));
+    pc.ontrack = e => { if (!call || call !== c) return; c.remote = e.streams[0] || new MediaStream([e.track]); renderCall(); };
+    pc.onicecandidate = e => { if (!e.candidate) return; const cand = e.candidate.toJSON(); if (c.ready) sendCand(c, cand); else c.outCands.push(cand); };
+    pc.onconnectionstatechange = () => {
+      if (call !== c) return;
+      const st = pc.connectionState;
+      if (st === "connected" && c.state !== "live"){ c.state = "live"; c.started = Date.now(); ring(false); c.tick = setInterval(renderCall, 1000); renderCall(); }
+      else if (st === "failed"){ toast("Verbindung fehlgeschlagen. Versucht es im WLAN noch einmal."); endCall(true); }
+      else if (st === "disconnected"){ clearTimeout(c.dropT); c.dropT = setTimeout(() => { if (call === c && pc.connectionState !== "connected"){ toast("Verbindung abgebrochen."); endCall(true); } }, 8000); }
+    };
+    return pc;
+  }
+  function sendCand(c, cand){ c.ref.collection("cands").add({by:UID, c:cand, at:Date.now()}).catch(e => console.warn(e)); }
+  function flushOut(c){ c.ready = true; c.outCands.splice(0).forEach(x => sendCand(c, x)); }
+  async function addCand(c, cand){ try { if (c.pc.remoteDescription) await c.pc.addIceCandidate(cand); else c.candQueue.push(cand); } catch(e){ console.warn(e); } }
+  async function flushIn(c){ for (const x of c.candQueue.splice(0)) try { await c.pc.addIceCandidate(x); } catch(e){ console.warn(e); } }
+  function listenCands(c){
+    c.unsubs.push(c.ref.collection("cands").onSnapshot(q => q.docChanges().forEach(ch => {
+      if (ch.type !== "added") return; const d = ch.doc.data(); if (d.by !== UID) addCand(c, d.c);
+    }), e => console.warn(e)));
+  }
+
+  startCall = async function(other, video){
+    if (call) return;
+    if (!myFriends.includes(other)) return toast("Du kannst nur Freunde anrufen.");
+    let local;
+    try { local = await getMedia(video); }
+    catch { return toast(video ? "Kein Zugriff auf Kamera/Mikrofon. Erlaube es in den Einstellungen." : "Kein Zugriff aufs Mikrofon. Erlaube es in den Einstellungen."); }
+    const ref = db.collection("calls").doc();
+    const c = call = {ref, other, video, local, state:"out", role:"out", unsubs:[], camOn:true, muted:false, facing:"user"};
+    renderCall(); ring(true, true);
+    try {
+      const pc = makePc();
+      const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+      await ref.set({from:UID, to:other, video:!!video, offer:{type:offer.type, sdp:offer.sdp}, status:"ringing", at:Date.now()});
+      flushOut(c); listenCands(c);
+      c.unsubs.push(ref.onSnapshot(async s => {
+        const d = s.data(); if (!d || call !== c) return;
+        if (d.answer && !c.answered){ c.answered = true; ring(false); c.state = "connecting"; renderCall();
+          try { await pc.setRemoteDescription(d.answer); await flushIn(c); } catch(e){ console.warn(e); } }
+        if (d.status === "declined"){ toast(pname(other) + " hat abgelehnt."); endCall(false); }
+        else if (d.status === "busy"){ toast(pname(other) + " telefoniert gerade."); endCall(false); }
+        else if (d.status === "ended"){ endCall(false); }
+      }, e => console.warn(e)));
+      c.noAnswer = setTimeout(() => { if (call === c && !c.answered){ toast(pname(other) + " geht nicht ran."); endCall(true, "missed"); } }, 45000);
+    } catch(e){ toast("Anruf nicht möglich: " + errText(e)); endCall(false); }
+  };
+
+  function incoming(ref, d){
+    const c = call = {ref, other:d.from, video:!!d.video, offer:d.offer, state:"incoming", role:"in", unsubs:[], camOn:true, muted:false, facing:"user"};
+    ensurePerson(d.from);
+    c.unsubs.push(ref.onSnapshot(s => { const x = s.data(); if (call === c && x && (x.status === "ended" || x.status === "missed") ){ if (c.state === "incoming") toast("Verpasster Anruf von " + pname(c.other)); endCall(false); } }, ()=>{}));
+    renderCall(); ring(true, false);
+  }
+  async function acceptCall(){
+    const c = call; if (!c || c.state !== "incoming") return;
+    ring(false); c.state = "connecting"; renderCall();
+    try { c.local = await getMedia(c.video); }
+    catch { toast("Kein Zugriff auf Kamera/Mikrofon."); return declineCall(); }
+    try {
+      const pc = makePc();
+      await pc.setRemoteDescription(c.offer);
+      const ans = await pc.createAnswer(); await pc.setLocalDescription(ans);
+      await c.ref.update({answer:{type:ans.type, sdp:ans.sdp}, status:"accepted"});
+      flushOut(c); listenCands(c); await flushIn(c);
+      renderCall();
+    } catch(e){ toast("Anruf nicht möglich: " + errText(e)); endCall(true); }
+  }
+  function declineCall(){ const c = call; if (!c) return; c.ref.update({status:"declined"}).catch(()=>{}); endCall(false); }
+
+  function endCall(notify, why){
+    const c = call; if (!c) return;
+    call = null;
+    if (c.ringer) clearInterval(c.ringer);
+    clearInterval(c.tick); clearTimeout(c.noAnswer); clearTimeout(c.dropT);
+    c.unsubs.forEach(f => { try { f(); } catch {} });
+    try { c.pc && c.pc.close(); } catch {}
+    [c.local].forEach(s => s && s.getTracks().forEach(t => t.stop()));
+    try { c.actx && c.actx.close(); } catch {}
+    if (notify) c.ref.update({status: why || "ended", endedAt:Date.now()}).catch(()=>{});
+    if (c.started) toast("Anruf beendet · " + fmtDur(Date.now() - c.started));
+    callEl.replaceChildren();
+  }
+
+  function watchCalls(){
+    unsubs.push(db.collection("calls").where("to", "==", UID).where("status", "==", "ringing").onSnapshot(q => {
+      q.docChanges().forEach(ch => {
+        if (ch.type !== "added") return;
+        const d = ch.doc.data();
+        if (!d || Date.now() - (d.at || 0) > 50000) return;
+        if (call){ if (call.ref.id !== ch.doc.id) ch.doc.ref.update({status:"busy"}).catch(()=>{}); return; }
+        incoming(ch.doc.ref, d);
+      });
+    }, e => console.warn(e)));
   }
 
   return {start, submit, seenStory: id => db.collection("stories").doc(id).update({viewedBy:FV.arrayUnion(UID)}).catch(()=>{})};
