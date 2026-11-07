@@ -1076,15 +1076,15 @@ const LiveCam = (() => {
 })();
 const camVideo = (() => { const v = document.createElement("video"); v.className = "live mirror"; v.autoplay = true; v.muted = true; v.playsInline = true; v.setAttribute("playsinline",""); v.setAttribute("muted",""); return v; })();
 const camFx = h("div",{class:"fx"});
-let camUserStarted = false, camOn = false, camRec = null, faceDet = null, faceLoad = null, faceLoop = 0, lastFace = null;
+let camUserStarted = false, camDenied = false, camStarting = false, camOn = false, camRec = null, faceDet = null, faceLoad = null, faceLoop = 0, lastFace = null;
 async function startCam(){
-  camUserStarted = true;
+  camUserStarted = true; if (camStarting) return; camStarting = true;
   try {
     const st = await LiveCam.ensure();
     camVideo.srcObject = st; camVideo.classList.toggle("mirror", LiveCam.facing === "user");
     await camVideo.play().catch(()=>{});
-    camOn = true; LiveCam.pause(false); renderCam(); drawFx(); loadFace();
-  } catch(e){ camOn = false; toast("Kamera nicht erlaubt. Erlaube sie in den iPhone-Einstellungen."); renderCam(); }
+    camOn = true; camDenied = false; camStarting = false; LiveCam.pause(false); renderCam(); drawFx(); loadFace();
+  } catch(e){ camOn = false; camDenied = true; camStarting = false; renderCam(); }
 }
 function loadFace(){
   if (faceDet || faceLoad) return faceLoad;
@@ -1285,7 +1285,7 @@ function renderCam(){
       h("span",{style:"display:flex;gap:8px"}, iconBtn("userplus","Freunde hinzufügen",openAddFriend,"round glass"), iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass"))),
     h("div",{class:"camside"}, iconBtn("expand","Vollbild",goFullscreen,"round glass"), iconBtn("flip","Kamera wechseln",async()=>{ if (!camOn) return toast("Schalte zuerst die Kamera ein."); try { await LiveCam.flip(); camVideo.srcObject = LiveCam.stream; camVideo.classList.toggle("mirror", LiveCam.facing === "user"); camVideo.play().catch(()=>{}); } catch { toast("Kamera konnte nicht gewechselt werden."); } },"round glass"), iconBtn("bolt","Blitz",()=>toast("Blitz an"),"round glass"), iconBtn("timer","Selbstauslöser",()=>toast("Selbstauslöser: 3 Sekunden"),"round glass")),
     h("p",{}, camMode==="video" ? "Tippe auf den roten Knopf und nimm ein Video auf." : "Lens wählen, dann auslösen."),
-    camOn ? null : h("button",{class:"chip",style:"background:var(--acc);color:var(--acc-ink);font-weight:800",onclick:startCam}, ic("camera"),"Kamera einschalten"),
+    camOn || !camDenied ? null : h("button",{class:"chip",style:"background:var(--acc);color:var(--acc-ink);font-weight:800",onclick:()=>{ camDenied = false; startCam(); }}, ic("camera"),"Kamera erlauben"),
     h("button",{class:"chip",onclick:()=>openEditor({}, {img:IMG.city}, camLens)}, ic("image"),"Mit Beispielbild testen"));
   el.replaceChildren(vf, lensName, row,
     h("div",{class:"modes"}, ...[["photo","FOTO"],["video","VIDEO"]].map(([k,l])=>h("button",{"aria-pressed":camMode===k?"true":"false",onclick:()=>{ camMode=k; renderCam(); }},l))),
@@ -2371,7 +2371,7 @@ const TABS = [["chat","Chats"],["users","Stories"],["camera","Kamera"],["play","
 document.getElementById("tabs").replaceChildren(...TABS.map(([i,l],k)=>h("button",{"data-i":k,"aria-label":l}, ic(i), l, k===0?h("span",{class:"badge",id:"badge",hidden:true}):null)));
 const tabBtns = [...document.querySelectorAll("#tabs button")];
 let curTab = 2;
-function setTab(i){ if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (store.get("shade-cam-ok") && loggedIn) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
+function setTab(i){ if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (loggedIn && !camDenied && !camStarting) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
 function goTab(i){ if (overlay.childElementCount) closeOverlay(); pager.scrollTo({left:i*pager.clientWidth,behavior:"smooth"}); setTab(i); }
 tabBtns.forEach(b=>b.addEventListener("click",()=>goTab(+b.dataset.i)));
 pager.addEventListener("scroll",()=>setTab(Math.round(pager.scrollLeft/pager.clientWidth)),{passive:true});
