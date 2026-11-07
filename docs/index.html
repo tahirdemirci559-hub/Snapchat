@@ -303,6 +303,15 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 @keyframes callpulse{0%,100%{box-shadow:0 0 0 0 #22d3ee55}50%{box-shadow:0 0 0 22px #22d3ee00}}
 .shot .yt{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
 .shot img.ytp{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.85)}
+.viewfinder video.live{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0!important;background:#000}
+.viewfinder video.live.mirror{transform:scaleX(-1)}
+.viewfinder .fx{position:absolute;inset:0;pointer-events:none;z-index:0!important;overflow:hidden}
+.viewfinder .fx .tint{position:absolute;inset:0;mix-blend-mode:soft-light}
+.viewfinder .fx .fs{position:absolute;transform:translate(-50%,-50%);line-height:1;transition:left .06s linear,top .06s linear,font-size .1s}
+.viewfinder.on{padding:0}
+.viewfinder.on>p,.viewfinder.on>.chip{display:none}
+.shoot.rec{background:#e5484d;border-color:#fff;animation:recpulse 1s infinite}
+@keyframes recpulse{50%{transform:scale(.92)}}
 </style>
 
 </head>
@@ -700,8 +709,17 @@ const lenses = [
   {id:"cyber", name:"Cyber", sw:"linear-gradient(135deg,#00e5ff,#ff00c8)", filter:"saturate(1.5) contrast(1.1)", tint:"linear-gradient(135deg,#00e5ff88,#ff00c888)"},
   {id:"frost", name:"Frost", sw:"linear-gradient(135deg,#dff3ff,#6aa9ff)", filter:"hue-rotate(-15deg) saturate(.8) brightness(1.1)", tint:"linear-gradient(180deg,#bfe6ff88,#ffffff22)"},
   {id:"vhs", name:"VHS", sw:"linear-gradient(135deg,#5d4157,#a8caba)", filter:"sepia(.5) contrast(1.15) saturate(1.2)", grain:true, frame:true},
-  {id:"shades", name:"Shades", icon:"🕶️", stickers:[{e:"🕶️",x:50,y:42,s:42}], filter:"contrast(1.1)"},
-  {id:"crown", name:"Crown", icon:"👑", stickers:[{e:"👑",x:50,y:18,s:34}], filter:"saturate(1.2)"},
+  {id:"shades", name:"Shades", icon:"🕶️", stickers:[{e:"🕶️",x:50,y:42,s:42}], face:[{e:"🕶️",at:"eyes",k:1.05}], filter:"contrast(1.1)"},
+  {id:"crown", name:"Crown", icon:"👑", stickers:[{e:"👑",x:50,y:18,s:34}], face:[{e:"👑",at:"top",k:.8}], filter:"saturate(1.2)"},
+  {id:"hearts", name:"Verliebt", icon:"😍", stickers:[{e:"❤️",x:40,y:42,s:14},{e:"❤️",x:60,y:42,s:14}], face:[{e:"❤️",at:"reye",k:.32},{e:"❤️",at:"leye",k:.32}], tint:"linear-gradient(180deg,#ff4d8d55,#0000)"},
+  {id:"lasers", name:"Laser", icon:"🔥", stickers:[{e:"🔥",x:40,y:42,s:14},{e:"🔥",x:60,y:42,s:14}], face:[{e:"🔥",at:"reye",k:.34},{e:"🔥",at:"leye",k:.34}], filter:"contrast(1.2) saturate(1.3)", tint:"linear-gradient(180deg,#ff3d0044,#0000)"},
+  {id:"skull", name:"Skull", icon:"💀", stickers:[{e:"💀",x:50,y:45,s:60}], face:[{e:"💀",at:"face",k:1.35}], filter:"grayscale(1) contrast(1.3)"},
+  {id:"alien", name:"Alien", icon:"👽", stickers:[{e:"👽",x:50,y:45,s:60}], face:[{e:"👽",at:"face",k:1.35}], filter:"hue-rotate(60deg) saturate(1.3)"},
+  {id:"clown", name:"Clown", icon:"🔴", stickers:[{e:"🔴",x:50,y:50,s:12}], face:[{e:"🔴",at:"nose",k:.28}]},
+  {id:"pig", name:"Schwein", icon:"🐽", stickers:[{e:"🐽",x:50,y:50,s:16}], face:[{e:"🐽",at:"nose",k:.38}]},
+  {id:"tophat", name:"Gentleman", icon:"🎩", stickers:[{e:"🎩",x:50,y:16,s:36},{e:"🥸",x:50,y:48,s:10}], face:[{e:"🎩",at:"top",k:.9}], filter:"sepia(.25) contrast(1.1)"},
+  {id:"party", name:"Party", icon:"🥳", stickers:[{e:"🎉",x:50,y:16,s:30}], face:[{e:"🎉",at:"top",k:.75}], rain:"🎊", filter:"saturate(1.3)"},
+  {id:"cool", name:"Cool", icon:"😎", stickers:[{e:"😎",x:50,y:45,s:60}], face:[{e:"😎",at:"face",k:1.3}]},
   {id:"fire", name:"On Fire", icon:"🔥", rain:"🔥", filter:"saturate(1.4) contrast(1.1)", tint:"linear-gradient(0deg,#ff3d0088,#0000)"},
   {id:"matrix", name:"Matrix", sw:"linear-gradient(135deg,#001a00,#00ff66)", filter:"grayscale(1) contrast(1.3)", tint:"linear-gradient(180deg,#00ff6688,#003300aa)", grain:true},
   {id:"film", name:"Kino", sw:"linear-gradient(135deg,#1a2a3a,#e0a060)", filter:"contrast(1.15) saturate(.9)", tint:"linear-gradient(180deg,#0b3a5a66,#e0a06055)", frame:true}
@@ -1012,26 +1030,163 @@ async function takePhoto(fromLibrary, target){
 function lensButton(l, pressed, onclick, size=52){
   return h("button",{class:"lens","aria-pressed":pressed?"true":"false","aria-label":"Lens "+l.name,title:l.name,style:`width:${size}px;height:${size}px;${l.sw?`background:${l.sw}`:""}`,onclick}, l.icon || "");
 }
+// ================= Live-Kamera (eine Erlaubnis für Kamera, Filter und Anrufe) =================
+const LiveCam = (() => {
+  let master = null, pending = null, facing = "user";
+  const live = () => master && master.getTracks().some(t => t.readyState === "live");
+  async function ensure(){
+    if (live()) return master;
+    if (pending) return pending;
+    if (!navigator.mediaDevices?.getUserMedia) throw new Error("Kamera geht hier nicht.");
+    const v = {facingMode:facing, width:{ideal:1280}, height:{ideal:720}};
+    pending = navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}, video:v})
+      .catch(() => navigator.mediaDevices.getUserMedia({video:v}))
+      .then(st => { master = st; store.set("shade-cam-ok", true); return st; })
+      .finally(() => { pending = null; });
+    return pending;
+  }
+  async function flip(){
+    facing = facing === "user" ? "environment" : "user";
+    const ns = await navigator.mediaDevices.getUserMedia({video:{facingMode:facing, width:{ideal:1280}, height:{ideal:720}}});
+    const nv = ns.getVideoTracks()[0];
+    if (live()){ master.getVideoTracks().forEach(t => { t.stop(); master.removeTrack(t); }); master.addTrack(nv); } else master = ns;
+    return master;
+  }
+  // Für Anrufe: Kopien der Spuren, damit nicht nochmal gefragt wird
+  async function av(video){
+    let st = null; try { st = await ensure(); } catch {}
+    let audio = st ? st.getAudioTracks().filter(t => t.readyState === "live") : [];
+    if (!audio.length){ const a = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}}); if (st) a.getAudioTracks().forEach(t => st.addTrack(t)); audio = a.getAudioTracks(); }
+    const tracks = audio.map(t => { const c = t.clone(); c.enabled = true; return c; });
+    if (video){
+      const vt = st ? st.getVideoTracks().filter(t => t.readyState === "live") : [];
+      if (!vt.length) throw new Error("Keine Kamera");
+      vt.forEach(t => { const c = t.clone(); c.enabled = true; tracks.push(c); });
+    }
+    return new MediaStream(tracks);
+  }
+  function pause(on){ if (master) master.getVideoTracks().forEach(t => t.enabled = !on); }
+  return {ensure, flip, av, pause, get facing(){ return facing; }, get stream(){ return live() ? master : null; }};
+})();
+const camVideo = (() => { const v = document.createElement("video"); v.className = "live mirror"; v.autoplay = true; v.muted = true; v.playsInline = true; v.setAttribute("playsinline",""); v.setAttribute("muted",""); return v; })();
+const camFx = h("div",{class:"fx"});
+let camOn = false, camRec = null, faceDet = null, faceLoad = null, faceLoop = 0, lastFace = null;
+async function startCam(){
+  try {
+    const st = await LiveCam.ensure();
+    camVideo.srcObject = st; camVideo.classList.toggle("mirror", LiveCam.facing === "user");
+    await camVideo.play().catch(()=>{});
+    camOn = true; LiveCam.pause(false); renderCam(); drawFx(); loadFace();
+  } catch(e){ camOn = false; toast("Kamera nicht erlaubt. Erlaube sie in den iPhone-Einstellungen."); renderCam(); }
+}
+function loadFace(){
+  if (faceDet || faceLoad) return faceLoad;
+  const V = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+  faceLoad = import(V + "/vision_bundle.mjs").then(async m => {
+    const fs = await m.FilesetResolver.forVisionTasks(V + "/wasm");
+    faceDet = await m.FaceDetector.createFromOptions(fs, {baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite"}, runningMode:"VIDEO", minDetectionConfidence:.5});
+  }).catch(e => { console.warn("Gesichtserkennung nicht verfügbar", e); });
+  return faceLoad;
+}
+// Gesicht im Bild finden und in Bildschirm-Koordinaten umrechnen
+function detectFace(){
+  if (!faceDet || !camVideo.videoWidth) return null;
+  let r; try { r = faceDet.detectForVideo(camVideo, performance.now()); } catch { return null; }
+  const d = r && r.detections && r.detections[0]; if (!d) return null;
+  const ew = camVideo.clientWidth, eh = camVideo.clientHeight, vw = camVideo.videoWidth, vh = camVideo.videoHeight;
+  const sc = Math.max(ew / vw, eh / vh), ox = (ew - vw * sc) / 2, oy = (eh - vh * sc) / 2, mir = LiveCam.facing === "user";
+  const P = (x, y) => { let px = x * vw * sc + ox; if (mir) px = ew - px; return {x:px, y:y * vh * sc + oy}; };
+  const k = d.keypoints || [], bb = d.boundingBox;
+  const re = P(k[0].x, k[0].y), le = P(k[1].x, k[1].y), nose = P(k[2].x, k[2].y), mouth = P(k[3].x, k[3].y);
+  const fw = bb.width * sc, top = bb.originY * sc + oy;
+  return {re, le, nose, mouth, fw, top, cx:(re.x + le.x) / 2, ang:Math.atan2(le.y - re.y, le.x - re.x) * (mir ? -1 : 1) * 0, ew, eh};
+}
+function anchor(f, a){
+  const eyes = {x:(f.re.x + f.le.x) / 2, y:(f.re.y + f.le.y) / 2};
+  switch (a.at){
+    case "eyes": return eyes;
+    case "reye": return f.re;
+    case "leye": return f.le;
+    case "nose": return f.nose;
+    case "mouth": return f.mouth;
+    case "top": return {x:eyes.x, y:f.top - f.fw * .25};
+    default: return {x:eyes.x, y:(eyes.y + f.mouth.y) / 2};
+  }
+}
+function drawFx(){
+  cancelAnimationFrame(faceLoop);
+  const l = lenses.find(x => x.id === camLens) || lenses[0];
+  camVideo.style.filter = l.filter || "none";
+  const parts = [];
+  if (l.tint) parts.push(h("div",{class:"tint",style:`background:${l.tint}`}));
+  if (l.rain) rainSpots(l.rain).forEach(sp => parts.push(h("span",{class:"fs",style:`left:${sp.x}%;top:${sp.y}%;font-size:${sp.size*3}px;transform:translate(-50%,-50%) rotate(${sp.r}deg);opacity:.9`}, l.rain)));
+  const faceEls = (l.face || []).map(a => h("span",{class:"fs"}, a.e));
+  const fallback = (l.stickers || []).map(st => h("span",{class:"fs",style:`left:${st.x}%;top:${st.y}%;font-size:${st.s}cqw`}, st.e));
+  camFx.replaceChildren(...parts, ...faceEls, ...fallback);
+  faceEls.forEach(e => e.style.display = "none");
+  if (!faceEls.length || !camOn) return;
+  const tick = () => {
+    if (!camOn || curTab !== 2) return;
+    const f = detectFace(); lastFace = f;
+    faceEls.forEach((e, i) => { const a = l.face[i];
+      if (!f){ e.style.display = "none"; return; }
+      const p = anchor(f, a); e.style.display = ""; e.style.left = p.x + "px"; e.style.top = p.y + "px"; e.style.fontSize = (f.fw * a.k) + "px"; });
+    fallback.forEach(e => e.style.display = f ? "none" : "");
+    faceLoop = requestAnimationFrame(tick);
+  };
+  faceLoop = requestAnimationFrame(tick);
+}
+// Foto aus der Live-Kamera: Bild + Gesichts-Sticker gehen in den Editor und können gepostet werden
+function captureCam(target){
+  const vw = camVideo.videoWidth, vh = camVideo.videoHeight; if (!vw) return toast("Kamera startet noch …");
+  const ew = camVideo.clientWidth, eh = camVideo.clientHeight;
+  const W = 1080, H = Math.round(W * eh / ew), c = document.createElement("canvas"); c.width = W; c.height = H;
+  const sc = Math.max(W / vw, H / vh), dw = vw * sc, dh = vh * sc, x = c.getContext("2d");
+  if (LiveCam.facing === "user"){ x.translate(W, 0); x.scale(-1, 1); }
+  x.drawImage(camVideo, (W - dw) / 2, (H - dh) / 2, dw, dh);
+  const img = c.toDataURL("image/jpeg", .9);
+  const l = lenses.find(q => q.id === camLens) || lenses[0];
+  const f = lastFace, extra = [];
+  if (f && l.face) l.face.forEach(a => { const p = anchor(f, a); extra.push({e:a.e, x:Math.max(0,Math.min(100,p.x / ew * 100)), y:Math.max(0,Math.min(100,p.y / eh * 100)), s:Math.min(80, f.fw * a.k / ew * 100)}); });
+  flashFx();
+  openEditor(target || {}, {img}, camLens);
+  if (extra.length) setTimeout(() => { const ed = window.__editSnap; if (ed){ ed.stickers = ed.stickers.filter(q => !q.fromLens).concat(extra.map(q => ({...q, fromLens:true}))); ed.__redraw && ed.__redraw(); } }, 0);
+}
+function flashFx(){ const fl = h("div",{style:"position:fixed;inset:0;background:#fff;z-index:99;opacity:.85;transition:opacity .35s;pointer-events:none"}); document.body.append(fl); requestAnimationFrame(()=>requestAnimationFrame(()=>fl.style.opacity=0)); setTimeout(()=>fl.remove(), 400); }
+function toggleRec(){
+  if (camRec){ camRec.stop(); return; }
+  const st = LiveCam.stream; if (!st || !window.MediaRecorder) return takePhoto(false,{});
+  const type = ["video/mp4","video/webm;codecs=vp9","video/webm"].find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || "";
+  const chunks = []; let rec;
+  try { rec = new MediaRecorder(new MediaStream(st.getTracks().filter(t => t.readyState === "live")), type ? {mimeType:type} : undefined); } catch { return takePhoto(false,{}); }
+  rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+  rec.onstop = () => { camRec = null; renderCam(); const b = new Blob(chunks, {type:rec.mimeType || "video/mp4"}); openEditor({}, {video:URL.createObjectURL(b)}, camLens); };
+  rec.start(); camRec = rec; renderCam();
+  setTimeout(() => { if (camRec === rec) rec.stop(); }, 15000);
+}
+
 function renderCam(){
   const el = document.getElementById("p-cam");
   const lensName = h("div",{class:"lensname"}, lenses.find(l=>l.id===camLens).name);
   const row = h("div",{class:"lensrow"});
-  const vf = h("div",{class:"viewfinder",style:`background-image:url(${IMG.city})`});
-  const preview = () => { const l = lenses.find(x=>x.id===camLens); vf.style.filter = l.filter || "none"; };
+  const vf = h("div",{class:"viewfinder"+(camOn?" on":""),style:camOn?"":`background-image:url(${IMG.city})`});
+  const preview = () => { const l = lenses.find(x=>x.id===camLens); if (camOn){ vf.style.filter = "none"; drawFx(); } else vf.style.filter = l.filter || "none"; };
   const drawRow = () => row.replaceChildren(...lenses.map(l => lensButton(l, l.id===camLens, ()=>{ camLens=l.id; lensName.textContent=l.name; drawRow(); preview(); })));
+  if (camOn){ vf.append(camVideo, camFx); setTimeout(() => camVideo.play().catch(()=>{}), 0); }
   drawRow(); preview();
   vf.append(
     h("div",{class:"camtop"},
       h("span",{style:"display:flex;gap:8px"}, h("button",{"aria-label":"Mein Profil",onclick:()=>goTab(4)}, avatar(ME,38)), iconBtn("search","Suchen",openSearch,"round glass")),
       h("span",{style:"display:flex;gap:8px"}, iconBtn("userplus","Freunde hinzufügen",openAddFriend,"round glass"), iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass"))),
-    h("div",{class:"camside"}, iconBtn("expand","Vollbild",goFullscreen,"round glass"), iconBtn("flip","Kamera wechseln",()=>toast("Kamera gewechselt"),"round glass"), iconBtn("bolt","Blitz",()=>toast("Blitz an"),"round glass"), iconBtn("timer","Selbstauslöser",()=>toast("Selbstauslöser: 3 Sekunden"),"round glass")),
+    h("div",{class:"camside"}, iconBtn("expand","Vollbild",goFullscreen,"round glass"), iconBtn("flip","Kamera wechseln",async()=>{ if (!camOn) return toast("Schalte zuerst die Kamera ein."); try { await LiveCam.flip(); camVideo.srcObject = LiveCam.stream; camVideo.classList.toggle("mirror", LiveCam.facing === "user"); camVideo.play().catch(()=>{}); } catch { toast("Kamera konnte nicht gewechselt werden."); } },"round glass"), iconBtn("bolt","Blitz",()=>toast("Blitz an"),"round glass"), iconBtn("timer","Selbstauslöser",()=>toast("Selbstauslöser: 3 Sekunden"),"round glass")),
     h("p",{}, camMode==="video" ? "Tippe auf den roten Knopf und nimm ein Video auf." : "Lens wählen, dann auslösen."),
+    camOn ? null : h("button",{class:"chip",style:"background:var(--acc);color:var(--acc-ink);font-weight:800",onclick:startCam}, ic("camera"),"Kamera einschalten"),
     h("button",{class:"chip",onclick:()=>openEditor({}, {img:IMG.city}, camLens)}, ic("image"),"Mit Beispielbild testen"));
   el.replaceChildren(vf, lensName, row,
     h("div",{class:"modes"}, ...[["photo","FOTO"],["video","VIDEO"]].map(([k,l])=>h("button",{"aria-pressed":camMode===k?"true":"false",onclick:()=>{ camMode=k; renderCam(); }},l))),
     h("div",{class:"camrow"},
       iconBtn("image","Foto oder Video aus der Galerie",()=>takePhoto(true,{}),"round glass"),
-      h("button",{class:"shoot"+(camMode==="video"?" vid":""),"aria-label":camMode==="video"?"Video aufnehmen":"Foto aufnehmen",onclick:()=>takePhoto(false,{})}),
+      h("button",{class:"shoot"+(camMode==="video"?" vid":"")+(camRec?" rec":""),"aria-label":camMode==="video"?"Video aufnehmen":"Foto aufnehmen",onclick:()=>{ if (!camOn) return takePhoto(false,{}); if (camMode==="video") toggleRec(); else captureCam({}); }}),
       iconBtn("play","Spotlight",()=>goTab(3),"round glass")));
 }
 const colorFilters = [["Original",""],["Klar","saturate(1.3) contrast(1.08)"],["Warm","sepia(.3) saturate(1.3)"],["Kalt","hue-rotate(-12deg) saturate(1.1) brightness(1.05)"],["S/W","grayscale(1)"],["Matt","contrast(.9) brightness(1.08) saturate(.85)"],["Kontrast","contrast(1.4) saturate(1.1)"]];
@@ -1054,6 +1209,7 @@ function openEditor(target, media, lensId){
   const tools = h("div",{class:"tools"});
   const tabs = h("div",{class:"tools"});
   const redraw = () => { stage.replaceChildren(renderShot(snap,{selected:sel,onDrag:i=>{ sel=i; tab="sticker"; redraw(); drawTools(); }})); };
+  window.__editSnap = snap; snap.__redraw = () => redraw();
   const nowTime = () => new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});
   const drawTools = () => {
     tabs.replaceChildren(...[["lens","mask","Lenses"],["filter","filter","Filter"],["zeit","pin","Zeit & Ort"],["sticker","smile","Sticker"],["regen","spark","Effekte"],["text","text","Text"],["timer","timer","Timer"]]
@@ -1082,7 +1238,7 @@ function openEditor(target, media, lensId){
     if (tab === "text") setTimeout(()=>document.getElementById("cap-input")?.focus(),50);
   };
   const doSend = () => {
-    const final = JSON.parse(JSON.stringify(snap)); final.stickers.forEach(s=>delete s.fromLens);
+    const final = JSON.parse(JSON.stringify(snap)); final.stickers.forEach(s=>delete s.fromLens); delete final.__redraw;
     unlock("snap"); addScore(10);
     if (target.chat){ const c = chats.find(x=>x.id===target.chat); c.msgs.push({by:ME,snap:final,at:Date.now()}); c.opened=false; reply(c,true); openChat(c.id); toast("Shot gesendet"); }
     else if (target.story){ postStory(final); closeOverlay(); toast("Zu deiner Story hinzugefügt"); }
@@ -1634,6 +1790,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       await ref.set({members:[UID, other].sort(), lastAt:now, lastBy:UID, lastKind:snap ? "snap" : "text",
         lastText:(m.text || "").slice(0, 80), readBy:[UID], streak, streakDay:day}, {merge:true});
       await ref.collection("messages").add({by:UID, text:m.text || "", snap:snap || null, share:m.share || null, at:now, viewedBy:[]});
+      notify([other], snap ? "shot" : m.share ? "share" : "msg", m.text || "");
     } catch(e){
       const i = c.msgs.indexOf(m); if (i >= 0) c.msgs.splice(i, 1);
       toast(e.code === "video" ? "Videos können noch nicht an Freunde geschickt werden – nur Fotos." : "Nicht gesendet: " + errText(e));
@@ -1667,6 +1824,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
     try {
       const s = await packSnap(snap);
       await db.collection("stories").add({by:UID, snap:s, at:Date.now(), viewedBy:[]});
+      notify(null, "story");
       unlock("story"); addScore(20);
     } catch(e){ toast(e.code === "video" ? "Videos gehen in Stories noch nicht – nur Fotos." : errText(e)); }
   };
@@ -1751,7 +1909,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
     }
     return true;
   };
-  logout = async function(){ const u = UID, s = mySub; stopAll(); overlay.replaceChildren(); if (u && s) { try { await db.collection("push").doc(u).update({subs:FV.arrayRemove(s)}); } catch {} } mySub = null; auth.signOut(); };
+  logout = async function(){ const u = UID, s = mySub; stopAll(); overlay.replaceChildren(); if (u && s) { try { await pushApi("/unsub", {sub:JSON.parse(s)}); await db.collection("push").doc(u).update({subs:FV.arrayRemove(s)}); } catch {} } mySub = null; auth.signOut(); };
 
   // ---------- Anmelden ----------
   async function submit(mode, err, photo){
@@ -1889,6 +2047,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
 
   async function getMedia(video){
     if (!navigator.mediaDevices?.getUserMedia) throw new Error("nomedia");
+    try { return await LiveCam.av(video); } catch(e){ console.warn(e); }
     return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}, video: video ? {facingMode:"user", width:{ideal:640}, height:{ideal:960}} : false});
   }
 
@@ -1930,6 +2089,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       const pc = makePc();
       const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
       await ref.set({from:UID, to:other, video:!!video, offer:{type:offer.type, sdp:offer.sdp}, status:"ringing", at:Date.now()});
+      notify([other], video ? "vcall" : "call");
       flushOut(c); listenCands(c);
       c.unsubs.push(ref.onSnapshot(async s => {
         const d = s.data(); if (!d || call !== c) return;
@@ -1939,7 +2099,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
         else if (d.status === "busy"){ toast(pname(other) + " telefoniert gerade."); endCall(false); }
         else if (d.status === "ended"){ endCall(false); }
       }, e => console.warn(e)));
-      c.noAnswer = setTimeout(() => { if (call === c && !c.answered){ toast(pname(other) + " geht nicht ran."); endCall(true, "missed"); } }, 45000);
+      c.noAnswer = setTimeout(() => { if (call === c && !c.answered){ toast(pname(other) + " geht nicht ran."); notify([other], "missed"); endCall(true, "missed"); } }, 45000);
     } catch(e){ toast("Anruf nicht möglich: " + errText(e)); endCall(false); }
   };
 
@@ -1993,6 +2153,14 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
 
 
   // ---------- Benachrichtigungen (Web Push) ----------
+  const PUSH_URL = "__WORKER__";
+  async function pushApi(path, body){
+    if (!PUSH_URL.startsWith("https://") || !auth.currentUser) return null;
+    const idToken = await auth.currentUser.getIdToken();
+    const r = await fetch(PUSH_URL + path, {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({idToken, ...body}), keepalive:true});
+    return r.ok ? r.json() : null;
+  }
+  function notify(to, kind, text){ pushApi("/send", {to, kind, text}).catch(e => console.warn(e)); }
   const VAPID_PUBLIC = "BGrJZ9KMNyDqfPjxTktH7IXccgnTvT3scQTYVpUlvJEJXT6ueJJZ5IVKlgvfD9u4Kdpd6Sr_cxFRiSw_NhTYwos";
   const pushOK = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
   const b64u = s => { const r = atob((s + "=".repeat((4 - s.length % 4) % 4)).replace(/-/g,"+").replace(/_/g,"/")); return Uint8Array.from(r, c => c.charCodeAt(0)); };
@@ -2017,11 +2185,14 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       if (!sub) sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64u(VAPID_PUBLIC)});
       mySub = JSON.stringify(sub.toJSON());
       await db.collection("push").doc(UID).set({subs:FV.arrayUnion(mySub)}, {merge:true});
+      const ok = await pushApi("/sub", {sub:sub.toJSON()});
+      if (!ok) throw new Error("Server nicht erreichbar");
       if (ask) toast("Benachrichtigungen sind an.");
     } catch(e){ console.warn(e); if (ask) toast("Benachrichtigungen gingen nicht: " + errText(e)); }
     refresh();
   }
   pushUI = () => {
+    if (!PUSH_URL.startsWith("https://")) return null;
     const apple = isApple && !isInstalled();
     if (!apple && (!pushOK() || Notification.permission !== "default")) return null;
     if (store.get("shade-push-later")) return null;
@@ -2031,6 +2202,7 @@ if (FIREBASE_CONFIG && window.firebase) NET = (() => {
       h("button",{class:"x","aria-label":"Später",style:"padding:6px;color:var(--muted)",onclick:()=>{ store.set("shade-push-later", true); refresh(); }}, ic("close",16)));
   };
   pushRow = () => {
+    if (!PUSH_URL.startsWith("https://")) return null;
     const on = pushOK() && Notification.permission === "granted", denied = pushOK() && Notification.permission === "denied";
     return h("button",{class:"row",style:"width:100%",onclick:()=>{ if (denied) toast("Erlaube Benachrichtigungen in den iPhone-Einstellungen → Mitteilungen → shade."); else savePush(true).then(()=>openSettings()); }},
       h("span",{class:"t"}, h("b",{},"Benachrichtigungen"), h("small",{}, h("span",{}, on ? "An – auch wenn shade zu ist" : denied ? "Aus – in den iPhone-Einstellungen erlauben" : "Aus – tippen zum Einschalten"))),
@@ -2058,7 +2230,7 @@ const TABS = [["chat","Chats"],["users","Stories"],["camera","Kamera"],["play","
 document.getElementById("tabs").replaceChildren(...TABS.map(([i,l],k)=>h("button",{"data-i":k,"aria-label":l}, ic(i), l, k===0?h("span",{class:"badge",id:"badge",hidden:true}):null)));
 const tabBtns = [...document.querySelectorAll("#tabs button")];
 let curTab = 2;
-function setTab(i){ curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
+function setTab(i){ if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (store.get("shade-cam-ok") && loggedIn) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
 function goTab(i){ if (overlay.childElementCount) closeOverlay(); pager.scrollTo({left:i*pager.clientWidth,behavior:"smooth"}); setTab(i); }
 tabBtns.forEach(b=>b.addEventListener("click",()=>goTab(+b.dataset.i)));
 pager.addEventListener("scroll",()=>setTab(Math.round(pager.scrollLeft/pager.clientWidth)),{passive:true});
