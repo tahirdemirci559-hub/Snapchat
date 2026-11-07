@@ -595,7 +595,7 @@ function finishLogin(isNew){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 14:46";
+const SHADE_VERSION = "07.11. 14:55";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -718,6 +718,7 @@ const snapReplies = ["Starker Shot.","Wo bist du da?","Haha, nice.","Coole Lens.
 
 const lenses = [
   {id:"none", name:"Normal", sw:"#2a2d33"},
+  {id:"ort", name:"Ort & Zeit", fx:"stamp", sw:"linear-gradient(135deg,#ffd60a,#ff8a00)"},
   {id:"shade", name:"Shade", fx:"shade", face:true, sw:"radial-gradient(circle at 50% 45%,#22d3ee 0 18%,#0b1220 60%)"},
   {id:"laser", name:"Laser Eyes", fx:"laser", face:true, sw:"radial-gradient(circle,#ff2a2a 0 20%,#300 70%)"},
   {id:"glitch", name:"Glitch", fx:"glitch", sw:"linear-gradient(90deg,#ff004c,#00e5ff)"},
@@ -1135,6 +1136,7 @@ function drawFx(){
   cancelAnimationFrame(faceLoop);
   const l = lenses.find(x => x.id === camLens) || lenses[0];
   if (l.fx){
+    if (l.fx === "stamp") loadPlace();
     camFx.replaceChildren(fxCanvas); camVideo.style.filter = "none";
     const tick = () => {
       if (!camOn || curTab !== 2 || camLens !== l.id) return;
@@ -1267,6 +1269,22 @@ const FX = (() => {
     vhs(d, w, h, f, t){ const s = d.slice(), sh = 4*4; const band = Math.floor((t / 12) % h);
       for (let i = 0, p = 0; i < d.length; i += 4, p++){ const y = Math.floor(p / w); d[i] = s[i + sh] ?? s[i]; d[i+2] = s[i - sh] ?? s[i+2];
         const n = (Math.random() - .5) * 26 + (Math.abs(y - band) < 6 ? 40 : 0); d[i] += n; d[i+1] += n; d[i+2] += n; d[i+1] *= .95; } },
+    stampAfter(ctx, w, h){
+      const now = new Date(), time = now.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});
+      const date = now.toLocaleDateString("de-DE",{weekday:"short", day:"numeric", month:"long"});
+      const place = stampPlace.city || "Ort wird gesucht …", region = stampPlace.region || "";
+      ctx.save(); ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+      const g = ctx.createLinearGradient(0, h*.62, 0, h); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.55)"); ctx.fillStyle = g; ctx.fillRect(0, h*.62, w, h*.38);
+      ctx.shadowColor = "rgba(0,0,0,.55)"; ctx.shadowBlur = w*.02; ctx.fillStyle = "#fff";
+      ctx.font = `800 ${Math.round(w*.2)}px system-ui,-apple-system,sans-serif`; ctx.fillText(time, w/2, h*.8);
+      ctx.font = `700 ${Math.round(w*.06)}px system-ui,-apple-system,sans-serif`;
+      const label = "📍 " + place + (region && region !== place ? ", " + region : "");
+      const tw = ctx.measureText(label).width + w*.08, ph = w*.1, py = h*.84;
+      ctx.shadowBlur = 0; ctx.fillStyle = "#ffd60a"; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(w/2 - tw/2, py, tw, ph, ph/2) : ctx.rect(w/2 - tw/2, py, tw, ph); ctx.fill();
+      ctx.fillStyle = "#0a0a0a"; ctx.fillText(label, w/2, py + ph*.7);
+      ctx.fillStyle = "rgba(255,255,255,.92)"; ctx.font = `600 ${Math.round(w*.042)}px system-ui,-apple-system,sans-serif`; ctx.fillText(date, w/2, py + ph + w*.065);
+      ctx.restore();
+    },
     vhsAfter(ctx, w, h){ ctx.save(); ctx.fillStyle = "#fff"; ctx.shadowColor = "#000"; ctx.shadowBlur = 4; ctx.font = `700 ${Math.round(w*.05)}px ui-monospace,monospace`; ctx.fillText("▶ PLAY", w*.06, h*.08); const dt = new Date(); ctx.fillText(dt.toLocaleDateString("de-DE") + " " + dt.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}), w*.06, h*.95); ctx.restore(); },
   };
   // Ein Bild (aus Video oder Foto) mit Effekt in ein Canvas zeichnen
@@ -1279,6 +1297,25 @@ const FX = (() => {
   }
   return {render};
 })();
+const stampPlace = {city:"", region:""};
+let placeLoading = false;
+async function loadPlace(){
+  if (placeLoading || stampPlace.city) return; placeLoading = true;
+  try { const c = JSON.parse(store.get("shade-place2") || "null"); if (c && Date.now() - c.at < 3*3600e3){ Object.assign(stampPlace, c); placeLoading = false; return; } } catch {}
+  const save = () => { try { store.set("shade-place2", JSON.stringify({...stampPlace, at:Date.now()})); } catch {} };
+  try {
+    let granted = false; try { granted = (await navigator.permissions.query({name:"geolocation"})).state === "granted"; } catch {}
+    if (granted){
+      const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout:8000, maximumAge:600000}));
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=12&accept-language=de&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+      const a = (await r.json()).address || {};
+      stampPlace.city = a.city || a.town || a.village || a.municipality || a.county || ""; stampPlace.region = a.state || "";
+    }
+  } catch {}
+  if (!stampPlace.city){ try { const d = await (await fetch("https://get.geojs.io/v1/ip/geo.json")).json(); stampPlace.city = d.city || d.region || ""; stampPlace.region = d.region || ""; } catch {} }
+  if (stampPlace.city) save();
+  placeLoading = false;
+}
 const fxCanvas = (() => { const c = document.createElement("canvas"); c.className = "live fxc"; return c; })();
 let fxFrame = 0;
 function scaleFace(f, k){ if (!f) return null; const P = q => ({x:q.x*k, y:q.y*k}); return {re:P(f.re), le:P(f.le), nose:P(f.nose), mouth:P(f.mouth), fw:f.fw*k, top:f.top*k, cx:f.cx*k}; }
