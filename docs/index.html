@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
-<title>yapp</title>
+<title>shade</title>
 <meta name="description" content="Snaps, Lenses, Stories und Spotlight – mit Familie und Freunden.">
 <meta name="theme-color" content="#0d0e11">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="yapp">
+<meta name="apple-mobile-web-app-title" content="shade">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -373,10 +373,10 @@ function ic(name, size){ const s = document.createElementNS("http://www.w3.org/2
 
 // ================= Logos (zum Aussuchen) =================
 const LOGOS = [
-  {id:"yapp", name:"yapp", bg:"#FFE14D", acc:"#FFE14D", ink:"#111214",
-   svg:'<path d="M50 14C74 14 90 29 90 48 90 67 74 82 50 82 44 82 38 81 33 79L15 88 21 72C14 66 10 57 10 48 10 29 26 14 50 14Z" fill="#111"/><circle cx="36" cy="38" r="5" fill="#fff"/><circle cx="64" cy="38" r="5" fill="#fff"/><path d="M26 52C36 68 64 68 74 52Z" fill="#fff"/><path d="M33 53v6M41 54v8M50 54v9M59 54v8M67 53v6" stroke="#111" stroke-width="2"/>'}
+  {id:"shade", name:"shade", bg:"linear-gradient(150deg,#334155,#0b1220)", border:true, acc:"#22d3ee", ink:"#031216",
+   svg:'<path d="M50 9C75 9 89 30 89 55 89 75 80 89 70 93H30C20 89 11 75 11 55 11 30 25 9 50 9Z" fill="#111827"/><ellipse cx="50" cy="56" rx="23" ry="27" fill="#020306"/><rect x="36" y="51" width="10" height="5" rx="2.5" fill="#22d3ee"/><rect x="54" y="51" width="10" height="5" rx="2.5" fill="#22d3ee"/><path d="M40 84v9M60 84v9" stroke="#e5e7eb" stroke-width="3" stroke-linecap="round"/>'}
 ];
-let logoId = "yapp";
+let logoId = "shade";
 const curLogo = () => LOGOS.find(l=>l.id===logoId) || LOGOS[0];
 function applyLogo(){ const l = curLogo(); document.documentElement.style.setProperty("--acc", l.acc); document.documentElement.style.setProperty("--acc-ink", l.ink); }
 function logo(size, l){ l = l || curLogo(); const d = h("div",{class:"logo",style:`background:${l.bg};${l.border?"border:1.5px solid #2a2d33;":""}${size?`width:${size}px;height:${size}px;border-radius:${size*.28}px`:""}`}); d.innerHTML = `<svg viewBox="0 0 100 100" aria-hidden="true">${l.svg}</svg>`; return d; }
@@ -496,7 +496,7 @@ function showAuth(mode){
       if (!bm) return err.textContent = "Bitte gib dein Geburtsdatum vollständig ein: Tag, Monat und Jahr.";
       const bd = new Date(+bm[3], +bm[2]-1, +bm[1]);
       if (bd.getDate() !== +bm[1] || bd.getMonth() !== +bm[2]-1 || +bm[3] < 1900 || bd > new Date()) return err.textContent = "Dieses Datum gibt es nicht. Bitte prüf es noch einmal.";
-      if (ageFrom(bd) < 13) return err.textContent = "yapp ist erst ab 13 Jahren erlaubt.";
+      if (ageFrom(bd) < 13) return err.textContent = "shade ist erst ab 13 Jahren erlaubt.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err.textContent = "Bitte gib eine gültige E-Mail-Adresse ein.";
       if (!pass) return err.textContent = "Bitte gib ein Passwort ein.";
       account = {email, name, username:user, photo, bio:"", birth, passHash: await hash(pass), joined: Date.now()};
@@ -522,10 +522,10 @@ function showAuth(mode){
     f("a-pass","Passwort","password",null, mode==="signup"?"new-password":"current-password"),
     err,
     h("button",{class:"big",type:"submit"}, mode === "signup" ? "Weiter" : "Anmelden"),
-    mode === "signup" ? h("p",{class:"note",style:"padding:0"},"yapp ist ab 13 Jahren.") : null,
+    mode === "signup" ? h("p",{class:"note",style:"padding:0"},"shade ist ab 13 Jahren.") : null,
     h("button",{type:"button",class:"link",onclick:()=>showAuth(mode==="signup"?"login":"signup")}, mode === "signup" ? "Schon ein Konto? Anmelden" : "Neu hier? Konto erstellen"));
   authEl.replaceChildren(h("div",{class:"auth"}, h("div",{class:"inner"},
-    h("div",{class:"brand"}, logo(96), h("h1",{},"yapp"), h("span",{class:"tag"},"Sag's einfach.")),
+    h("div",{class:"brand"}, logo(96), h("h1",{},"shade"), h("span",{class:"tag"},"Bleib im Schatten.")),
     card,
     h("p",{style:"text-align:center;font-size:12px;margin:0;color:#8b919d"},"Vorschau – dein Konto wird nur auf diesem Gerät gespeichert."))));
 }
@@ -534,7 +534,7 @@ function finishLogin(isNew){
   if (!account.joined) account.joined = Date.now();
   authEl.replaceChildren(); renderAll(); requestAnimationFrame(()=>{ pager.scrollLeft = 2*pager.clientWidth; setTab(2); });
   if (isNew) unlock("start");
-  toast(isNew ? `Willkommen bei yapp, ${account.name}.` : `Willkommen zurück, ${account.name}.`);
+  toast(isNew ? `Willkommen bei shade, ${account.name}.` : `Willkommen zurück, ${account.name}.`);
 }
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
@@ -734,7 +734,7 @@ function renderChats(){
   const list = [...chats].filter(c=>c.msgs.length).sort((a,b)=>b.msgs.at(-1).at - a.msgs.at(-1).at).filter(c => c.title.toLowerCase().includes(search.toLowerCase()));
   el.replaceChildren(
     header("Chats", iconBtn("edit","Neuer Chat",openNewChat)),
-    isInstalled() ? null : h("button",{class:"installbar",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"yapp als App holen"), h("small",{},"Auf den Home-Bildschirm legen")), ic("home")),
+    isInstalled() ? null : h("button",{class:"installbar",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"shade als App holen"), h("small",{},"Auf den Home-Bildschirm legen")), ic("home")),
     h("div",{class:"searchwrap"}, ic("search"), h("input",{class:"search",id:"chat-search",placeholder:"Chats durchsuchen",value:search,oninput:e=>{search=e.target.value; renderChats(); const i=document.getElementById("chat-search"); i.focus(); i.setSelectionRange(search.length,search.length);}})),
     ...list.map(c => { const s = status(c);
       return h("button",{class:"row",onclick:()=>openChat(c.id)},
@@ -1118,7 +1118,7 @@ function openShare(p){
       h("span",{style:"position:relative"}, avatar(id,56,sel.has(id)), sel.has(id)?h("span",{class:"check",style:"position:absolute;right:-2px;bottom:-2px;background:var(--acc);border-color:var(--surface)"},ic("check")):null), pname(id)))),
     msg,
     h("div",{style:"display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px"},
-      h("button",{class:"sbtn",onclick:async()=>{ const link="yapp.app/s/"+p.id; try{ await navigator.clipboard.writeText(link); toast("Link kopiert"); } catch { toast("Link: "+link); } p.shares++; refreshFeedCounts(); unlock("share"); }}, ic("link"),"Link kopieren"),
+      h("button",{class:"sbtn",onclick:async()=>{ const link="shade.app/s/"+p.id; try{ await navigator.clipboard.writeText(link); toast("Link kopiert"); } catch { toast("Link: "+link); } p.shares++; refreshFeedCounts(); unlock("share"); }}, ic("link"),"Link kopieren"),
       h("button",{class:"sbtn",onclick:()=>{ postStory(JSON.parse(JSON.stringify(p.snap))); p.shares++; refreshFeedCounts(); unlock("share"); wrap.remove(); toast("Zu deiner Story hinzugefügt"); }}, ic("story"),"In meine Story")),
     h("button",{class:"send",style:"width:100%",disabled:!sel.size,onclick:()=>{
       sel.forEach(id=>{ const c = chatWith(id); c.msgs.push({by:ME,share:p.id,text:msg.value.trim(),at:Date.now()}); c.opened=false; reply(c,false); });
@@ -1142,7 +1142,7 @@ function openSearch(){
       isFriend(id) ? h("span",{class:"pill dim"},"Freund") : null);
     res.replaceChildren(
       friends.length ? h("h2",{},"Freunde") : null, ...friends.map(rowFor),
-      others.length ? h("h2",{}, q ? "Weitere Ergebnisse" : "Beliebt auf yapp") : null, ...others.map(rowFor),
+      others.length ? h("h2",{}, q ? "Weitere Ergebnisse" : "Beliebt auf shade") : null, ...others.map(rowFor),
       !ids.length ? h("p",{class:"note",style:"padding:30px 0"},"Keine Treffer. Versuch einen anderen Namen.") : null);
   };
   overlay.replaceChildren(h("div",{class:"ov"},
@@ -1239,7 +1239,7 @@ function renderProfile(){
       h("div",{class:"tools2"},
         iconBtn("search","Suchen",openSearch,"round glass"),
         h("span",{style:"display:flex;gap:8px"},
-          iconBtn("share","Profil teilen",async()=>{ try{ await navigator.clipboard.writeText("Füg mich bei yapp hinzu: @"+account.username); toast("Profil-Link kopiert"); }catch{ toast("Dein Benutzername: @"+account.username); } },"round glass"),
+          iconBtn("share","Profil teilen",async()=>{ try{ await navigator.clipboard.writeText("Füg mich bei shade hinzu: @"+account.username); toast("Profil-Link kopiert"); }catch{ toast("Dein Benutzername: @"+account.username); } },"round glass"),
           iconBtn("sliders","Einstellungen",openSettings,"round glass"),
           iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass")))),
     h("div",{class:"pbody"},
@@ -1304,7 +1304,7 @@ function openSettings(){
   overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
     h("div",{class:"sheet"},
       h("h2",{},"Einstellungen", iconBtn("close","Schließen",closeOverlay)),
-      h("button",{class:"installbar",style:"width:100%",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"Zum Home-Bildschirm"), h("small",{},"yapp wie eine App nutzen")), ic("home")),
+      h("button",{class:"installbar",style:"width:100%",onclick:openInstall}, logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"Zum Home-Bildschirm"), h("small",{},"shade wie eine App nutzen")), ic("home")),
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Aussehen"),
       h("div",{style:"display:flex;gap:8px"}, ...[["dark","Dunkel"],["light","Hell"]].map(([k,l])=>h("button",{class:"sbtn",style:theme===k?"background:var(--acc);color:var(--acc-ink)":"",onclick:()=>setTheme(k)}, ic(k==="dark"?"moon":"spark"), l))),
       h("h2",{style:"font-size:14px;color:var(--muted)"},"Konto & Privatsphäre"),
@@ -1332,19 +1332,19 @@ function openInstall(fromFullscreen){
   const steps = isApple
     ? [ ["Tippe in Safari unten auf ", k("more",""), " – oder auf ", k("shareios","Teilen"), "."],
         ["Tippe auf ", k(null,"Zum Home-Bildschirm"), ". Falls du es nicht siehst: im Menü nach unten wischen."],
-        ["Tippe oben rechts auf ", k(null,"Hinzufügen"), ". Fertig – yapp ist jetzt auf deinem Home-Bildschirm."] ]
+        ["Tippe oben rechts auf ", k(null,"Hinzufügen"), ". Fertig – shade ist jetzt auf deinem Home-Bildschirm."] ]
     : [ ["Tippe im Browser oben rechts auf ", k("more",""), "."],
         ["Tippe auf ", k(null,"App installieren"), " oder ", k(null,"Zum Startbildschirm"), "."],
         ["Bestätige mit ", k(null,"Installieren"), "."] ];
   overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
     h("div",{class:"sheet"},
-      h("h2",{},"yapp als App", iconBtn("close","Schließen",closeOverlay)),
+      h("h2",{},"shade als App", iconBtn("close","Schließen",closeOverlay)),
       fromFullscreen === true ? h("p",{class:"empty",style:"margin:0 0 12px;text-align:left"},"Dieses Gerät erlaubt kein Vollbild per Knopf. Auf dem iPhone geht Vollbild nur über den Home-Bildschirm:") : h("button",{class:"send",style:"width:100%;margin-bottom:12px",onclick:()=>{ closeOverlay(); goFullscreen(); }}, ic("expand"),"Vollbild jetzt"),
-      h("div",{style:"display:flex;gap:14px;align-items:center;margin-bottom:12px"}, logo(60), h("span",{}, h("b",{style:"display:block;font-size:17px"},"yapp auf deinen Home-Bildschirm"), h("small",{style:"color:var(--muted)"},"Startet im Vollbild wie eine echte App."))),
-      isInstalled() ? h("p",{class:"empty"},"yapp ist schon als App installiert.") : null,
-      installEvt ? h("button",{class:"send",style:"width:100%;margin-bottom:12px",onclick:async()=>{ installEvt.prompt(); const r = await installEvt.userChoice; installEvt = null; if (r.outcome==="accepted"){ closeOverlay(); toast("yapp wird installiert"); } }}, ic("home"),"Jetzt installieren") : null,
+      h("div",{style:"display:flex;gap:14px;align-items:center;margin-bottom:12px"}, logo(60), h("span",{}, h("b",{style:"display:block;font-size:17px"},"shade auf deinen Home-Bildschirm"), h("small",{style:"color:var(--muted)"},"Startet im Vollbild wie eine echte App."))),
+      isInstalled() ? h("p",{class:"empty"},"shade ist schon als App installiert.") : null,
+      installEvt ? h("button",{class:"send",style:"width:100%;margin-bottom:12px",onclick:async()=>{ installEvt.prompt(); const r = await installEvt.userChoice; installEvt = null; if (r.outcome==="accepted"){ closeOverlay(); toast("shade wird installiert"); } }}, ic("home"),"Jetzt installieren") : null,
       h("ol",{class:"steps"}, ...steps.map(st=>h("li",{}, h("span",{}, ...st)))),
-      isApple ? h("p",{class:"note",style:"text-align:left"},"Wichtig: Das klappt nur in Safari. Wenn du yapp gerade in einer anderen App geöffnet hast, öffne den Link zuerst in Safari.") : null,
+      isApple ? h("p",{class:"note",style:"text-align:left"},"Wichtig: Das klappt nur in Safari. Wenn du shade gerade in einer anderen App geöffnet hast, öffne den Link zuerst in Safari.") : null,
       h("button",{class:"sbtn",style:"width:100%;justify-content:center",onclick:closeOverlay},"Verstanden"))));
 }
 
