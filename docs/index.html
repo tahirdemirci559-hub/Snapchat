@@ -593,11 +593,14 @@ function showAuth(mode){
       : h("button",{type:"button",class:"link",style:"color:#b9bec8",onclick:openImport}, "Konto von anderem Handy übernehmen"));
   authEl.replaceChildren(h("div",{class:"auth"}, h("div",{class:"inner"},
     h("div",{class:"brand"}, logo(96), h("h1",{},"ShadeChat"), h("span",{class:"tag"},"Bleib im Schatten.")),
+    isInstalled() ? null : h("button",{type:"button",class:"installbar",style:"width:100%;color:#fff",onclick:()=>{ if (installEvt){ installEvt.prompt(); installEvt.userChoice.then(()=>{ installEvt = null; }); return; } openInstall(); const o = overlay.firstChild; if (o) o.style.zIndex = 60; }},
+      logo(40), h("span",{style:"flex:1;text-align:left"}, h("b",{},"ShadeChat als App holen"), h("small",{},"Aufs Handy wie eine echte App – 1 Minute")), ic("home")),
     card,
     h("p",{style:"text-align:center;font-size:12px;margin:0;color:#8b919d"}, NET ? "Dein Konto ist online gespeichert – du kannst dich auf jedem Handy anmelden." : "Dein Konto wird auf diesem Handy gespeichert. Freunde fügst du per Code hinzu."))));
 }
 function finishLogin(isNew){
   loggedIn = true; store.set("pling-session", true);
+  if (!isInstalled() && !store.get("shade-install-shown")){ store.set("shade-install-shown", true); setTimeout(() => openInstall(), 1500); }
   if (!account.joined) account.joined = Date.now();
   authEl.replaceChildren(); renderAll(); requestAnimationFrame(()=>{ pager.scrollLeft = 2*pager.clientWidth; setTab(2); });
   if (isNew) unlock("start");
@@ -627,7 +630,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "14.11. 17:32";
+const SHADE_VERSION = "14.11. 17:35";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
