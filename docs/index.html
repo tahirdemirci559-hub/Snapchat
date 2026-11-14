@@ -568,7 +568,8 @@ function showAuth(mode){
       finishLogin(true);
     } else {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err.textContent = "Bitte gib eine gültige E-Mail-Adresse ein.";
-      if (!account || account.email !== email) return err.textContent = "Zu dieser E-Mail gibt es auf diesem Gerät kein Konto.";
+      if (!account){ showAuth("signup"); const em = document.getElementById("a-email"); if (em) em.value = email; toast("Auf diesem Handy gibt es noch kein Konto – erstelle es hier kurz neu."); return; }
+      if (account.email !== email) return err.textContent = "Auf diesem Handy ist ein Konto mit einer anderen E-Mail: " + account.email;
       if (!pass) return err.textContent = "Bitte gib dein Passwort ein.";
       if (account.passHash !== await hash(pass)) return err.textContent = "Das Passwort stimmt nicht.";
       finishLogin(false);
@@ -626,7 +627,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "14.11. 17:30";
+const SHADE_VERSION = "14.11. 17:32";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
