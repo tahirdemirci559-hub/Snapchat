@@ -589,11 +589,11 @@ function showAuth(mode){
     mode === "signup" ? h("p",{class:"note",style:"padding:0"},"ShadeChat ist ab 13 Jahren.") : null,
     h("button",{type:"button",class:"link",onclick:()=>showAuth(mode==="signup"?"login":"signup")}, mode === "signup" ? "Schon ein Konto? Anmelden" : "Neu hier? Konto erstellen"),
     NET ? h("button",{type:"button",class:"link",style:"color:#b9bec8",onclick:()=>{ store.set("shade-preview", true); location.reload(); }}, "Ohne Konto ansehen (Vorschau)")
-      : store.get("shade-preview") ? h("button",{type:"button",class:"link",style:"color:#b9bec8",onclick:()=>{ store.del("shade-preview"); location.reload(); }}, "Zurück zum Online-Konto") : null);
+      : h("button",{type:"button",class:"link",style:"color:#b9bec8",onclick:openImport}, "Konto von anderem Handy übernehmen"));
   authEl.replaceChildren(h("div",{class:"auth"}, h("div",{class:"inner"},
     h("div",{class:"brand"}, logo(96), h("h1",{},"ShadeChat"), h("span",{class:"tag"},"Bleib im Schatten.")),
     card,
-    h("p",{style:"text-align:center;font-size:12px;margin:0;color:#8b919d"}, NET ? "Dein Konto ist online gespeichert – du kannst dich auf jedem Handy anmelden." : "Vorschau – Chats mit Freunden, Anrufe und Benachrichtigungen gehen erst mit dem Online-Konto. Dein Vorschau-Konto wird nur auf diesem Gerät gespeichert."))));
+    h("p",{style:"text-align:center;font-size:12px;margin:0;color:#8b919d"}, NET ? "Dein Konto ist online gespeichert – du kannst dich auf jedem Handy anmelden." : "Dein Konto wird auf diesem Handy gespeichert. Freunde fügst du per Code hinzu."))));
 }
 function finishLogin(isNew){
   loggedIn = true; store.set("pling-session", true);
@@ -602,10 +602,31 @@ function finishLogin(isNew){
   if (isNew) unlock("start");
   toast(isNew ? `Willkommen bei ShadeChat, ${account.name}.` : `Willkommen zurück, ${account.name}.`);
 }
+function openImport(){
+  const ta = h("textarea",{id:"import-code",rows:"4",placeholder:"Übertragungs-Code einfügen",style:"width:100%;box-sizing:border-box;border-radius:14px;padding:12px;background:var(--surface2);color:var(--fg);border:1px solid var(--line);font:13px ui-monospace,monospace"});
+  const msg = h("p",{class:"note",style:"text-align:left"},"Auf dem alten Handy: Profil → Einstellungen → „Auf anderes Handy übertragen“ → Code kopieren.");
+  const go = () => { try {
+      const raw = ta.value.trim(); if (!raw.startsWith("SC1.")) throw 0;
+      const d = JSON.parse(decodeURIComponent(escape(atob(raw.slice(4))))); if (!d.st || !d.st.code || !d.account) throw 0;
+      store.set("shade-p2p", JSON.stringify(d.st)); store.set("pling-account", d.account); store.set("pling-session", true); location.reload();
+    } catch { msg.textContent = "Der Code stimmt nicht. Kopiere ihn nochmal komplett."; } };
+  overlay.replaceChildren(h("div",{class:"ov dim",style:"z-index:50",onclick:e=>{ if(e.target===e.currentTarget) overlay.replaceChildren(); }},
+    h("div",{class:"sheet"}, h("h2",{},"Konto übernehmen", h("button",{class:"round","aria-label":"Schließen",onclick:()=>overlay.replaceChildren()}, ic("close",19))), ta, msg,
+      h("button",{class:"send",style:"width:100%",onclick:go}, ic("check"),"Übernehmen"))));
+}
+function openExport(){
+  const code = exportAccount ? exportAccount() : "";
+  overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
+    h("div",{class:"sheet"}, h("h2",{},"Auf anderes Handy übertragen", iconBtn("close","Schließen",closeOverlay)),
+      h("p",{class:"note",style:"text-align:left;margin:0"},"1. Code kopieren und dir selbst schicken. 2. Auf dem neuen Handy ShadeChat öffnen → „Konto von anderem Handy übernehmen“ → Code einfügen."),
+      h("div",{style:"max-height:120px;overflow:auto;padding:10px 12px;border-radius:14px;background:var(--surface2);font:11px ui-monospace,monospace;word-break:break-all;color:var(--muted)"}, code.slice(0, 160) + "…"),
+      h("button",{class:"send",style:"width:100%",onclick:async()=>{ try { await navigator.clipboard.writeText(code); toast("Code kopiert"); } catch { toast("Kopieren ging nicht"); } }}, ic("link"),"Code kopieren"),
+      h("p",{class:"note",style:"text-align:left"},"Gib diesen Code niemandem – damit kann man dein Konto benutzen."))));
+}
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "07.11. 20:27";
+const SHADE_VERSION = "14.11. 17:25";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -1220,6 +1241,7 @@ function status(c){
 }
 
 // ================= Anrufe (ohne Server nicht möglich) =================
+let exportAccount = null;
 let pushUI = () => null, pushRow = () => null, openNtfy = () => toast("Benachrichtigungen gehen, wenn du über shadechat.github.io angemeldet bist.");
 let deleteStory = async (st) => { const i = myStories.indexOf(st); if (i >= 0) myStories.splice(i, 1); };
 let startCall = () => toast("Anrufe gehen, wenn du über shadechat.github.io angemeldet bist.");
@@ -2194,7 +2216,7 @@ function openSettings(){
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer kann mir Shots schicken?"), h("small",{},h("span",{},"Nur Freunde")))),
       h("div",{class:"row"}, h("span",{class:"t"}, h("b",{},"Wer sieht meine Story?"), h("small",{},h("span",{},"Freunde")))),
       h("p",{class:"note",style:"text-align:left;margin-top:10px"}, NET ? "Online: Konto, Freunde, Chats und Stories werden sicher auf dem Server gespeichert." : "Vorschau: Konto, Fotos und Chats bleiben nur auf diesem Gerät."),
-      !NET && store.get("shade-preview") ? h("button",{class:"sbtn",style:"width:100%;justify-content:center",onclick:()=>{ store.del("shade-preview"); location.reload(); }}, ic("user"),"Zurück zum Online-Konto") : null,
+      !NET && exportAccount ? h("button",{class:"sbtn",style:"width:100%;justify-content:center",onclick:openExport}, ic("user"),"Auf anderes Handy übertragen") : null,
       h("button",{class:"sbtn",style:"color:var(--snap);width:100%;justify-content:center",onclick:logout}, ic("logout"),"Abmelden"),
       h("p",{class:"note",style:"margin-top:10px"},"Version " + SHADE_VERSION))));
 }
@@ -2943,12 +2965,22 @@ const P2P = (() => {
   function onData(d){
     if (st.seen.includes(d.id)) return; st.seen.push(d.id); if (st.seen.length > 400) st.seen.splice(0, 200);
     st.since = Math.max(st.since, d.time || 0); save();
-    let p; try { p = JSON.parse(d.message); } catch { return; }
+    let p; try { p = JSON.parse(d.message); } catch { try { if (String(d.message).startsWith("B64:")) p = JSON.parse(b64d(d.message.slice(4))); } catch {} }
+    if (!p && d.attachment && d.attachment.url && /text|json|octet/.test(d.attachment.type || "")){ fetch(d.attachment.url).then(r => r.text()).then(tx => { try { onData({...d, id:d.id + "-a", message:tx, attachment:null}); } catch {} }); return; }
+    if (!p) return;
     if (!p || typeof p.from !== "string" || !/^[a-z0-9]{6,20}$/.test(p.from) || p.from === st.code) return;
     if (p.t === "hi" || p.t === "ack"){
       const isNew = addFriend(p.from, p.name, p.username);
       if (p.t === "hi"){ post(p.from, {t:"ack", ...meInfo()}).catch(()=>{}); if (isNew) toast(`${p.name || "Jemand"} hat dich als Freund hinzugefügt`); }
       renderAll(); return;
+    }
+    if (p.t === "call"){ onCall(p); return; }
+    if (p.t === "shot" && d.attachment && d.attachment.url){
+      if (!st.friends[p.from]) addFriend(p.from, p.name, p.username);
+      keep(p.from, {mine:false, text:"📸 Shot", at:p.at || Date.now()});
+      const c = chatWith(pid(p.from)); c.msgs.push({by:pid(p.from), snap:{img:d.attachment.url, filter:p.filter || "", cap:p.cap || "", capY:64, stickers:[], sec:p.sec || 5}, at:p.at || Date.now()});
+      if (chatOpen(c)){ c.read = true; c.redraw(); } else { c.read = false; if (!overlay.childElementCount) renderAll(); toast(`${people[pid(p.from)].name} hat dir einen Shot geschickt`); }
+      return;
     }
     if (p.t === "msg" && typeof p.text === "string"){
       if (!st.friends[p.from]) addFriend(p.from, p.name, p.username);
@@ -2969,7 +3001,12 @@ const P2P = (() => {
   reply = function(c, wasSnap){
     if (!c.id.startsWith("p_")) return baseReply(c, wasSnap);
     const code = c.id.slice(2), last = c.msgs[c.msgs.length - 1]; if (!last || last.by !== ME) return;
-    const text = last.snap ? "📸 hat dir einen Shot geschickt (Fotos gehen in der Vorschau noch nicht)" : (last.text || "");
+    if (last.snap && last.snap.img){
+      keep(code, {mine:true, text:"📸 Shot gesendet", at:last.at});
+      sendShot(code, last.snap).catch(() => toast("Shot nicht gesendet – prüf dein Internet."));
+      return;
+    }
+    const text = last.snap ? "🎬 hat dir ein Video geschickt (Videos gehen hier noch nicht)" : (last.text || "");
     if (last.snap){ last.snap = null; last.text = text; }
     keep(code, {mine:true, text, at:last.at});
     post(code, {t:"msg", ...meInfo(), text, at:last.at}, text).then(() => { c.opened = false; }).catch(() => toast("Nicht gesendet – prüf dein Internet."));
@@ -2997,6 +3034,122 @@ const P2P = (() => {
         h("p",{class:"note",style:"text-align:left;margin-top:12px"},"Benachrichtigungen: Abonniere in ntfy das Thema ", h("b",{style:"color:var(--fg)"},"shade-" + st.code), ". Dann siehst du neue Nachrichten auch, wenn ShadeChat zu ist."))));
     input.focus();
   };
+  // ---------- Fotos (Shots) als Anhang ----------
+  const b64e = s => btoa(unescape(encodeURIComponent(s)));
+  const b64d = s => decodeURIComponent(escape(atob(s)));
+  function shrink(src, max = 900, q = .72){
+    return new Promise((res, rej) => { const im = new Image(); im.crossOrigin = "anonymous"; im.onload = () => {
+      const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement("canvas");
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      c.toBlob(b => b ? res(b) : rej(new Error("bild")), "image/jpeg", q); }; im.onerror = rej; im.src = src; });
+  }
+  async function sendShot(code, snap){
+    const blob = await shrink(snap.img);
+    const meta = {t:"shot", ...meInfo(), at:Date.now(), cap:snap.cap || "", filter:snap.filter || "", sec:snap.sec || 5};
+    const r = await fetch(NT + dataT(code), {method:"PUT", body:blob, headers:{"Filename":"shot.jpg", "X-Message":"B64:" + b64e(JSON.stringify(meta))}});
+    if (!r.ok) throw new Error("upload");
+    fetch(NT, {method:"POST", body:JSON.stringify({topic:noteT(code), title:"ShadeChat · " + meInfo().name, message:"hat dir einen Shot geschickt 📸", click:location.origin + location.pathname, priority:4})}).catch(()=>{});
+  }
+  // ---------- Anrufe (WebRTC, Verbindungsdaten laufen über ntfy) ----------
+  const ICE = {iceServers:[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302"]}]};
+  const callEl = document.getElementById("call");
+  let call = null;
+  async function pack(sdp){
+    try { if (window.CompressionStream){ const s = new Blob([sdp]).stream().pipeThrough(new CompressionStream("gzip")); const buf = new Uint8Array(await new Response(s).arrayBuffer()); let bin = ""; buf.forEach(x => bin += String.fromCharCode(x)); return "gz:" + btoa(bin); } } catch {}
+    return "raw:" + b64e(sdp);
+  }
+  async function unpack(v){
+    if (v.startsWith("gz:")){ const bin = atob(v.slice(3)), u = Uint8Array.from(bin, ch => ch.charCodeAt(0)); const s = new Blob([u]).stream().pipeThrough(new DecompressionStream("gzip")); return await new Response(s).text(); }
+    return b64d(v.slice(4));
+  }
+  const gathered = pc => new Promise(res => { if (pc.iceGatheringState === "complete") return res(); const t = setTimeout(res, 3000); pc.addEventListener("icegatheringstatechange", () => { if (pc.iceGatheringState === "complete"){ clearTimeout(t); res(); } }); });
+  const fmt = ms => { const t = Math.floor(ms / 1000); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); };
+  function ring(on, out){
+    if (call && call.ringer){ clearInterval(call.ringer); call.ringer = null; }
+    if (!on || !call) return;
+    let ctx; try { ctx = call.actx || (call.actx = new (window.AudioContext || window.webkitAudioContext)()); } catch { return; }
+    const beep = () => { try { const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = out ? 425 : 660; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.1, t + .03); g.gain.setValueAtTime(.1, t + (out ? 1 : .4)); g.gain.linearRampToValueAtTime(0, t + (out ? 1.05 : .45)); o.start(t); o.stop(t + 1.1); } catch {} };
+    beep(); call.ringer = setInterval(beep, out ? 4000 : 2000);
+  }
+  function ui(){
+    if (!call){ callEl.replaceChildren(); return; }
+    const c = call, live = c.state === "live";
+    const status = c.state === "incoming" ? (c.video ? "Videoanruf …" : "Anruf …") : c.state === "out" ? "Klingelt …" : c.state === "connecting" ? "Verbinde …" : fmt(Date.now() - c.started);
+    const btn = (icon, label, fn, cls = "") => h("span",{class:"lbl"}, h("button",{class:"cb " + cls,"aria-label":label,onclick:fn}, ic(icon,26)), label);
+    if (!c.remoteEl){ c.remoteEl = h("video",{class:"remote",autoplay:true,playsinline:true}); }
+    if (!c.localEl){ c.localEl = h("video",{class:"local",autoplay:true,playsinline:true,muted:true}); c.localEl.muted = true; }
+    if (c.remote && c.remoteEl.srcObject !== c.remote){ c.remoteEl.srcObject = c.remote; c.remoteEl.play().catch(()=>{}); }
+    if (c.local && c.video && c.localEl.srcObject !== c.local){ c.localEl.srcObject = c.local; c.localEl.play().catch(()=>{}); }
+    const showRemote = c.video && c.remote;
+    c.remoteEl.style.display = showRemote ? "" : "none"; c.localEl.style.display = c.video && c.local ? "" : "none";
+    const ctl = c.state === "incoming"
+      ? [btn("hangup","Ablehnen",() => decline(),"end"), btn(c.video ? "video" : "phone","Annehmen",() => accept(),"ok pulse")]
+      : [btn(c.muted ? "micoff" : "mic", c.muted ? "Stumm" : "Mikro", () => { c.muted = !c.muted; c.local && c.local.getAudioTracks().forEach(t => t.enabled = !c.muted); ui(); }, c.muted ? "on" : ""),
+         btn("hangup","Auflegen",() => end(true),"end")];
+    if (!c.root){ c.root = h("div",{class:"call"}); c.statusEl = h("small",{}); c.root.append(c.remoteEl, c.localEl, h("div",{class:"who"}, avatar(pid(c.code), 112), h("b",{}, pname(pid(c.code))), c.statusEl), h("div",{class:"ctl"})); callEl.replaceChildren(c.root); }
+    c.root.className = "call" + (live ? " live" : "") + (showRemote ? " vid" : "");
+    c.statusEl.textContent = status; c.root.querySelector(".ctl").replaceChildren(...ctl);
+  }
+  function makePc(){
+    const c = call, pc = new RTCPeerConnection(ICE); c.pc = pc;
+    c.local.getTracks().forEach(t => pc.addTrack(t, c.local));
+    pc.ontrack = e => { if (call !== c) return; c.remote = e.streams[0] || new MediaStream([e.track]); ui(); };
+    pc.onconnectionstatechange = () => { if (call !== c) return; const s = pc.connectionState;
+      if (s === "connected" && c.state !== "live"){ c.state = "live"; c.started = Date.now(); ring(false); c.tick = setInterval(ui, 1000); ui(); }
+      else if (s === "failed"){ toast("Verbindung fehlgeschlagen. Probiert es im WLAN nochmal."); end(true); } };
+    return pc;
+  }
+  const sig = (code, o) => post(code, {t:"call", ...meInfo(), at:Date.now(), ...o});
+  async function start(code, video){
+    if (call) return;
+    let local; try { local = await LiveCam.av(video); } catch { return toast("Kein Zugriff auf Mikrofon/Kamera."); }
+    const c = call = {code, video, local, state:"out", cid:Math.random().toString(36).slice(2, 10)};
+    ui(); ring(true, true);
+    try {
+      const pc = makePc(); await pc.setLocalDescription(await pc.createOffer()); await gathered(pc);
+      await sig(code, {sub:"offer", cid:c.cid, video:!!video, sdp:await pack(pc.localDescription.sdp)});
+      fetch(NT, {method:"POST", body:JSON.stringify({topic:noteT(code), title:"ShadeChat · " + meInfo().name, message:video ? "ruft dich per Video an 🎥 – öffne ShadeChat" : "ruft dich an 📞 – öffne ShadeChat", click:location.origin + location.pathname, priority:5, tags:["telephone_receiver"]})}).catch(()=>{});
+      c.noAnswer = setTimeout(() => { if (call === c && c.state === "out"){ toast(pname(pid(code)) + " geht nicht ran."); end(true); } }, 45000);
+    } catch { toast("Anruf ging nicht."); end(false); }
+  }
+  async function accept(){
+    const c = call; if (!c || c.state !== "incoming") return;
+    ring(false); c.state = "connecting"; ui();
+    try { c.local = await LiveCam.av(c.video); } catch { toast("Kein Zugriff auf Mikrofon/Kamera."); return decline(); }
+    try {
+      const pc = makePc(); await pc.setRemoteDescription({type:"offer", sdp:await unpack(c.offer)});
+      await pc.setLocalDescription(await pc.createAnswer()); await gathered(pc);
+      await sig(c.code, {sub:"answer", cid:c.cid, sdp:await pack(pc.localDescription.sdp)}); ui();
+    } catch { toast("Anruf ging nicht."); end(true); }
+  }
+  function decline(){ const c = call; if (!c) return; sig(c.code, {sub:"decline", cid:c.cid}).catch(()=>{}); end(false); }
+  function end(notify){
+    const c = call; if (!c) return; call = null;
+    if (c.ringer) clearInterval(c.ringer); clearInterval(c.tick); clearTimeout(c.noAnswer);
+    try { c.pc && c.pc.close(); } catch {} c.local && c.local.getTracks().forEach(t => t.stop()); try { c.actx && c.actx.close(); } catch {}
+    if (notify) sig(c.code, {sub:"end", cid:c.cid}).catch(()=>{});
+    if (c.started) toast("Anruf beendet · " + fmt(Date.now() - c.started));
+    callEl.replaceChildren();
+  }
+  async function onCall(p){
+    const code = p.from;
+    if (p.sub === "offer"){
+      if (Date.now() - (p.at || 0) > 45000) return;
+      if (call){ if (call.cid !== p.cid) sig(code, {sub:"busy", cid:p.cid}).catch(()=>{}); return; }
+      if (!st.friends[code]) addFriend(code, p.name, p.username);
+      call = {code, video:!!p.video, offer:p.sdp, cid:p.cid, state:"incoming"}; ui(); ring(true, false);
+      return;
+    }
+    if (!call || call.cid !== p.cid) return;
+    if (p.sub === "answer" && call.state === "out"){ ring(false); call.state = "connecting"; ui(); try { await call.pc.setRemoteDescription({type:"answer", sdp:await unpack(p.sdp)}); } catch { end(true); } }
+    else if (p.sub === "decline"){ toast(pname(pid(code)) + " hat abgelehnt."); end(false); }
+    else if (p.sub === "busy"){ toast(pname(pid(code)) + " telefoniert gerade."); end(false); }
+    else if (p.sub === "end"){ if (call.state === "incoming") toast("Verpasster Anruf von " + pname(pid(code))); end(false); }
+  }
+  startCall = function(id, video){ if (!id.startsWith("p_")) return toast("Diesen Kontakt kannst du nicht anrufen."); start(id.slice(2), video); };
+  // ---------- Konto auf ein anderes Handy übertragen ----------
+  exportAccount = () => "SC1." + b64e(JSON.stringify({st, account}));
   restore(); listen();
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") listen(); });
   return {code:() => st.code};
@@ -3017,7 +3170,6 @@ if (NET){
   serverDown().then(down => { if (down){ store.set("shade-preview", true); store.set("shade-auto-preview", true); location.reload(); } });
 } else {
   if (!loggedIn) showAuth(); else renderAll();
-  if (store.get("shade-auto-preview")) setTimeout(() => toast("Der Online-Server ist gerade gesperrt – du bist in der Vorschau."), 800);
   if (store.get("shade-auto-preview") && FIREBASE_CONFIG){
     serverDown().then(down => { if (!down){ fetch(SERVER_PROBE, {cache:"no-store"}).then(r => { if (r.status !== 403){ store.del("shade-preview"); store.del("shade-auto-preview"); toast("Der Server läuft wieder – melde dich mit deinem Konto an."); setTimeout(() => location.reload(), 1500); } }).catch(()=>{}); } });
   }
