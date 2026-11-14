@@ -571,7 +571,7 @@ function showAuth(mode){
       if (!account){ showAuth("signup"); const em = document.getElementById("a-email"); if (em) em.value = email; toast("Auf diesem Handy gibt es noch kein Konto – erstelle es hier kurz neu."); return; }
       if (account.email !== email) return err.textContent = "Auf diesem Handy ist ein Konto mit einer anderen E-Mail: " + account.email;
       if (!pass) return err.textContent = "Bitte gib dein Passwort ein.";
-      if (account.passHash !== await hash(pass)) return err.textContent = "Das Passwort stimmt nicht.";
+      if (account.passHash !== await hash(pass)){ err.replaceChildren("Das Passwort stimmt nicht. ", h("button",{type:"button",class:"link",style:"display:inline;padding:0",onclick:resetLocalPass}, "Passwort vergessen?")); return; }
       finishLogin(false);
     }
   }},
@@ -606,6 +606,23 @@ function finishLogin(isNew){
   if (isNew) unlock("start");
   toast(isNew ? `Willkommen bei ShadeChat, ${account.name}.` : `Willkommen zurück, ${account.name}.`);
 }
+// Passwort vergessen (Konto ist auf diesem Handy): mit dem Geburtsdatum ein neues Passwort setzen
+function resetLocalPass(){
+  if (!account) return;
+  const bd = h("input",{id:"r-birth",inputmode:"numeric",maxlength:"10",placeholder:"TT.MM.JJJJ",class:"search",style:"padding-left:14px",oninput:e=>{ const d=e.target.value.replace(/\D/g,"").slice(0,8); e.target.value = d.length>4 ? d.slice(0,2)+"."+d.slice(2,4)+"."+d.slice(4) : d.length>2 ? d.slice(0,2)+"."+d.slice(2) : d; }});
+  const pw = h("input",{id:"r-pass",type:"password",placeholder:"Neues Passwort",class:"search",style:"padding-left:14px",autocomplete:"new-password"});
+  const msg = h("p",{class:"note",style:"text-align:left"},"Gib dein Geburtsdatum ein, so wie beim Konto-Erstellen. Dann kannst du ein neues Passwort festlegen.");
+  const go = async () => {
+    if (bd.value.trim() !== (account.birth || "")) return msg.textContent = "Das Geburtsdatum stimmt nicht.";
+    if (!pw.value) return msg.textContent = "Bitte gib ein neues Passwort ein.";
+    account.passHash = await hash(pw.value); saveAccount(); overlay.replaceChildren();
+    toast("Neues Passwort gespeichert – du bist drin."); finishLogin(false);
+  };
+  overlay.replaceChildren(h("div",{class:"ov dim",style:"z-index:60",onclick:e=>{ if(e.target===e.currentTarget) overlay.replaceChildren(); }},
+    h("div",{class:"sheet"}, h("h2",{},"Passwort vergessen", h("button",{class:"round","aria-label":"Schließen",onclick:()=>overlay.replaceChildren()}, ic("close",19))),
+      h("p",{class:"note",style:"text-align:left;margin:0"},"Konto: " + account.email), bd, pw, msg,
+      h("button",{class:"send",style:"width:100%",onclick:go}, ic("check"),"Neues Passwort speichern"))));
+}
 function openImport(){
   const ta = h("textarea",{id:"import-code",rows:"4",placeholder:"Übertragungs-Code einfügen",style:"width:100%;box-sizing:border-box;border-radius:14px;padding:12px;background:var(--surface2);color:var(--fg);border:1px solid var(--line);font:13px ui-monospace,monospace"});
   const msg = h("p",{class:"note",style:"text-align:left"},"Auf dem alten Handy: Profil → Einstellungen → „Auf anderes Handy übertragen“ → Code kopieren.");
@@ -630,7 +647,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "14.11. 17:35";
+const SHADE_VERSION = "14.11. 18:42";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
