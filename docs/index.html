@@ -584,7 +584,8 @@ function showAuth(mode){
     mode === "signup" ? f("a-user","Benutzername","text",null,"username",{autocapitalize:"none"}) : null,
     mode === "signup" ? f("a-birth","Geburtsdatum","text",null,"bday",{inputmode:"numeric",maxlength:"10",oninput:e=>{ const d=e.target.value.replace(/\D/g,"").slice(0,8); e.target.value = d.length>4 ? d.slice(0,2)+"."+d.slice(2,4)+"."+d.slice(4) : d.length>2 ? d.slice(0,2)+"."+d.slice(2) : d; }}) : null,
     f("a-email","E-Mail","email",null,"email",{value:store.get("shade-last-email") || ""}),
-    f("a-pass","Passwort","password",null, mode==="signup"?"new-password":"current-password"),
+    f("a-pass","Passwort","password",null,"off",{autocapitalize:"none",autocorrect:"off",spellcheck:"false","data-lpignore":"true"}),
+    h("label",{style:"display:flex;gap:8px;align-items:center;font-size:13px;color:#b9bec8;margin-top:-4px"}, h("input",{type:"checkbox",id:"a-show",onchange:e=>{ const pw = document.getElementById("a-pass"); if (pw) pw.type = e.target.checked ? "text" : "password"; }}), "Passwort anzeigen"),
     err,
     h("button",{class:"big",type:"submit"}, mode === "signup" ? "Weiter" : "Anmelden"),
     mode === "signup" ? h("p",{class:"note",style:"padding:0"},"ShadeChat ist ab 13 Jahren.") : null,
@@ -647,7 +648,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "14.11. 18:42";
+const SHADE_VERSION = "14.11. 19:04";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
