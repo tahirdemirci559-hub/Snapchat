@@ -321,7 +321,7 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 .viewfinder.on>p,.viewfinder.on>.chip{display:none}
 .shoot.rec{background:#e5484d;border-color:#fff;animation:recpulse 1s infinite}
 @keyframes recpulse{50%{transform:scale(.92)}}
-#p-spot>iframe.ytshared{position:absolute;top:50%;left:50%;width:100%;height:100%;border:0;transform:translate(-50%,-50%) scale(1.32);z-index:0;pointer-events:none;background:#000}
+#p-spot>iframe.ytshared{transition:none;position:absolute;top:50%;left:50%;width:100%;height:100%;border:0;transform:translate(-50%,-50%) scale(1.32);z-index:0;pointer-events:none;background:#000}
 #p-spot>.feed{position:relative;z-index:1}
 #spotfeed .post.ytlive{background:transparent}
 #spotfeed .post.ytlive .shot{background:transparent}
@@ -650,7 +650,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "15.11. 18:30";
+const SHADE_VERSION = "15.11. 18:47";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -1894,26 +1894,40 @@ function openSendTo(snap){
 
 // ================= Spotlight =================
 let spotDirty = true, feedSound = true;
-function ytSrc(id, snd){ return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=${snd ? 0 : 1}&playsinline=1&loop=1&playlist=${id}&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`; }
+function ytSrc(id, snd, auto = 1){ return `https://www.youtube-nocookie.com/embed/${id}?autoplay=${auto}&mute=${snd ? 0 : 1}&playsinline=1&loop=1&playlist=${id}&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`; }
 function ytCmd(f, func){ try { f.contentWindow.postMessage(JSON.stringify({event:"command", func, args:[]}), "*"); } catch {} }
-// Ein einziger Player für den Spotlight-Feed: Ton bleibt an, sobald er einmal an ist
+// Zwei Player für den Spotlight-Feed: einer spielt, der andere lädt schon das nächste Video vor
 let ytP = null, ytCurPost = null, ytState = -1, ytMsgSeen = false;
-function ytShared(id){
+const ytPs = [];
+const ytHello = f => { try { f.contentWindow.postMessage(JSON.stringify({event:"listening", id:"shade", channel:"widget"}), "*"); } catch {} };
+function ytMake(id, auto){
   const panel = document.getElementById("p-spot");
-  if (!ytP || !ytP.isConnected){
-    ytP = h("iframe",{class:"ytshared",src:ytSrc(id, false),allow:"autoplay; encrypted-media",title:"Video"});
-    ytP.dataset.id = id;
-    ytP.onload = () => { try { ytP.contentWindow.postMessage(JSON.stringify({event:"listening", id:"shade", channel:"widget"}), "*"); } catch {}
-      [300, 1000, 2200].forEach(t => setTimeout(() => { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }, t)); };
-    panel.prepend(ytP);
-  } else if (ytP.dataset.id !== id){
-    ytP.dataset.id = id;
-    try { ytP.contentWindow.postMessage(JSON.stringify({event:"command", func:"cueVideoById", args:[id, 0]}), "*"); ytP.contentWindow.postMessage(JSON.stringify({event:"listening", id:"shade", channel:"widget"}), "*"); } catch {}
-    setTimeout(() => { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }, 500);
-  } else { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }
+  const f = h("iframe",{class:"ytshared",src:ytSrc(id, false, auto ? 1 : 0),allow:"autoplay; encrypted-media",title:"Video"});
+  f.dataset.id = id; f.style.visibility = "hidden";
+  f.onload = () => { f.dataset.ready = "1"; ytHello(f); if (f === ytP) ytKick(f); };
+  panel.prepend(f); ytPs.push(f); return f;
+}
+function ytKick(f){ [0, 250, 700, 1500, 2600].forEach(t => setTimeout(() => { if (f !== ytP) return; ytCmd(f, "playVideo"); if (feedSound) ytCmd(f, "unMute"); }, t)); }
+function ytCue(f, id){ if (f.dataset.id === id) return; f.dataset.id = id; try { f.contentWindow.postMessage(JSON.stringify({event:"command", func:"cueVideoById", args:[id, 0]}), "*"); } catch {} ytHello(f); }
+function ytShared(id, nextId){
+  for (let k = ytPs.length - 1; k >= 0; k--) if (!ytPs[k].isConnected) ytPs.splice(k, 1);
+  let f = ytPs.find(p => p.dataset.id === id);
+  if (!f){ f = ytPs.length < 2 ? ytMake(id, true) : ytPs.find(p => p !== ytP) || ytPs[0]; ytCue(f, id); }
+  if (ytP && ytP !== f){ ytCmd(ytP, "pauseVideo"); ytCmd(ytP, "mute"); ytP.style.visibility = "hidden"; }
+  ytP = f; f.style.visibility = "visible"; ytKick(f);
+  if (nextId){
+    let o = ytPs.find(p => p !== f);
+    if (!o) o = ytMake(nextId, false); else if (o.dataset.id !== nextId) ytCue(o, nextId);
+  }
+}
+// Schon beim Öffnen der App das erste Video vorladen
+function ytPrewarm(){
+  const first = document.querySelector("#spotfeed [data-yt]"); if (!first || ytPs.length) return;
+  ytMake(first.dataset.yt, false);
 }
 window.addEventListener("message", e => {
-  if (!ytP || e.source !== ytP.contentWindow) return;
+  const from = ytPs.find(p => p.contentWindow === e.source); if (!from) return;
+  if (from !== ytP){ return; }
   let d; try { d = typeof e.data === "string" ? JSON.parse(e.data) : e.data; } catch { return; }
   const st = d && (d.event === "onStateChange" ? d.info : (d.event === "infoDelivery" && d.info && typeof d.info.playerState === "number" ? d.info.playerState : undefined));
   if (d && d.event) ytMsgSeen = true;
@@ -1930,7 +1944,9 @@ const ytio = new IntersectionObserver(entries => entries.forEach(en => {
     const post = sh.closest(".post");
     if (en.isIntersecting && en.intersectionRatio > .6){
       if (ytCurPost && ytCurPost !== post) ytCurPost.classList.remove("ytlive");
-      ytCurPost = post; post.paused = false; ytState = -1; const sd = post.querySelector(".snd"); if (sd) sd.classList.remove("show"); ytShared(id);
+      ytCurPost = post; post.paused = false; ytState = -1; const sd = post.querySelector(".snd"); if (sd) sd.classList.remove("show");
+      let nx = post.nextElementSibling; while (nx && !nx.querySelector("[data-yt]")) nx = nx.nextElementSibling;
+      ytShared(id, nx ? nx.querySelector("[data-yt]").dataset.yt : null);
       setTimeout(() => { if (ytCurPost !== post || ytState === 1) return;
         if (!ytMsgSeen){ post.classList.add("ytlive"); return; }
         sd && (sd.replaceChildren(ic("resume")), sd.classList.add("show","keep")); }, 3500);
@@ -1996,6 +2012,7 @@ function renderSpot(){
       h("span",{class:"seg"}, h("span",{class:"on"},"Für dich"), h("span",{},"Folge ich")),
       h("span",{style:"display:flex;gap:8px"}, iconBtn("search","Suchen",openSearch,"round glass"), iconBtn("video","Eigenes Video posten",()=>{ camMode="video"; renderCam(); goTab(2); },"round glass"))),
     h("div",{class:"feed",id:"spotfeed"}, ...posts.map(buildPost)));
+  setTimeout(ytPrewarm, 400);
 }
 function openFeedOverlay(list, start){
   const feed = h("div",{class:"feed"}, ...list.map(buildPost));
