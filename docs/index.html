@@ -321,7 +321,7 @@ h2 small{font-family:var(--body);font-size:12.5px;color:var(--muted);font-weight
 .viewfinder.on>p,.viewfinder.on>.chip{display:none}
 .shoot.rec{background:#e5484d;border-color:#fff;animation:recpulse 1s infinite}
 @keyframes recpulse{50%{transform:scale(.92)}}
-#p-spot>iframe.ytshared{position:absolute;top:50%;left:50%;width:100%;height:100%;border:0;transform:translate(-50%,-50%) scale(1.22);z-index:0;pointer-events:none;background:#000}
+#p-spot>iframe.ytshared{position:absolute;top:50%;left:50%;width:100%;height:100%;border:0;transform:translate(-50%,-50%) scale(1.32);z-index:0;pointer-events:none;background:#000}
 #p-spot>.feed{position:relative;z-index:1}
 #spotfeed .post.ytlive{background:transparent}
 #spotfeed .post.ytlive .shot{background:transparent}
@@ -650,7 +650,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "15.11. 18:28";
+const SHADE_VERSION = "15.11. 18:30";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -1908,7 +1908,7 @@ function ytShared(id){
     panel.prepend(ytP);
   } else if (ytP.dataset.id !== id){
     ytP.dataset.id = id;
-    try { ytP.contentWindow.postMessage(JSON.stringify({event:"command", func:"loadVideoById", args:[id, 0]}), "*"); ytP.contentWindow.postMessage(JSON.stringify({event:"listening", id:"shade", channel:"widget"}), "*"); } catch {}
+    try { ytP.contentWindow.postMessage(JSON.stringify({event:"command", func:"cueVideoById", args:[id, 0]}), "*"); ytP.contentWindow.postMessage(JSON.stringify({event:"listening", id:"shade", channel:"widget"}), "*"); } catch {}
     setTimeout(() => { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }, 500);
   } else { ytCmd(ytP, "playVideo"); if (feedSound) ytCmd(ytP, "unMute"); }
 }
