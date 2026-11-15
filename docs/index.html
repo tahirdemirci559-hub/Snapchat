@@ -650,7 +650,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "15.11. 18:23";
+const SHADE_VERSION = "15.11. 18:28";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -1817,7 +1817,7 @@ function openEditor(target, media, lensId){
     if (tab === "zeit") items = [
       h("button",{class:"chip","aria-pressed":snap.stamp&&snap.stamp.style!=="boxed"?"true":"false",onclick:()=>{snap.stamp={time:nowTime(),place,style:"plain"}; redraw(); drawTools();}}, ic("timer"), nowTime()+" · "+place),
       h("button",{class:"chip","aria-pressed":snap.stamp?.style==="boxed"?"true":"false",onclick:()=>{snap.stamp={time:nowTime(),place,style:"boxed"}; redraw(); drawTools();}},"Etikett"),
-      h("input",{id:"place-input",value:place,placeholder:"Ort, z. B. Stuttgart","aria-label":"Ort",style:"max-width:150px",oninput:e=>{place=e.target.value; store.set("pling-place",place); if(snap.stamp){snap.stamp.place=place; redraw();}}}),
+      h("input",{id:"place-input",value:place,placeholder:"Ort","aria-label":"Ort",style:"max-width:150px",oninput:e=>{place=e.target.value; store.set("pling-place",place); if(snap.stamp){snap.stamp.place=place; redraw();}}}),
       h("button",{class:"chip",onclick:()=>{snap.stamp=null; redraw(); drawTools();}}, ic("close"),"Aus")];
     if (tab === "sticker"){
       if (sel >= 0 && snap.stickers[sel]) items.push(
@@ -3062,8 +3062,8 @@ const P2P = (() => {
   setTimeout(() => announce(false), 2500); setInterval(() => announce(false), 30 * 60e3);
   // Freunde hinzufügen per Benutzername oder Code
   openAddFriend = function(){
-    const input = h("input",{class:"search",id:"friend-input",style:"padding-left:14px",placeholder:"Benutzername (z. B. tahir) oder Code",autocapitalize:"none",autocorrect:"off",onkeydown:e=>{ if (e.key === "Enter") go(); }});
-    const msg = h("p",{class:"note",style:"text-align:left"},"Gib den Benutzernamen deines Freundes ein.");
+    const input = h("input",{class:"search",id:"friend-input",style:"padding-left:14px",placeholder:"Benutzername",autocapitalize:"none",autocorrect:"off",onkeydown:e=>{ if (e.key === "Enter") go(); }});
+    const msg = h("p",{class:"note",style:"text-align:left"},"Benutzername");
     const results = h("div",{style:"display:grid;gap:8px"});
     const addCode = async (code, name) => {
       if (code === st.code) return msg.textContent = "Das bist du selbst.";
@@ -3094,12 +3094,9 @@ const P2P = (() => {
     const copy = async () => { const t = "Füg mich bei ShadeChat hinzu! Mein Code: " + st.code + " – " + location.origin + location.pathname; try { await navigator.clipboard.writeText(t); toast("Kopiert – jetzt deinem Freund schicken"); } catch { toast(st.code); } };
     overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
       h("div",{class:"sheet"}, h("h2",{},"Freunde hinzufügen", iconBtn("close","Schließen",closeOverlay)),
-        h("p",{class:"note",style:"text-align:left;margin:0"},"Dein Benutzername: ", h("b",{style:"color:var(--fg)"},"@" + (account?.username || "")), " · Dein Code:"),
-        h("div",{style:"padding:12px 14px;border-radius:14px;background:var(--surface2);font:800 20px ui-monospace,monospace;letter-spacing:.06em;color:var(--fg);text-align:center"}, st.code),
-        h("button",{class:"sbtn",style:"width:100%;justify-content:center",onclick:copy}, ic("link"),"Meinen Code kopieren & schicken"),
         h("h2",{style:"margin-top:8px"},"Freund suchen"), input, msg, results,
         h("button",{class:"send",style:"width:100%",onclick:go}, ic("userplus"),"Hinzufügen"),
-        h("p",{class:"note",style:"text-align:left;margin-top:12px"},"Benachrichtigungen: Abonniere in ntfy das Thema ", h("b",{style:"color:var(--fg)"},"shade-" + st.code), ". Dann siehst du neue Nachrichten auch, wenn ShadeChat zu ist."))));
+        )));
     input.focus();
   };
   // ---------- Fotos (Shots) als Anhang ----------
