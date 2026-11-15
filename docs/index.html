@@ -563,6 +563,7 @@ function showAuth(mode){
       if (ageFrom(bd) < 13) return err.textContent = "ShadeChat ist erst ab 13 Jahren erlaubt.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err.textContent = "Bitte gib eine gültige E-Mail-Adresse ein.";
       if (!pass) return err.textContent = "Bitte gib ein Passwort ein.";
+      if (typeof P2P !== "undefined" && P2P && !(account && account.username === user)){ try { const taken = await P2P.lookup(user); if (taken.length) return err.textContent = "Dieser Benutzername ist schon vergeben. Nimm einen anderen."; } catch {} }
       account = {email, name, username:user, photo, bio:"", birth, passHash: await hash(pass), joined: Date.now()};
       saveAccount() || toast("Hinweis: Dein Browser speichert das Konto nicht dauerhaft.");
       finishLogin(true);
@@ -600,6 +601,7 @@ function showAuth(mode){
     h("p",{style:"text-align:center;font-size:12px;margin:0;color:#8b919d"}, NET ? "Dein Konto ist online gespeichert – du kannst dich auf jedem Handy anmelden." : "Dein Konto wird auf diesem Handy gespeichert. Freunde fügst du per Code hinzu."))));
 }
 function finishLogin(isNew){
+  setTimeout(() => { try { P2P && P2P.announce(true); } catch {} }, 500);
   loggedIn = true; store.set("pling-session", true);
   if (!isInstalled() && !store.get("shade-install-shown")){ store.set("shade-install-shown", true); setTimeout(() => openInstall(), 1500); }
   if (!account.joined) account.joined = Date.now();
@@ -648,7 +650,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "14.11. 19:04";
+const SHADE_VERSION = "15.11. 18:23";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -2974,9 +2976,15 @@ const P2P = (() => {
       if (list.length){ const c = chatWith(pid(f.code)); c.msgs = list.map(m => ({by:m.mine ? ME : pid(f.code), text:m.text, at:m.at})); c.read = true; }
     });
   }
+  // Mit Benachrichtigung: EINE Nachricht an das Benachrichtigungs-Thema (Daten stecken im Klick-Link) – spart das Tageslimit
+  const b64u = x => btoa(unescape(encodeURIComponent(x))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const unb64u = x => decodeURIComponent(escape(atob(x.replace(/-/g, "+").replace(/_/g, "/"))));
   async function post(code, payload, note){
-    await fetch(NT, {method:"POST", body:JSON.stringify({topic:dataT(code), message:JSON.stringify(payload)})});
-    if (note) fetch(NT, {method:"POST", body:JSON.stringify({topic:noteT(code), title:"ShadeChat · " + meInfo().name, message:note.slice(0, 200), click:location.origin + location.pathname, priority:4, tags:["speech_balloon"]})}).catch(()=>{});
+    const r = note
+      ? await fetch(NT, {method:"POST", body:JSON.stringify({topic:noteT(code), title:"ShadeChat · " + meInfo().name, message:note.slice(0, 200), click:location.origin + location.pathname + "#p=" + b64u(JSON.stringify(payload)), priority:4, tags:["speech_balloon"]})})
+      : await fetch(NT, {method:"POST", body:JSON.stringify({topic:dataT(code), message:JSON.stringify(payload)})});
+    if (r.status === 429) { toast("Tageslimit erreicht – morgen geht es wieder."); throw new Error("limit"); }
+    if (!r.ok) throw new Error("send");
   }
   function keep(code, m){ (st.msgs[code] = st.msgs[code] || []).push(m); if (st.msgs[code].length > 300) st.msgs[code].splice(0, st.msgs[code].length - 300); save(); }
   function addFriend(code, name, username){
@@ -2987,7 +2995,9 @@ const P2P = (() => {
   function onData(d){
     if (st.seen.includes(d.id)) return; st.seen.push(d.id); if (st.seen.length > 400) st.seen.splice(0, 200);
     st.since = Math.max(st.since, d.time || 0); save();
-    let p; try { p = JSON.parse(d.message); } catch { try { if (String(d.message).startsWith("B64:")) p = JSON.parse(b64d(d.message.slice(4))); } catch {} }
+    let p = null;
+    if (d.topic && d.topic.startsWith("shade-")){ const m = String(d.click || "").match(/#p=([A-Za-z0-9_-]+)/); if (!m) return; try { p = JSON.parse(unb64u(m[1])); } catch { return; } }
+    else try { p = JSON.parse(d.message); } catch { try { if (String(d.message).startsWith("B64:")) p = JSON.parse(b64d(d.message.slice(4))); } catch {} }
     if (!p && d.attachment && d.attachment.url && /text|json|octet/.test(d.attachment.type || "")){ fetch(d.attachment.url).then(r => r.text()).then(tx => { try { onData({...d, id:d.id + "-a", message:tx, attachment:null}); } catch {} }); return; }
     if (!p) return;
     if (!p || typeof p.from !== "string" || !/^[a-z0-9]{6,20}$/.test(p.from) || p.from === st.code) return;
@@ -3015,7 +3025,7 @@ const P2P = (() => {
   let es = null;
   function listen(){
     try { es && es.close(); } catch {}
-    es = new EventSource(NT + dataT(st.code) + "/sse?since=" + st.since);
+    es = new EventSource(NT + dataT(st.code) + "," + noteT(st.code) + "/sse?since=" + st.since);
     es.onmessage = e => { try { const d = JSON.parse(e.data); if (d.event === "message") onData(d); } catch {} };
   }
   // Senden: Nachrichten an Freunde gehen über ntfy raus
@@ -3033,25 +3043,61 @@ const P2P = (() => {
     keep(code, {mine:true, text, at:last.at});
     post(code, {t:"msg", ...meInfo(), text, at:last.at}, text).then(() => { c.opened = false; }).catch(() => toast("Nicht gesendet – prüf dein Internet."));
   };
-  // Freunde hinzufügen per Code
+  // Benutzername-Verzeichnis (über ntfy): jedes Handy meldet "Benutzername -> Code", damit man Freunde per Namen findet
+  const uT = u => "scu-" + u;
+  function announce(force){
+    if (!account || !account.username) return;
+    const last = +store.get("shade-announce") || 0, key = account.username + "|" + (account.name || "");
+    if (!force && Date.now() - last < 3 * 3600e3 && store.get("shade-announce-key") === key) return;
+    fetch(NT, {method:"POST", body:JSON.stringify({topic:uT(account.username), message:JSON.stringify({code:st.code, name:account.name || "", username:account.username, at:Date.now()})})})
+      .then(r => { if (r.ok){ store.set("shade-announce", Date.now()); store.set("shade-announce-key", key); } }).catch(()=>{});
+  }
+  async function lookup(u){
+    const r = await fetch(NT + uT(u) + "/json?poll=1&since=12h"); if (!r.ok) return [];
+    const found = {};
+    (await r.text()).split("\n").forEach(line => { try { const d = JSON.parse(line); if (d.event !== "message") return; const p = JSON.parse(d.message);
+      if (p && /^[a-z0-9]{6,20}$/.test(p.code) && p.username === u) found[p.code] = {code:p.code, name:p.name || u, at:p.at || 0}; } catch {} });
+    return Object.values(found).filter(f => f.code !== st.code);
+  }
+  setTimeout(() => announce(false), 2500); setInterval(() => announce(false), 30 * 60e3);
+  // Freunde hinzufügen per Benutzername oder Code
   openAddFriend = function(){
-    const input = h("input",{class:"search",id:"friend-input",style:"padding-left:14px",placeholder:"Code deines Freundes",autocapitalize:"none",autocorrect:"off"});
-    const msg = h("p",{class:"note",style:"text-align:left"},"Lass dir den Code deines Freundes schicken und füge ihn hier ein.");
-    const go = async () => {
-      const code = input.value.trim().toLowerCase().replace(/^.*shade-/, "").replace(/[^a-z0-9]/g, "");
-      if (!/^[a-z0-9]{6,20}$/.test(code)) return msg.textContent = "Das ist kein gültiger Code.";
-      if (code === st.code) return msg.textContent = "Das ist dein eigener Code.";
+    const input = h("input",{class:"search",id:"friend-input",style:"padding-left:14px",placeholder:"Benutzername (z. B. tahir) oder Code",autocapitalize:"none",autocorrect:"off",onkeydown:e=>{ if (e.key === "Enter") go(); }});
+    const msg = h("p",{class:"note",style:"text-align:left"},"Gib den Benutzernamen deines Freundes ein.");
+    const results = h("div",{style:"display:grid;gap:8px"});
+    const addCode = async (code, name) => {
+      if (code === st.code) return msg.textContent = "Das bist du selbst.";
+      if (st.friends[code]) return msg.textContent = "Ihr seid schon befreundet.";
       msg.textContent = "Wird hinzugefügt …";
-      try { await post(code, {t:"hi", ...meInfo()}); addFriend(code); closeOverlay(); goTab(0); toast("Freund hinzugefügt – er sieht dich gleich in seinen Chats"); }
+      try { await post(code, {t:"hi", ...meInfo()}, "hat dich als Freund hinzugefügt 👋"); addFriend(code, name); closeOverlay(); goTab(0); toast((name || "Freund") + " hinzugefügt – er sieht dich gleich in seinen Chats"); }
       catch { msg.textContent = "Ging nicht – prüf dein Internet."; }
     };
+    async function go(){
+      const raw = input.value.trim().toLowerCase(); results.replaceChildren();
+      const u = raw.replace(/^@/, "");
+      if (!u) return;
+      if (account && u === account.username) return msg.textContent = "Das bist du selbst.";
+      if (/^[a-z0-9._]{3,20}$/.test(u)){
+        msg.textContent = "Suche …";
+        let list = []; try { list = await lookup(u); } catch {}
+        if (list.length === 1) return addCode(list[0].code, list[0].name);
+        if (list.length > 1){
+          msg.textContent = "Mehrere gefunden – wähle deinen Freund aus (oder frag ihn nach seinem Code):";
+          results.replaceChildren(...list.sort((a, b) => b.at - a.at).map(f => h("button",{class:"sbtn",style:"width:100%;justify-content:space-between",onclick:()=>addCode(f.code, f.name)}, h("span",{}, f.name + " (@" + u + ")"), h("small",{style:"opacity:.7"}, "Code " + f.code))));
+          return;
+        }
+      }
+      const code = raw.replace(/^.*shade-/, "").replace(/[^a-z0-9]/g, "");
+      if (/^[a-z0-9]{10}$/.test(code)) return addCode(code);
+      msg.textContent = "Niemanden mit diesem Namen gefunden. Dein Freund muss ShadeChat einmal öffnen – oder lass dir seinen Code schicken.";
+    }
     const copy = async () => { const t = "Füg mich bei ShadeChat hinzu! Mein Code: " + st.code + " – " + location.origin + location.pathname; try { await navigator.clipboard.writeText(t); toast("Kopiert – jetzt deinem Freund schicken"); } catch { toast(st.code); } };
     overlay.replaceChildren(h("div",{class:"ov dim",onclick:e=>{ if(e.target===e.currentTarget) closeOverlay(); }},
       h("div",{class:"sheet"}, h("h2",{},"Freunde hinzufügen", iconBtn("close","Schließen",closeOverlay)),
-        h("p",{class:"note",style:"text-align:left;margin:0"},"Dein Code:"),
+        h("p",{class:"note",style:"text-align:left;margin:0"},"Dein Benutzername: ", h("b",{style:"color:var(--fg)"},"@" + (account?.username || "")), " · Dein Code:"),
         h("div",{style:"padding:12px 14px;border-radius:14px;background:var(--surface2);font:800 20px ui-monospace,monospace;letter-spacing:.06em;color:var(--fg);text-align:center"}, st.code),
         h("button",{class:"sbtn",style:"width:100%;justify-content:center",onclick:copy}, ic("link"),"Meinen Code kopieren & schicken"),
-        h("h2",{style:"margin-top:8px"},"Code von deinem Freund"), input, msg,
+        h("h2",{style:"margin-top:8px"},"Freund suchen"), input, msg, results,
         h("button",{class:"send",style:"width:100%",onclick:go}, ic("userplus"),"Hinzufügen"),
         h("p",{class:"note",style:"text-align:left;margin-top:12px"},"Benachrichtigungen: Abonniere in ntfy das Thema ", h("b",{style:"color:var(--fg)"},"shade-" + st.code), ". Dann siehst du neue Nachrichten auch, wenn ShadeChat zu ist."))));
     input.focus();
@@ -3174,7 +3220,7 @@ const P2P = (() => {
   exportAccount = () => "SC1." + b64e(JSON.stringify({st, account}));
   restore(); listen();
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") listen(); });
-  return {code:() => st.code};
+  return {code:() => st.code, announce, lookup};
 })();
 
 if (NET){ loggedIn = false; NET.start(); } else { if (!loggedIn) showAuth(); else renderAll(); }
