@@ -650,7 +650,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "16.11. 13:58";
+const SHADE_VERSION = "16.11. 18:15";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -1939,7 +1939,7 @@ function openEditor(target, media, lensId){
       h("button",{class:"send",onclick:doSend}, target.chat||target.story ? "Senden" : "Senden an", ic("send")))));
   redraw(); drawTools();
 }
-function postStory(snap){
+let postStory = function(snap){
   myStories.push({by:ME, snap, at:Date.now(), views:0, seen:true}); unlock("story"); addScore(20);
   setTimeout(()=>{ myStories.forEach(s=>s.views=Math.min(4,s.views+2)); if(!overlay.childElementCount) renderAll(); },4000);
 }
@@ -3124,6 +3124,7 @@ const P2P = (() => {
       renderAll(); return;
     }
     if (p.t === "call"){ onCall(p); return; }
+    if (p.t === "story" && d.attachment && d.attachment.url){ onStory(p, d.attachment.url); return; }
     if (p.t === "shot" && d.attachment && d.attachment.url){
       if (!st.friends[p.from]) addFriend(p.from, p.name, p.username);
       keep(p.from, {mine:false, text:"📸 Shot", at:p.at || Date.now()});
@@ -3344,7 +3345,35 @@ const P2P = (() => {
   startCall = function(id, video){ if (!id.startsWith("p_")) return toast("Diesen Kontakt kannst du nicht anrufen."); start(id.slice(2), video); };
   // ---------- Konto auf ein anderes Handy übertragen ----------
   exportAccount = () => "SC1." + b64e(JSON.stringify({st, account}));
-  restore(); listen();
+  // ---------- Stories: bleiben gespeichert (bis du sie löschst) und gehen an deine Freunde ----------
+  const SK = "shade-mystories", FK = "shade-fstories";
+  const toData = blob => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
+  function saveMine(){ try { store.set(SK, JSON.stringify(myStories.slice(-30).map(x => ({id:x.id, snap:x.snap, at:x.at, views:x.views || 0})))); } catch { toast("Speicher voll – lösch ein paar alte Stories."); } }
+  function saveFriends(){ try { store.set(FK, JSON.stringify(stories.filter(x => x.p2p).slice(-60).map(x => ({id:x.id, code:x.by.slice(2), snap:x.snap, at:x.at, seen:!!x.seen})))); } catch {} }
+  function restoreStories(){
+    try { (JSON.parse(store.get(SK) || "[]") || []).forEach(x => myStories.push({id:x.id, by:ME, snap:x.snap, at:x.at, views:x.views || 0, seen:true})); } catch {}
+    try { (JSON.parse(store.get(FK) || "[]") || []).forEach(x => { if (!st.friends[x.code]) return; person(st.friends[x.code]); stories.push({id:x.id, by:pid(x.code), snap:x.snap, at:x.at, seen:x.seen, views:0, p2p:true}); }); } catch {}
+  }
+  postStory = async function(snap){
+    const s2 = JSON.parse(JSON.stringify(snap)); delete s2.__redraw;
+    if (s2.img && !s2.video){ try { s2.img = await toData(await shrink(s2.img, 720, .7)); } catch {} }
+    const it = {id:"s" + Date.now().toString(36), by:ME, snap:s2, at:Date.now(), views:0, seen:true};
+    myStories.push(it); saveMine(); unlock("story"); addScore(20); if (!overlay.childElementCount) renderAll();
+    if (!s2.img || s2.video) return;
+    let blob; try { blob = await (await fetch(s2.img)).blob(); } catch { return; }
+    const meta = "B64:" + b64e(JSON.stringify({t:"story", ...meInfo(), id:it.id, at:it.at, filter:s2.filter || "", cap:s2.cap || "", capY:s2.capY || 64}));
+    Object.keys(st.friends).forEach(code => fetch(NT + dataT(code), {method:"PUT", body:blob, headers:{"Filename":"story.jpg", "X-Message":meta}}).catch(()=>{}));
+  };
+  deleteStory = async function(x){ const i = myStories.indexOf(x); if (i >= 0) myStories.splice(i, 1); saveMine(); };
+  async function onStory(p, url){
+    if (stories.some(x => x.id === p.id && x.by === pid(p.from))) return;
+    if (!st.friends[p.from]) addFriend(p.from, p.name, p.username);
+    let img = url; try { img = await toData(await shrink(url, 720, .72)); } catch {}
+    stories.push({id:p.id, by:pid(p.from), snap:{img, filter:p.filter || "", cap:p.cap || "", capY:p.capY || 64, stickers:[]}, at:p.at || Date.now(), seen:false, views:0, p2p:true});
+    saveFriends(); toast(`${people[pid(p.from)].name} hat eine neue Story gepostet`); if (!overlay.childElementCount) renderAll();
+  }
+  setInterval(() => { if (stories.some(x => x.p2p)) saveFriends(); }, 15000);
+  restore(); restoreStories(); listen();
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") listen(); });
   return {code:() => st.code, announce, lookup};
 })();
