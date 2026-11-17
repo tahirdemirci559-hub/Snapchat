@@ -650,7 +650,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "17.11. 14:52";
+const SHADE_VERSION = "17.11. 14:54";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -1644,7 +1644,7 @@ async function startCam(){
     camVideo.srcObject = st; camVideo.classList.toggle("mirror", LiveCam.facing === "user");
     await camVideo.play().catch(()=>{});
     camOn = true; camDenied = false; camStarting = false; store.set("shade-livecam", true); LiveCam.pause(false); renderCam(); drawFx(); loadFace();
-  } catch(e){ camOn = false; camDenied = true; camStarting = false; store.set("shade-livecam", ""); renderCam(); toast("Die Kamera wurde nicht erlaubt. Tippe nochmal auf „Kamera an“ und dann auf „Erlauben“."); }
+  } catch(e){ camOn = false; camDenied = true; camStarting = false; renderCam(); }
 }
 function loadFace(){
   if (faceDet || faceLoad) return faceLoad;
@@ -1883,7 +1883,7 @@ function renderCam(){
       h("span",{style:"display:flex;gap:8px"}, iconBtn("userplus","Freunde hinzufügen",openAddFriend,"round glass"), iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass"))),
     h("div",{class:"camside"}, iconBtn("expand","Vollbild",goFullscreen,"round glass"), iconBtn("flip","Kamera wechseln",async()=>{ if (!camOn) return toast("Schalte zuerst die Kamera ein."); try { await LiveCam.flip(); camVideo.srcObject = LiveCam.stream; camVideo.classList.toggle("mirror", LiveCam.facing === "user"); camVideo.play().catch(()=>{}); } catch { toast("Kamera konnte nicht gewechselt werden."); } },"round glass"), iconBtn("bolt","Blitz",()=>toast("Blitz an"),"round glass"), iconBtn("timer","Selbstauslöser",()=>toast("Selbstauslöser: 3 Sekunden"),"round glass")),
 
-    camOn ? null : h("button",{class:"chip camgo",style:"position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);z-index:5;background:var(--acc);color:var(--acc-ink);font-weight:800;font-size:17px;padding:14px 22px;box-shadow:0 6px 24px rgba(0,0,0,.5)",onclick:e=>{ e.stopPropagation(); camDenied = false; startCam(); }}, ic("camera"), camStarting ? "Kamera startet …" : "Kamera an"),
+    camOn || !camDenied ? null : h("button",{class:"chip camgo",style:"position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);z-index:5;background:var(--acc);color:var(--acc-ink);font-weight:800;font-size:17px;padding:14px 22px;box-shadow:0 6px 24px rgba(0,0,0,.5)",onclick:e=>{ e.stopPropagation(); camDenied = false; startCam(); }}, ic("camera"), "Kamera an"),
     null);
   el.replaceChildren(vf, lensName, row,
     h("div",{class:"modes"}, ...[["photo","FOTO"],["video","VIDEO"]].map(([k,l])=>h("button",{"aria-pressed":camMode===k?"true":"false",onclick:()=>{ camMode=k; renderCam(); }},l))),
@@ -3080,7 +3080,7 @@ const TABS = [["chat","Chats"],["users","Stories"],["camera","Kamera"],["play","
 document.getElementById("tabs").replaceChildren(...TABS.map(([i,l],k)=>h("button",{"data-i":k,"aria-label":l}, ic(i), l, k===0?h("span",{class:"badge",id:"badge",hidden:true}):null)));
 const tabBtns = [...document.querySelectorAll("#tabs button")];
 let curTab = 2;
-function setTab(i){ if (i === 3 && i !== curTab && navigator.userActivation?.isActive !== false) setTimeout(ytSoundOn, 0); if (i !== 3 && curTab === 3 && ytP) ytCmd(ytP, "pauseVideo"); if (i === 3 && curTab !== 3 && ytP && ytCurPost) ytCmd(ytP, "playVideo"); if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (loggedIn && !camDenied && !camStarting && store.get("shade-livecam")) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
+function setTab(i){ if (i === 3 && i !== curTab && navigator.userActivation?.isActive !== false) setTimeout(ytSoundOn, 0); if (i !== 3 && curTab === 3 && ytP) ytCmd(ytP, "pauseVideo"); if (i === 3 && curTab !== 3 && ytP && ytCurPost) ytCmd(ytP, "playVideo"); if (i === 2){ if (camOn){ if (curTab !== 2){ LiveCam.pause(false); drawFx(); } } else if (loggedIn && !camDenied && !camStarting) startCam(); } else if (curTab === 2 && camOn && !camRec) LiveCam.pause(true); curTab=i; tabBtns.forEach((b,j)=>b.setAttribute("aria-current", i===j ? "true" : "false")); }
 function goTab(i){ if (overlay.childElementCount) closeOverlay(); pager.scrollTo({left:i*pager.clientWidth,behavior:"smooth"}); setTab(i); }
 tabBtns.forEach(b=>b.addEventListener("click",()=>goTab(+b.dataset.i)));
 pager.addEventListener("scroll",()=>setTab(Math.round(pager.scrollLeft/pager.clientWidth)),{passive:true});
