@@ -650,7 +650,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "17.11. 14:39";
+const SHADE_VERSION = "17.11. 14:43";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -1558,8 +1558,14 @@ function openStoryViewer(groups, gi){
   };
   const next = () => { prog = 0; const g=groups[gi]; if(si+1<g.list.length) si++; else if(gi+1<groups.length){gi++; si=0;} else return closeOverlay(); show(); };
   const prev = () => { prog = 0; if(si>0) si--; else if(gi>0){gi--; si=groups[gi].list.length-1;} show(); };
-  overlay.replaceChildren(h("div",{class:"ov dark",onclick:e=>{ (e.clientX < window.innerWidth/3) ? prev() : next(); }}, bars, head, stage,
-    h("p",{class:"note",style:"color:#fff8;padding:4px 0 0"},"Tippe rechts für weiter · links für zurück"), foot));
+  let sx = 0, sy = 0, swiped = false;
+  overlay.replaceChildren(h("div",{class:"ov dark",
+    ontouchstart:e=>{ sx = e.touches[0].clientX; sy = e.touches[0].clientY; swiped = false; },
+    ontouchend:e=>{ const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)){ swiped = true; dx < 0 ? next() : prev(); }
+      else if (dy > 90 && Math.abs(dy) > Math.abs(dx)){ swiped = true; closeOverlay(); } },
+    onclick:e=>{ if (swiped){ swiped = false; return; } (e.clientX < window.innerWidth/3) ? prev() : next(); }}, bars, head, stage,
+    h("p",{class:"note",style:"color:#fff8;padding:4px 0 0"},"Rechts tippen = weiter · links = zurück · nach unten wischen = schließen"), foot));
   show();
   timers.push(setInterval(()=>{ if(paused) return; const v = stage.querySelector("video");
     if (v){ if (v.duration) prog = Math.min(100, v.currentTime/v.duration*100); if (v.ended) prog = 100; } else prog = 100;
@@ -2210,14 +2216,15 @@ function openUserProfile(id){
           h("div",{}, h("b",{}, num(likes)), h("small",{},"Likes")),
           h("div",{}, h("b",{}, theirPosts.length), h("small",{},"Spotlights")),
           h("div",{}, h("b",{}, theirStories.length), h("small",{},"Stories"))),
-        theirStories.length ? h("button",{class:"send",style:"width:100%;margin-bottom:10px",onclick:()=>openStoryViewer([{by:id,list:theirStories}],0)}, ic("eye"),"Story ansehen (" + theirStories.length + ")") : null,
         h("div",{class:"pactions"},
           friend ? h("button",{class:"main",onclick:()=>{ chatWith(id); openChat(id); }}, ic("chat"),"Chat")
                  : h("button",{class:"main",onclick:()=>{ befriend(id); draw(); }}, ic("userplus"),"Hinzufügen"),
           friend ? h("button",{onclick:()=>{ chatWith(id); takePhoto(false,{chat:id}); }}, ic("camera"),"Shot")
                  : h("button",{onclick:()=>{ p.following=!p.following; p.followers+=p.following?1:-1; draw(); }}, p.following?[ic("check"),"Abonniert"]:"Abonnieren")),
         theirStories.length ? h("h2",{},"Story") : null,
-        theirStories.length ? h("div",{class:"grid"}, ...theirStories.map((st, i) => { const c = h("button",{class:"card"+(st.seen?"":" unseen"),onclick:()=>{ const g = {by:id, list:theirStories.slice(i).concat(theirStories.slice(0, i))}; openStoryViewer([g],0); }}); c.append(miniShot(st.snap,"art"), h("span",{class:"cap"}, h("span",{}, ago(st.at)))); return c; })) : null,
+        theirStories.length ? h("div",{class:"grid"}, (() => { const last = theirStories[theirStories.length - 1];
+          const c = h("button",{class:"card"+(theirStories.some(x=>!x.seen)?" unseen":""),onclick:()=>openStoryViewer([{by:id,list:theirStories}],0)});
+          c.append(miniShot(last.snap,"art"), h("span",{class:"cap"}, h("span",{}, theirStories.length > 1 ? theirStories.length + " Stories · tippen" : "Tippen zum Ansehen"))); return c; })()) : null,
         theirPosts.length ? h("h2",{},"Spotlight") : null,
         theirPosts.length ? postGrid(theirPosts, likeLabel) : null,
         friend ? h("button",{class:"sbtn",style:"width:100%;justify-content:center;margin-top:18px;color:var(--snap)",onclick:()=>{ if (!confirm(pname(id) + " als Freund entfernen?")) return; removeFriend(id); closeOverlay(); toast(pname(id) + " ist nicht mehr dein Freund"); }}, ic("close"),"Freund entfernen") : null));
