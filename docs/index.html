@@ -650,7 +650,7 @@ function openExport(){
 function logout(){ loggedIn = false; store.del("pling-session"); overlay.replaceChildren(); showAuth("login"); }
 
 // ================= Personen & Inhalte (Beispiele) =================
-const SHADE_VERSION = "17.11. 14:48";
+const SHADE_VERSION = "17.11. 14:52";
 const ME = "me";
 const people = {
   street: {name:"Streetfood Stuttgart", username:"streetfood.stgt", color:"#c2562b", bio:"Die besten Spots der Stadt. Jeden Abend neu.", followers:48200, verified:true},
@@ -1638,13 +1638,13 @@ const camVideo = (() => { const v = document.createElement("video"); v.className
 const camFx = h("div",{class:"fx"});
 let camUserStarted = false, camDenied = false, camStarting = false, camOn = false, camRec = null, faceDet = null, faceLoad = null, faceLoop = 0, lastFace = null;
 async function startCam(){
-  camUserStarted = true; if (camStarting) return; camStarting = true;
+  camUserStarted = true; if (camStarting) return; camStarting = true; if (!camOn) renderCam();
   try {
     const st = await LiveCam.ensure();
     camVideo.srcObject = st; camVideo.classList.toggle("mirror", LiveCam.facing === "user");
     await camVideo.play().catch(()=>{});
-    camOn = true; camDenied = false; camStarting = false; LiveCam.pause(false); renderCam(); drawFx(); loadFace();
-  } catch(e){ camOn = false; camDenied = true; camStarting = false; renderCam(); }
+    camOn = true; camDenied = false; camStarting = false; store.set("shade-livecam", true); LiveCam.pause(false); renderCam(); drawFx(); loadFace();
+  } catch(e){ camOn = false; camDenied = true; camStarting = false; store.set("shade-livecam", ""); renderCam(); toast("Die Kamera wurde nicht erlaubt. Tippe nochmal auf „Kamera an“ und dann auf „Erlauben“."); }
 }
 function loadFace(){
   if (faceDet || faceLoad) return faceLoad;
@@ -1883,7 +1883,7 @@ function renderCam(){
       h("span",{style:"display:flex;gap:8px"}, iconBtn("userplus","Freunde hinzufügen",openAddFriend,"round glass"), iconBtn("more","Mehr – zum Home-Bildschirm",openInstall,"round glass"))),
     h("div",{class:"camside"}, iconBtn("expand","Vollbild",goFullscreen,"round glass"), iconBtn("flip","Kamera wechseln",async()=>{ if (!camOn) return toast("Schalte zuerst die Kamera ein."); try { await LiveCam.flip(); camVideo.srcObject = LiveCam.stream; camVideo.classList.toggle("mirror", LiveCam.facing === "user"); camVideo.play().catch(()=>{}); } catch { toast("Kamera konnte nicht gewechselt werden."); } },"round glass"), iconBtn("bolt","Blitz",()=>toast("Blitz an"),"round glass"), iconBtn("timer","Selbstauslöser",()=>toast("Selbstauslöser: 3 Sekunden"),"round glass")),
 
-    camOn || !camDenied ? null : h("button",{class:"chip",style:"background:var(--acc);color:var(--acc-ink);font-weight:800",onclick:()=>{ camDenied = false; startCam(); }}, ic("camera"),"Kamera erlauben"),
+    camOn ? null : h("button",{class:"chip camgo",style:"position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);z-index:5;background:var(--acc);color:var(--acc-ink);font-weight:800;font-size:17px;padding:14px 22px;box-shadow:0 6px 24px rgba(0,0,0,.5)",onclick:e=>{ e.stopPropagation(); camDenied = false; startCam(); }}, ic("camera"), camStarting ? "Kamera startet …" : "Kamera an"),
     null);
   el.replaceChildren(vf, lensName, row,
     h("div",{class:"modes"}, ...[["photo","FOTO"],["video","VIDEO"]].map(([k,l])=>h("button",{"aria-pressed":camMode===k?"true":"false",onclick:()=>{ camMode=k; renderCam(); }},l))),
